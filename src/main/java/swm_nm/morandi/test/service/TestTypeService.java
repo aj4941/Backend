@@ -94,15 +94,14 @@ public class TestTypeService {
 
             Process p = pb.start();
 
-            // Write input to the Python process if input is provided
             if (input != null) {
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
                 writer.write(input);
-                writer.newLine(); // Add a new line to signal the end of input
+                writer.newLine();
                 writer.flush();
                 writer.close();
             }
-            // Read the output of the Python process
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             StringBuilder output = new StringBuilder();
             String line;
@@ -117,33 +116,34 @@ public class TestTypeService {
             return output.toString();
 
         } catch (IOException e) {
-            // Handle IO exceptions, if any.
             throw new RuntimeException("Error running Python process: " + e.getMessage(), e);
         }
     }
 
     public String runCpp(String code, String input) throws InterruptedException, IOException {
         try {
-            // Save the C++ code to a temporary file
             String tempFileName = "temp.cpp";
 //            saveCodeToFile(tempFileName, code);
 
-            // Compile the C++ code using g++ compiler
             String executableFileName = "temp.out";
-            String compileCommand = "g++ " + tempFileName + " -o " + executableFileName;
+            String compileCommand = "g++ -std=c++17 " + tempFileName + " -o " + executableFileName;
             Process compileProcess = Runtime.getRuntime().exec(compileCommand);
             compileProcess.waitFor();
 
-            // Check if the compilation was successful
             if (compileProcess.exitValue() != 0) {
-                return "Compile Error occured";
+                StringBuilder errorMessage = new StringBuilder();
+                try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream()))) {
+                    String line;
+                    while ((line = errorReader.readLine()) != null) {
+                        errorMessage.append(line).append("\n");
+                    }
+                }
+                return errorMessage.toString();
             }
 
-            // Run the compiled C++ executable and read the output
             String runCommand = "./" + executableFileName;
             Process runProcess = Runtime.getRuntime().exec(runCommand);
 
-            // input
             String inputFileName = "input.txt";
             StringBuilder inputText = new StringBuilder();
             try (BufferedReader fileReader = new BufferedReader(new FileReader(inputFileName))) {
@@ -152,16 +152,15 @@ public class TestTypeService {
                     inputText.append(line).append("\n");
                 }
             }
-            // Write input to the C++ process if input is provided
+
             if (inputText.toString() != null) {
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(runProcess.getOutputStream()));
                 writer.write(inputText.toString());
-                writer.newLine(); // Add a new line to signal the end of input
+                writer.newLine();
                 writer.flush();
                 writer.close();
             }
 
-            // Read the output of the C++ process
             BufferedReader reader = new BufferedReader(new InputStreamReader(runProcess.getInputStream()));
             StringBuilder output = new StringBuilder();
             String line;
@@ -176,7 +175,6 @@ public class TestTypeService {
             return output.toString();
 
         } catch (IOException | InterruptedException e) {
-            // Handle exceptions, if any.
             throw new RuntimeException("Error running C++ process: " + e.getMessage(), e);
         }
     }
