@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.test.domain.TestType;
@@ -14,6 +15,7 @@ import swm_nm.morandi.test.dto.TestTypeDto;
 import swm_nm.morandi.test.mapper.TestTypeMapper;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -70,5 +72,120 @@ public class TestTypeService {
         }
 
         return bojProblems;
+    }
+
+    public String runCode(String language, String code, String input) throws IOException, InterruptedException {
+        if (language.equals("Python")) {
+            return runPython(code, input);
+        }
+        else if (language.equals("Cpp")) {
+            return runCpp(code, input);
+        }
+        else if (language.equals("Java")) {
+            return runPython(code, input);
+        }
+        return "Error";
+    }
+    public String runPython(String code, String input)
+            throws InterruptedException, IOException {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("python3", "-c", code);
+            pb.redirectErrorStream(true);
+
+            Process p = pb.start();
+
+            // Write input to the Python process if input is provided
+            if (input != null) {
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+                writer.write(input);
+                writer.newLine(); // Add a new line to signal the end of input
+                writer.flush();
+                writer.close();
+            }
+            // Read the output of the Python process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            long startTime = System.currentTimeMillis();
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+                if (System.currentTimeMillis() - startTime >= 12000) {
+                    return "Time Limit Exceed";
+                }
+            }
+
+            return output.toString();
+
+        } catch (IOException e) {
+            // Handle IO exceptions, if any.
+            throw new RuntimeException("Error running Python process: " + e.getMessage(), e);
+        }
+    }
+
+    public String runCpp(String code, String input) throws InterruptedException, IOException {
+        try {
+            // Save the C++ code to a temporary file
+            String tempFileName = "temp.cpp";
+//            saveCodeToFile(tempFileName, code);
+
+            // Compile the C++ code using g++ compiler
+            String executableFileName = "temp.out";
+            String compileCommand = "g++ " + tempFileName + " -o " + executableFileName;
+            Process compileProcess = Runtime.getRuntime().exec(compileCommand);
+            compileProcess.waitFor();
+
+            // Check if the compilation was successful
+            if (compileProcess.exitValue() != 0) {
+                return "Compile Error occured";
+            }
+
+            // Run the compiled C++ executable and read the output
+            String runCommand = "./" + executableFileName;
+            Process runProcess = Runtime.getRuntime().exec(runCommand);
+
+            // input
+            String inputFileName = "input.txt";
+            StringBuilder inputText = new StringBuilder();
+            try (BufferedReader fileReader = new BufferedReader(new FileReader(inputFileName))) {
+                String line;
+                while ((line = fileReader.readLine()) != null) {
+                    inputText.append(line).append("\n");
+                }
+            }
+            // Write input to the C++ process if input is provided
+            if (inputText.toString() != null) {
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(runProcess.getOutputStream()));
+                writer.write(inputText.toString());
+                writer.newLine(); // Add a new line to signal the end of input
+                writer.flush();
+                writer.close();
+            }
+
+            // Read the output of the C++ process
+            BufferedReader reader = new BufferedReader(new InputStreamReader(runProcess.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            long startTime = System.currentTimeMillis();
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+                if (System.currentTimeMillis() - startTime >= 12000) {
+                    return "Time Limit Exceed";
+                }
+            }
+
+            return output.toString();
+
+        } catch (IOException | InterruptedException e) {
+            // Handle exceptions, if any.
+            throw new RuntimeException("Error running C++ process: " + e.getMessage(), e);
+        }
+    }
+
+    private void saveCodeToFile(String fileName, String code) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(code);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
