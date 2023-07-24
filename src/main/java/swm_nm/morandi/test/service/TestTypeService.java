@@ -16,9 +16,12 @@ import swm_nm.morandi.test.mapper.TestTypeMapper;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -82,17 +85,24 @@ public class TestTypeService {
             return runCpp(code, input);
         }
         else if (language.equals("Java")) {
-            return runPython(code, input);
+            return runJava(code, input);
         }
         return "Error";
     }
     public String runPython(String code, String input)
             throws InterruptedException, IOException {
+
         try {
+//          File codeFile = new File("temp.py");
+//          code = new String(Files.readAllBytes(codeFile.toPath()), StandardCharsets.UTF_8);
+
             ProcessBuilder pb = new ProcessBuilder("python3", "-c", code);
             pb.redirectErrorStream(true);
 
             Process p = pb.start();
+
+//          File inputFile = new File("input.txt");
+//          input = new String(Files.readAllBytes(inputFile.toPath()), StandardCharsets.UTF_8);
 
             if (input != null) {
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
@@ -123,7 +133,7 @@ public class TestTypeService {
     public String runCpp(String code, String input) throws InterruptedException, IOException {
         try {
             String tempFileName = "temp.cpp";
-//            saveCodeToFile(tempFileName, code);
+            saveCodeToFile(tempFileName, code); // file 입력 시 주석 처리
 
             String executableFileName = "temp.out";
             String compileCommand = "g++ -std=c++17 " + tempFileName + " -o " + executableFileName;
@@ -144,18 +154,18 @@ public class TestTypeService {
             String runCommand = "./" + executableFileName;
             Process runProcess = Runtime.getRuntime().exec(runCommand);
 
-            String inputFileName = "input.txt";
-            StringBuilder inputText = new StringBuilder();
-            try (BufferedReader fileReader = new BufferedReader(new FileReader(inputFileName))) {
-                String line;
-                while ((line = fileReader.readLine()) != null) {
-                    inputText.append(line).append("\n");
-                }
-            }
+//            String inputFileName = "input.txt";
+//            StringBuilder inputText = new StringBuilder();
+//            try (BufferedReader fileReader = new BufferedReader(new FileReader(inputFileName))) {
+//                String line;
+//                while ((line = fileReader.readLine()) != null) {
+//                    inputText.append(line).append("\n");
+//                }
+//            }
 
-            if (inputText.toString() != null) {
+            if (input != null) { // File 사용시 inputText.toString()
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(runProcess.getOutputStream()));
-                writer.write(inputText.toString());
+                writer.write(input);
                 writer.newLine();
                 writer.flush();
                 writer.close();
@@ -184,6 +194,71 @@ public class TestTypeService {
             writer.write(code);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public String runJava(String code, String input) throws IOException {
+        try {
+            File javaFile = new File("Main.java");
+//          code = new String(Files.readAllBytes(javaFile.toPath()), StandardCharsets.UTF_8);
+            Files.write(javaFile.toPath(), code.getBytes(StandardCharsets.UTF_8));
+
+            // 컴파일된 클래스 파일 생성
+            ProcessBuilder compilePb = new ProcessBuilder("javac", javaFile.getName());
+            compilePb.redirectErrorStream(true);
+            Process compileProcess = compilePb.start();
+            compileProcess.waitFor();
+
+            // 컴파일 에러가 있는지 확인
+            BufferedReader compileReader = new BufferedReader(new InputStreamReader(compileProcess.getInputStream()));
+            StringBuilder compileOutput = new StringBuilder();
+            String compileLine;
+            while ((compileLine = compileReader.readLine()) != null) {
+                compileOutput.append(compileLine).append("\n");
+            }
+            if (compileOutput.length() > 0) {
+                return "Compile Error:\n" + compileOutput.toString();
+            }
+
+            // 실행
+            ProcessBuilder pb = new ProcessBuilder("java", "Main");
+            pb.redirectErrorStream(true);
+
+            Process p = pb.start();
+
+            File inputFile = new File("input.txt");
+            Files.write(inputFile.toPath(), input.getBytes(StandardCharsets.UTF_8));
+//          input = new String(Files.readAllBytes(inputFile.toPath()), StandardCharsets.UTF_8);
+
+            if (input != null) {
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+                writer.write(input);
+                writer.newLine();
+                writer.flush();
+                writer.close();
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            long startTime = System.currentTimeMillis();
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+                if (System.currentTimeMillis() - startTime >= 12000) {
+                    return "Time Limit Exceeded";
+                }
+            }
+
+            boolean processFinished = p.waitFor(10, TimeUnit.SECONDS);
+            if (!processFinished) {
+                p.destroy();
+                return "Execution Time Exceeded";
+            }
+
+            return output.toString();
+
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Error running Java process: " + e.getMessage(), e);
         }
     }
 }
