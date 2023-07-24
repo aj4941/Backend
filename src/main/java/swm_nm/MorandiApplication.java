@@ -8,5 +8,4 @@ public class MorandiApplication {
     public static void main(String[] args) {
         SpringApplication.run(MorandiApplication.class, args);
     }
-
 }

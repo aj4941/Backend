@@ -38,12 +38,12 @@ public class MemberController {
     public ResponseEntity<Map<String, Object>> memberInfo(@PathVariable Long memberId) {
         List<GrassDto> grassDtos =
                 attemptProblemService.getGrassDtosByMemberId(memberId);
-        List<TestRecordDto> testRecordDtos
-                = testService.getTestRecordDtosByMemberId(memberId);
+        List<TestRecordDto> testRecordDtos =
+                testService.getTestRecordDtosByMemberId(memberId);
         List<GraphDto> graphDtos =
                 attemptProblemService.getGraphDtosByMemberId(memberId);
-        List<TestRatingDto> testRatingDtos
-                = testService.getTestRatingDtosByMemberId(memberId);
+        List<TestRatingDto> testRatingDtos =
+                testService.getTestRatingDtosByMemberId(memberId);
 
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("grassDto", grassDtos);

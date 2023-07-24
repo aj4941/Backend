@@ -7,10 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.dto.BojProblemRequestDto;
+import swm_nm.morandi.test.dto.TestInputData;
 import swm_nm.morandi.test.dto.TestTypeDto;
 import swm_nm.morandi.member.service.MemberService;
 import swm_nm.morandi.test.service.TestTypeService;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 @RestController
@@ -31,7 +35,6 @@ public class TestController {
         TestTypeDto testTypeDto = testTypeService.getTestTypeDto(testTypeId);
         return new ResponseEntity<>(testTypeDto, HttpStatus.OK);
     }
-
     @PostMapping("/tests")
     public ResponseEntity<List<BojProblem>> getTestInfo
             (@RequestBody BojProblemRequestDto bojProblemRequestDto) throws JsonProcessingException {
@@ -40,5 +43,15 @@ public class TestController {
         String bojId = memberService.getBojId(memberId);
         List<BojProblem> bojProblems = testTypeService.getBojProblems(testTypeId, bojId);
         return new ResponseEntity<>(bojProblems, HttpStatus.OK);
+    }
+
+    @PostMapping("/tests/output")
+    public ResponseEntity<String> getOutputResult
+            (@RequestBody TestInputData testInputData) throws IOException, InterruptedException {
+        String language = testInputData.getLanguage();
+        String code = testInputData.getCode();
+        String input = testInputData.getInput();
+        String output = testTypeService.runCode(language, code, input);
+        return ResponseEntity.ok(output);
     }
 }
