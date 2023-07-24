@@ -5,12 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.member.dto.GraphDto;
 import swm_nm.morandi.member.dto.GrassDto;
 import swm_nm.morandi.member.dto.MemberDto;
 import swm_nm.morandi.member.dto.RegisterInfoDto;
-import swm_nm.morandi.member.service.AttemptProblemService;
+import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.member.service.MemberService;
 import swm_nm.morandi.test.dto.TestRatingDto;
 import swm_nm.morandi.test.dto.TestRecordDto;

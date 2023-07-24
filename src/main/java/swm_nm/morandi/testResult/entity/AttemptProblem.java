@@ -1,6 +1,7 @@
-package swm_nm.morandi.member.domain;
+package swm_nm.morandi.testResult.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swm_nm.morandi.member.domain.Member;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AttemptProblem {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,10 +1,18 @@
-package swm_nm.morandi.member.service;
+package swm_nm.morandi.testResult.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import swm_nm.morandi.auth.security.SecurityUtils;
+import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.testResult.request.AttemptProblemDto;
+import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.domain.AlgorithmProblemList;
-import swm_nm.morandi.member.domain.AttemptProblem;
+import swm_nm.morandi.problem.domain.Problem;
+import swm_nm.morandi.problem.repository.ProblemRepository;
+import swm_nm.morandi.test.domain.Test;
+import swm_nm.morandi.test.repository.TestRepository;
+import swm_nm.morandi.testResult.entity.AttemptProblem;
 import swm_nm.morandi.member.dto.GraphDto;
 import swm_nm.morandi.member.dto.GrassDto;
 import swm_nm.morandi.problem.repository.AlgorithmProblemListRepository;
@@ -16,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
