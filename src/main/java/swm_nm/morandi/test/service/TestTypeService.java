@@ -58,7 +58,7 @@ public class TestTypeService {
         return testTypeDto;
     }
 
-    public Integer getProblemsByTestType(Long testTypeId, List<BojProblem> bojProblems) {
+    public void getProblemsByTestType(Long testTypeId, List<BojProblem> bojProblems) {
         Optional<TestType> result = testTypeRepository.findById(testTypeId);
         List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testTypeId);
         List<Problem> problems = new ArrayList<>();
@@ -110,7 +110,6 @@ public class TestTypeService {
                 bojProblems.add(bojProblem);
             }
         }
-
     }
 
     public void getProblemsByApi(Long testTypeId, String bojId, List<BojProblem> bojProblems)
