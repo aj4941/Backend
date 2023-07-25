@@ -9,7 +9,7 @@ public class SecurityTestController {
 
     @GetMapping("test")
     public String test(){
-        Long id = SecurityUtils.getCurrentUserId();
+        Long id = SecurityUtils.getCurrentMemberId();
         return id.toString();
     }
 }

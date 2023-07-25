@@ -2,7 +2,7 @@ package swm_nm.morandi.test.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.member.domain.AttemptProblem;
+import swm_nm.morandi.testResult.entity.AttemptProblem;
 import swm_nm.morandi.test.domain.Test;
 import swm_nm.morandi.test.dto.TestRatingDto;
 import swm_nm.morandi.test.dto.TestRecordDto;
@@ -61,4 +61,5 @@ public class TestService {
 
         return testRatingDtos;
     }
+
 }

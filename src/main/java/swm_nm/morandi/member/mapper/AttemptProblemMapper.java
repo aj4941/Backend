@@ -1,7 +1,7 @@
 package swm_nm.morandi.member.mapper;
 
-import swm_nm.morandi.member.domain.AttemptProblem;
-import swm_nm.morandi.member.dto.AttemptProblemDto;
+import swm_nm.morandi.testResult.entity.AttemptProblem;
+import swm_nm.morandi.testResult.request.AttemptProblemDto;
 
 public class AttemptProblemMapper {
     public static AttemptProblemDto convertToDto(AttemptProblem attemptProblem) {

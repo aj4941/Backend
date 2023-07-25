@@ -1,4 +1,4 @@
-package swm_nm.morandi.member.dto;
+package swm_nm.morandi.testResult.request;
 
 import lombok.*;
 
@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class AttemptProblemDto {
-    private Boolean isSolved;
+    private Long testId;
+    private Long problemId;
     private LocalDate testDate;
+    private Integer attemptTime;
 }
