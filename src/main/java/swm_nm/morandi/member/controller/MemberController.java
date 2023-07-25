@@ -1,13 +1,10 @@
 package swm_nm.morandi.member.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import swm_nm.morandi.member.dto.*;
@@ -17,10 +14,7 @@ import swm_nm.morandi.test.dto.TestRatingDto;
 import swm_nm.morandi.test.dto.TestRecordDto;
 import swm_nm.morandi.test.service.TestService;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.nio.file.Files;
 import java.util.*;
 
 @RestController
@@ -58,7 +52,7 @@ public class MemberController {
 
     @GetMapping("/{memberId}/info")
     public ResponseEntity<Map<String, String>> memberInfo(@PathVariable Long memberId) {
-        MemberDto memberDto = memberService.getMemberInfo(memberId);
+        MemberInfoDto memberDto = memberService.getMemberInfo(memberId);
         Map<String, String> info = new HashMap<>();
         info.put("nickname", memberDto.getNickname());
         info.put("bojId", memberDto.getBojId());
@@ -67,7 +61,7 @@ public class MemberController {
 
     @GetMapping("/{memberId}/thumbInfo")
     public ResponseEntity<byte[]> memberThumbInfo(@PathVariable Long memberId) throws IOException {
-        MemberDto memberDto = memberService.getMemberInfo(memberId);
+        MemberInfoDto memberDto = memberService.getMemberInfo(memberId);
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<>(memberDto.getThumbPhoto(), header, HttpStatus.OK);

@@ -3,7 +3,6 @@ package swm_nm.morandi.member.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import swm_nm.morandi.auth.response.GoogleUserDto;
 import swm_nm.morandi.auth.response.TokenDto;
@@ -12,7 +11,7 @@ import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.LoginAppException;
 import swm_nm.morandi.exception.LoginErrorCode;
 import swm_nm.morandi.member.domain.Member;
-import swm_nm.morandi.member.dto.MemberDto;
+import swm_nm.morandi.member.dto.MemberInfoDto;
 import swm_nm.morandi.member.dto.RegisterInfoDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 
@@ -23,13 +22,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -47,9 +43,9 @@ public class MemberService {
 
 
 
-        //이메일이나 아이디가 이미 존재하는지 검증하는 로직도 넣기
+        // 이메일이나 아이디가 이미 존재하는지 검증하는 로직도 넣기
         Optional<Member> findMember = memberRepository.findByEmail(googleUserDto.getEmail());
-        //이메일이나 아이디가 존재하지 않으면 회원가입 진행
+        // 이메일이나 아이디가 존재하지 않으면 회원가입 진행
         if(findMember.isEmpty()) {
             findMember = Optional.of(Member.builder()
                     .email(googleUserDto.getEmail())
@@ -93,11 +89,11 @@ public class MemberService {
         return URLEncoder.encode(fileName, "UTF-8");
     }
 
-    public MemberDto getMemberInfo(Long memberId) {
+    public MemberInfoDto getMemberInfo(Long memberId) {
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
         String thumbPhoto = member.getThumbPhoto();
-        MemberDto memberDto = new MemberDto();
+        MemberInfoDto memberDto = new MemberInfoDto();
         memberDto.setNickname(member.getNickname());
         memberDto.setBojId(member.getBojId());
         try {
@@ -120,7 +116,6 @@ public class MemberService {
 
         return memberDto;
     }
-
     @Transactional
     public void editProfile(Long memberId, String nickname, String bojId, String thumbPhoto) {
         Optional<Member> result = memberRepository.findById(memberId);

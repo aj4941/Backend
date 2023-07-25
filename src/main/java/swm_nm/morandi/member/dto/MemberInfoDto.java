@@ -5,12 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.File;
-
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberDto {
+public class MemberInfoDto {
     private String nickname;
     private String bojId;
     private byte[] thumbPhoto;
