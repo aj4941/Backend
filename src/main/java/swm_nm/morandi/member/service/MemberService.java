@@ -63,10 +63,10 @@ public class MemberService {
     }
 
     public RegisterInfoDto memberInitialize(RegisterInfoDto registerInfoDto) {
-        Long userId = SecurityUtils.getCurrentUserId();
+        Long userId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(userId).orElseThrow(()-> new LoginAppException(LoginErrorCode.USERNAME_NOT_FOUND,"Username not found"));
         member.setBojId(registerInfoDto.getBojId());
-
+        memberRepository.save(member);
         return registerInfoDto;
 
 
