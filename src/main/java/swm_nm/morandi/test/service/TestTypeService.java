@@ -62,7 +62,8 @@ public class TestTypeService {
                     .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
                     .retrieve()
                     .bodyToMono(String.class)
-                    .block();ObjectMapper mapper = new ObjectMapper();
+                    .block();
+            ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(jsonString);
             JsonNode itemsArray = rootNode.get("items");
             if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
