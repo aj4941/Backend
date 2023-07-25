@@ -26,4 +26,13 @@ public enum DifficultyLevel {
         }
         return "Invalid Level";
     }
+
+    public static int getLevelByValue(DifficultyLevel level) {
+        for (int i = 0; i < DifficultyLevel.values().length; i++) {
+            if (DifficultyLevel.values()[i] == level) {
+                return i + 1;
+            }
+        }
+        return -1;
+    }
 }

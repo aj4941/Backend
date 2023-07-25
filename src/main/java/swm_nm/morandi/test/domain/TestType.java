@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.dto.DifficultyRange;
 
@@ -28,4 +29,7 @@ public class TestType {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<DifficultyRange> difficultyRanges;
+
+    @OneToMany(mappedBy = "testType")
+    private List<Algorithm> algorithms;
 }

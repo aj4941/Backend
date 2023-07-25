@@ -7,6 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import swm_nm.morandi.problem.domain.Algorithm;
+import swm_nm.morandi.problem.domain.AlgorithmProblemList;
+import swm_nm.morandi.problem.domain.Problem;
+import swm_nm.morandi.problem.domain.TypeProblemList;
+import swm_nm.morandi.problem.repository.AlgorithmProblemListRepository;
+import swm_nm.morandi.problem.repository.ProblemRepository;
+import swm_nm.morandi.problem.repository.TypeProblemListRepository;
 import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
@@ -21,6 +28,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,6 +36,10 @@ import java.util.concurrent.TimeUnit;
 public class TestTypeService {
 
     private final TestTypeRepository testTypeRepository;
+
+    private final TypeProblemListRepository typeProblemListRepository;
+
+    private final AlgorithmProblemListRepository algorithmProblemListRepository;
 
     public List<TestTypeDto> getTestTypeDtos() {
         List<TestType> testTypes = testTypeRepository.findAll();
@@ -46,17 +58,76 @@ public class TestTypeService {
         return testTypeDto;
     }
 
-    public List<BojProblem> getBojProblems(Long testTypeId, String bojId) throws JsonProcessingException {
-        List<BojProblem> bojProblems = new ArrayList<>();
+    public Integer getProblemsByTestType(Long testTypeId, List<BojProblem> bojProblems) {
+        Optional<TestType> result = testTypeRepository.findById(testTypeId);
+        List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testTypeId);
+        List<Problem> problems = new ArrayList<>();
+        for (TypeProblemList typeProblemList : typeProblemLists) {
+            problems.add(typeProblemList.getProblem());
+        }
+        TestType testType = result.get();
+        List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
+        int size = testType.getAlgorithms().size();
+        Random random = new Random();
+        int randomNumber = random.nextInt(size);
+        List<Algorithm> testTypeAlgorithms = testType.getAlgorithms();
+        long index = 1;
+        for (DifficultyRange difficultyRange : difficultyRanges) {
+            int start = DifficultyLevel.getLevelByValue(difficultyRange.getStart());
+            int end = DifficultyLevel.getLevelByValue(difficultyRange.getEnd());
+            boolean flag = false;
+            for (Problem problem : problems) {
+                int problemLevel = DifficultyLevel.getLevelByValue(problem.getProblemDifficulty());
+                List<AlgorithmProblemList> algorithmProblemLists
+                        = algorithmProblemListRepository.findByProblem_ProblemId(problem.getProblemId());
+                List<Algorithm> algorithms = new ArrayList<>();
+                for (AlgorithmProblemList algorithmProblemList : algorithmProblemLists) {
+                    algorithms.add(algorithmProblemList.getAlgorithm());
+                }
+                if (start <= problemLevel && problemLevel <= end) {
+                    long testTypeAlgorithmId = testTypeAlgorithms.get(randomNumber).getAlgorithmId();
+                    for (Algorithm algorithm : algorithms) {
+                        if (algorithm.getAlgorithmId() == testTypeAlgorithmId)
+                            flag = true;
+                    }
+                    if (flag) {
+                        BojProblem bojProblem = BojProblem.builder()
+                                        .testProblemId(index++)
+                                        .problemId(problem.getBojProblemId())
+                                        .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
+                                        .levelToString(problem.getProblemDifficulty().getFullName()).build();
+                        bojProblems.add(bojProblem);
+                        randomNumber = (randomNumber + 1) % size;
+                        break;
+                    }
+                }
+            }
+            if (!flag) {
+                BojProblem bojProblem = BojProblem.builder()
+                        .testProblemId(index++)
+                        .problemId(0L)
+                        .build();
+                bojProblems.add(bojProblem);
+            }
+        }
+
+    }
+
+    public void getProblemsByApi(Long testTypeId, String bojId, List<BojProblem> bojProblems)
+            throws JsonProcessingException {
         Optional<TestType> result = testTypeRepository.findById(testTypeId);
         TestType testType = result.get();
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
+            if (bojProblems.get((int) (index - 1)).getProblemId() != 0) {
+                index++;
+                continue;
+            }
             String start = difficultyRange.getStart().getShortName();
             String end = difficultyRange.getEnd().getShortName();
             String apiUrl = "https://solved.ac/api/v3/search/problem";
-            String query = String.format("tier:%s..%s ~solved_by:%s", start, end, bojId);
+            String query = String.format("tier:%s..%s ~solved_by:%s solved:1000..", start, end, bojId);
             WebClient webClient = WebClient.builder().build();
             String jsonString = webClient.get()
                     .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
@@ -68,14 +139,14 @@ public class TestTypeService {
             JsonNode itemsArray = rootNode.get("items");
             if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
                 JsonNode firstProblem = itemsArray.get(0);
-                BojProblem bojProblem = mapper.treeToValue(firstProblem, BojProblem.class); // 문제 번호, 난이도
+                BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class); // 문제 번호, 난이도
+                BojProblem bojProblem = bojProblems.get((int) (index - 1));
+                bojProblem.setProblemId(apiProblem.getProblemId());
+                bojProblem.setLevel(apiProblem.getLevel());
                 bojProblem.setTestProblemId(index++);
                 bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
-                bojProblems.add(bojProblem);
             }
         }
-
-        return bojProblems;
     }
 
     public String runCode(String language, String code, String input) throws IOException, InterruptedException {
