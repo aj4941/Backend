@@ -13,6 +13,7 @@ import swm_nm.morandi.exception.LoginErrorCode;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.member.dto.MemberInfoDto;
 import swm_nm.morandi.member.dto.RegisterInfoDto;
+import swm_nm.morandi.member.dto.ThumbURLDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 
 import javax.imageio.ImageIO;
@@ -27,6 +28,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +71,8 @@ public class MemberService {
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
         String thumbPhoto = member.getThumbPhoto();
-        String fileName = thumbPhotoFile.getOriginalFilename();
+        UUID uuid = UUID.randomUUID();
+        String fileName = uuid + thumbPhotoFile.getOriginalFilename();
         String saveName = uploadFolder + "/" + fileName;
         Path savePath = Paths.get(saveName);
         try {
@@ -92,10 +95,16 @@ public class MemberService {
     public MemberInfoDto getMemberInfo(Long memberId) {
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
-        String thumbPhoto = member.getThumbPhoto();
         MemberInfoDto memberDto = new MemberInfoDto();
         memberDto.setNickname(member.getNickname());
         memberDto.setBojId(member.getBojId());
+        return memberDto;
+    }
+
+    public ThumbURLDto getMemberThumbDto(Long memberId) {
+        Optional<Member> result = memberRepository.findById(memberId);
+        Member member = result.get();
+        ThumbURLDto thumbURLDto = new ThumbURLDto();
         try {
             String fileName = URLDecoder.decode(member.getThumbPhoto(), "UTF-8");
             File file = new File(uploadFolder + "/" + fileName);
@@ -109,12 +118,11 @@ public class MemberService {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(resizedImage, "jpg", baos);
             byte[] resizedBytes = baos.toByteArray();
-            memberDto.setThumbPhoto(resizedBytes);
+            thumbURLDto.setThumbPhoto(resizedBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return memberDto;
+        return thumbURLDto;
     }
     @Transactional
     public void editProfile(Long memberId, String nickname, String bojId, String thumbPhoto) {

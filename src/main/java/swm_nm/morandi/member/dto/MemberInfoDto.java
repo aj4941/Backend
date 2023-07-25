@@ -11,5 +11,4 @@ import lombok.Setter;
 public class MemberInfoDto {
     private String nickname;
     private String bojId;
-    private byte[] thumbPhoto;
 }

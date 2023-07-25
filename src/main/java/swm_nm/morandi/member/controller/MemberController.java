@@ -61,10 +61,10 @@ public class MemberController {
 
     @GetMapping("/{memberId}/thumbInfo")
     public ResponseEntity<byte[]> memberThumbInfo(@PathVariable Long memberId) throws IOException {
-        MemberInfoDto memberDto = memberService.getMemberInfo(memberId);
+        ThumbURLDto thumbURLDto = memberService.getMemberThumbDto(memberId);
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.IMAGE_JPEG);
-        return new ResponseEntity<>(memberDto.getThumbPhoto(), header, HttpStatus.OK);
+        return new ResponseEntity<>(thumbURLDto.getThumbPhoto(), header, HttpStatus.OK);
     }
 
     @PostMapping(value = "/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
