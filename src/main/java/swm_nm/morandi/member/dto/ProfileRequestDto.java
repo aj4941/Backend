@@ -1,17 +1,14 @@
 package swm_nm.morandi.member.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.File;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class MemberDto {
+public class ProfileRequestDto {
     private String nickname;
     private String bojId;
-    private byte[] thumbPhoto;
+    private MultipartFile thumbPhotoFile;
 }

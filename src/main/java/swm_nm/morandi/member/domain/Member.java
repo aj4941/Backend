@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
@@ -19,6 +20,8 @@ public class Member {
     private String email;
     private String nickname;
     private String bojId;
+
+    @Column(length = 200000)
     private String thumbPhoto;
 
     @Enumerated(EnumType.STRING)

@@ -21,11 +21,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class JwtAuthenticationFilter  extends OncePerRequestFilter {
-
-
     private final JwtProvider jwtProvider;
     private final AuthUserDetailService authUserDetailService;
-
 
     private String getJwtFromRequest(HttpServletRequest request) {
         // 쿠키로 넘어오는 방식

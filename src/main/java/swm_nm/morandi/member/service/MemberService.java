@@ -1,8 +1,10 @@
 package swm_nm.morandi.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 import swm_nm.morandi.auth.response.GoogleUserDto;
 import swm_nm.morandi.auth.response.TokenDto;
 import swm_nm.morandi.auth.security.JwtProvider;
@@ -14,10 +16,25 @@ import swm_nm.morandi.member.dto.MemberDto;
 import swm_nm.morandi.member.dto.RegisterInfoDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 
+import javax.imageio.ImageIO;
+import javax.transaction.Transactional;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -50,11 +67,55 @@ public class MemberService {
         return tokenDto;
 
     }
-    public void editProfile(Long memberId, MemberDto memberDto) {
+    private String userHome = System.getProperty("user.home");
+    private String uploadFolder = userHome + "/SWM/morandi-backend/morandi-backend/uploads";
+    public String editThumbPhoto(Long memberId, MultipartFile thumbPhotoFile) throws IOException {
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
-        member.editProfile(memberDto.getNickname(), memberDto.getBojId(), memberDto.getThumbPhoto());
-        // memberRepository.save(member);
+        String fileName = thumbPhotoFile.getOriginalFilename();
+        String saveName = uploadFolder + "/" + fileName;
+        Path savePath = Paths.get(saveName);
+        try {
+            thumbPhotoFile.transferTo(savePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return URLEncoder.encode(fileName, "UTF-8");
+    }
+
+    public MemberDto getMemberInfo(Long memberId) {
+        Optional<Member> result = memberRepository.findById(memberId);
+        Member member = result.get();
+        String thumbPhoto = member.getThumbPhoto();
+        MemberDto memberDto = new MemberDto();
+        memberDto.setNickname(member.getNickname());
+        memberDto.setBojId(member.getBojId());
+        try {
+            String fileName = URLDecoder.decode(member.getThumbPhoto(), "UTF-8");
+            File file = new File(uploadFolder + "/" + fileName);
+            BufferedImage originalImage = ImageIO.read(file);
+
+            BufferedImage resizedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = resizedImage.createGraphics();
+            g2d.drawImage(originalImage, 0, 0, 200, 200, null);
+            g2d.dispose();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "jpg", baos);
+            byte[] resizedBytes = baos.toByteArray();
+            memberDto.setThumbPhoto(resizedBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return memberDto;
+    }
+
+    @Transactional
+    public void editProfile(Long memberId, String nickname, String bojId, String thumbPhoto) {
+        Optional<Member> result = memberRepository.findById(memberId);
+        Member member = result.get();
+        member.editProfile(nickname, bojId, thumbPhoto);
     }
     public String getBojId(Long memberId) {
         Optional<Member> result = memberRepository.findById(memberId);
@@ -68,7 +129,5 @@ public class MemberService {
         member.setBojId(registerInfoDto.getBojId());
 
         return registerInfoDto;
-
-
     }
 }
