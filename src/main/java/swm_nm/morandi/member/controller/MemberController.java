@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import swm_nm.morandi.member.dto.*;
-import swm_nm.morandi.member.service.AttemptProblemService;
+import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.member.service.MemberService;
 import swm_nm.morandi.test.dto.TestRatingDto;
 import swm_nm.morandi.test.dto.TestRecordDto;
