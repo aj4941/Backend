@@ -72,6 +72,7 @@ public class MemberService {
     public String editThumbPhoto(Long memberId, MultipartFile thumbPhotoFile) throws IOException {
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
+        String thumbPhoto = member.getThumbPhoto();
         String fileName = thumbPhotoFile.getOriginalFilename();
         String saveName = uploadFolder + "/" + fileName;
         Path savePath = Paths.get(saveName);
@@ -80,6 +81,15 @@ public class MemberService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // 기존 프로필 사진 삭제
+        String decodedFileName = URLDecoder.decode(thumbPhoto, "UTF-8");
+        String existingFilePath = uploadFolder + "/" + decodedFileName;
+        File existingFile = new File(existingFilePath);
+        if (existingFile.exists()) {
+            existingFile.delete();
+        }
+
         return URLEncoder.encode(fileName, "UTF-8");
     }
 
