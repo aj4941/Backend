@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.dto.DifficultyRange;
 
@@ -23,7 +24,11 @@ public class TestType {
     private String testTypename;
     private Integer testTime;
     private Integer problemCount;
+
+    @Enumerated(EnumType.STRING)
     private DifficultyLevel startDifficulty;
+
+    @Enumerated(EnumType.STRING)
     private DifficultyLevel endDifficulty;
 
     @ElementCollection(fetch = FetchType.EAGER)

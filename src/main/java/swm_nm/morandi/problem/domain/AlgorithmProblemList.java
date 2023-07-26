@@ -1,6 +1,7 @@
 package swm_nm.morandi.problem.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AlgorithmProblemList {
 
     @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)

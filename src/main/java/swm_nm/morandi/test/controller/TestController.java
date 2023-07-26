@@ -15,10 +15,11 @@ import swm_nm.morandi.test.service.TestTypeService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 @RequiredArgsConstructor
 public class TestController {
 
@@ -35,13 +36,16 @@ public class TestController {
         TestTypeDto testTypeDto = testTypeService.getTestTypeDto(testTypeId);
         return new ResponseEntity<>(testTypeDto, HttpStatus.OK);
     }
+
     @PostMapping("/tests")
     public ResponseEntity<List<BojProblem>> getTestInfo
             (@RequestBody BojProblemRequestDto bojProblemRequestDto) throws JsonProcessingException {
         Long memberId = bojProblemRequestDto.getMemberId();
         Long testTypeId = bojProblemRequestDto.getTestTypeId();
         String bojId = memberService.getBojId(memberId);
-        List<BojProblem> bojProblems = testTypeService.getBojProblems(testTypeId, bojId);
+        List<BojProblem> bojProblems = new ArrayList<>();
+        testTypeService.getProblemsByTestType(testTypeId, bojProblems);
+        testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
         return new ResponseEntity<>(bojProblems, HttpStatus.OK);
     }
 
