@@ -33,4 +33,16 @@ public class TestType {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<DifficultyRange> difficultyRanges;
+
+    private Double averageCorrectAnswerRate;
+
+    private Integer numberOfTestTrial;
+
+
+    public void updateAverageCorrectAnswerRate(Double newTrialCorrectAnswerRate){
+        this.averageCorrectAnswerRate =
+                (((this.averageCorrectAnswerRate * this.numberOfTestTrial) + newTrialCorrectAnswerRate)
+                        /(++this.numberOfTestTrial));
+
+    }
 }

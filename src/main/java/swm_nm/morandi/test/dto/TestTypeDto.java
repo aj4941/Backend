@@ -13,4 +13,6 @@ public class TestTypeDto {
     private Integer problemCount;
     private DifficultyLevel startDifficulty;
     private DifficultyLevel endDifficulty;
+    private Double averageCorrectAnswerRate;
+    private Integer numberOfTestTrial;
 }
