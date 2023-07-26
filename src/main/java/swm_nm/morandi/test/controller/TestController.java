@@ -44,6 +44,7 @@ public class TestController {
         Long testTypeId = bojProblemRequestDto.getTestTypeId();
         String bojId = memberService.getBojId(memberId);
         List<BojProblem> bojProblems = new ArrayList<>();
+        testTypeService.getProblemsByTestType(testTypeId, bojProblems);
         testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
         return new ResponseEntity<>(bojProblems, HttpStatus.OK);
     }

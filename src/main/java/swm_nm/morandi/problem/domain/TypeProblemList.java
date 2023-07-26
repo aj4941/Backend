@@ -1,6 +1,7 @@
 package swm_nm.morandi.problem.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swm_nm.morandi.problem.domain.Problem;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TypeProblemList {
 
     @Id

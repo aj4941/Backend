@@ -29,7 +29,4 @@ public class TestType {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<DifficultyRange> difficultyRanges;
-
-    @OneToMany(mappedBy = "testType")
-    private List<Algorithm> algorithms;
 }

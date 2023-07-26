@@ -67,10 +67,8 @@ public class TestTypeService {
         }
         TestType testType = result.get();
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
-        int size = testType.getAlgorithms().size();
         Random random = new Random();
-        int randomNumber = random.nextInt(size);
-        List<Algorithm> testTypeAlgorithms = testType.getAlgorithms();
+        long randomNumber = random.nextInt(10);
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
             int start = DifficultyLevel.getLevelByValue(difficultyRange.getStart());
@@ -85,7 +83,7 @@ public class TestTypeService {
                     algorithms.add(algorithmProblemList.getAlgorithm());
                 }
                 if (start <= problemLevel && problemLevel <= end) {
-                    long testTypeAlgorithmId = testTypeAlgorithms.get(randomNumber).getAlgorithmId();
+                    long testTypeAlgorithmId = randomNumber + 1;
                     for (Algorithm algorithm : algorithms) {
                         if (algorithm.getAlgorithmId() == testTypeAlgorithmId)
                             flag = true;
@@ -97,7 +95,7 @@ public class TestTypeService {
                                         .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
                                         .levelToString(problem.getProblemDifficulty().getFullName()).build();
                         bojProblems.add(bojProblem);
-                        randomNumber = (randomNumber + 1) % size;
+                        randomNumber = (randomNumber + 1) % 10;
                         break;
                     }
                 }
