@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class AttemptProblemDto {
-    private Long testId;
     private Long problemId;
     private LocalDate testDate;
     private Integer attemptTime;

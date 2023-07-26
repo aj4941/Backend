@@ -55,8 +55,11 @@ public class AttemptProblemService {
 
         Test test = testRepository.findById(testId).orElseThrow(()-> new RuntimeException("테스트를 찾을 수 없습니다."));
         String bojId = member.getBojId();
+        if(bojId==null)
+            throw new RuntimeException("백준 아이디를 찾을 수 없습니다.");
+
         List<AttemptProblem> attemptProblems = attemptProblemDtos.stream().map(attemptProblemDto -> {
-            Problem problem = problemRepository.findById(attemptProblemDto.getProblemId()).orElseThrow(()-> new RuntimeException("문제를 찾을 수 없습니다."));
+            Problem problem = problemRepository.findProblemByBojProblemId(attemptProblemDto.getProblemId()).orElseThrow(()-> new RuntimeException("문제를 찾을 수 없습니다."));
             return AttemptProblem.builder()
                     .isSolved(checkAttemptedProblemResult(bojId,problem.getBojProblemId()))
                     .testDate(attemptProblemDto.getTestDate())
