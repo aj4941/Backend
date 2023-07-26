@@ -1,15 +1,18 @@
 package swm_nm.morandi.test.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.problem.dto.DifficultyLevel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Test {
@@ -18,12 +21,21 @@ public class Test {
     private LocalDateTime testDate;
     private Long testTime;
     private Integer problemCount;
-    private Integer startDifficulty;
-    private Integer endDifficulty;
+
+    @Enumerated(EnumType.STRING)
+    private DifficultyLevel startDifficulty;
+
+    @Enumerated(EnumType.STRING)
+    private DifficultyLevel endDifficulty;
+
     private String testTypename;
     private Long testRating;
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    public void setTestRating(Long testRating) {
+        this.testRating = testRating;
+    }
 }
