@@ -4,14 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.member.repository.AttemptProblemRepository;
 import swm_nm.morandi.member.repository.MemberRepository;
+import swm_nm.morandi.problem.domain.Problem;
+import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.test.domain.Test;
 import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.test.repository.TestTypeRepository;
+import swm_nm.morandi.testResult.entity.AttemptProblem;
 import swm_nm.morandi.testResult.request.TestResultDto;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
+
+import static java.lang.Math.max;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +31,8 @@ public class TestResultService {
     private final TestRepository testRepository;
 
     private final AttemptProblemService attemptProblemService;
+
+    private final AttemptProblemRepository attemptProblemRepository;
 
     @Transactional
     public void saveTestResult(Long testTypeId, TestResultDto testResultDto){
@@ -50,11 +60,41 @@ public class TestResultService {
         testType.updateAverageCorrectAnswerRate(attemptProblemService.saveAttemptedProblemResult(testId, testResultDto.getAttemptProblemDtos()));
 
         //테스트 레이팅 저장
-        test.setTestRating(1111L);
+        test.setTestRating(calculateTestRating(memberId, testId));
 
         //변경된 테스트 정답률 업데이트
-
+        
     }
 
+    @Transactional
+    public Long calculateTestRating(Long memberId, Long testId) {
+        Optional<List<AttemptProblem>> resAttemptProblems
+                = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
+        Optional<Member> resMember = memberRepository.findById(memberId);
+        Member member = resMember.get();
+        long memberRating = member.getRating();
+        long rating = 0;
+        boolean allSolved = true;
+        if (resAttemptProblems.isPresent()) {
+            List<AttemptProblem> attemptProblems = resAttemptProblems.get();
+            for (AttemptProblem attemptProblem : attemptProblems) {
+                if (attemptProblem.getIsSolved()) {
+                    Problem problem = attemptProblem.getProblem();
+                    DifficultyLevel problemDifficulty = problem.getProblemDifficulty();
+                    long value = DifficultyLevel.getRatingByValue(problemDifficulty);
+                    value -= attemptProblem.getSolvedTime();
+                    value = max(value, 50);
+                    rating += value;
+                }
+                else
+                    allSolved = false;
+            }
+        }
+        long resultRating = (memberRating * 4 + rating) / 5;
+        if (allSolved) memberRating = max(memberRating, resultRating);
+        else memberRating = resultRating;
+        member.setRating(memberRating);
+        return memberRating;
+    }
 }
 

@@ -180,34 +180,4 @@ public class AttemptProblemService {
 
         return graphDtos;
     }
-    @Transactional
-    public Long calculateTestRating(Long memberId, Long testId) {
-        Optional<List<AttemptProblem>> resAttemptProblems
-                = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
-        Optional<Member> resMember = memberRepository.findById(memberId);
-        Member member = resMember.get();
-        long memberRating = member.getRating();
-        long rating = 0;
-        boolean allSolved = true;
-        if (resAttemptProblems.isPresent()) {
-            List<AttemptProblem> attemptProblems = resAttemptProblems.get();
-            for (AttemptProblem attemptProblem : attemptProblems) {
-                if (attemptProblem.getIsSolved()) {
-                    Problem problem = attemptProblem.getProblem();
-                    DifficultyLevel problemDifficulty = problem.getProblemDifficulty();
-                    long value = DifficultyLevel.getRatingByValue(problemDifficulty);
-                    value -= attemptProblem.getSolvedTime();
-                    value = max(value, 50);
-                    rating += value;
-                }
-                else
-                    allSolved = false;
-            }
-        }
-        long resultRating = (memberRating * 4 + rating) / 5;
-        if (allSolved) memberRating = max(memberRating, resultRating);
-        else memberRating = resultRating;
-        member.setRating(memberRating);
-        return memberRating;
-    }
 }

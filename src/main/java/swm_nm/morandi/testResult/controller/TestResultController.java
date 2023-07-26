@@ -35,11 +35,4 @@ public class TestResultController {
         Boolean isSolved = attemptProblemService.checkAttemptedProblemResult(bojId,problemId);
         return new ResponseEntity<>(isSolved, HttpStatus.OK);
     }
-
-    @PostMapping("/{test-id}/rating")
-    public ResponseEntity<Long> calculateTestRating(@PathVariable("test-id") Long testId) {
-        Long memberId = SecurityUtils.getCurrentMemberId();
-        Long rating = attemptProblemService.calculateTestRating(memberId, testId);
-        return new ResponseEntity<>(rating, HttpStatus.OK);
-    }
 }
