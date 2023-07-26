@@ -47,12 +47,12 @@ public class TestResultService {
 
         Long testId = test.getTestId();
         //문제별 결과 목록 저장
-        attemptProblemService.saveAttemptedProblemResult(testId, testResultDto.getAttemptProblemDtos());
+        testType.updateAverageCorrectAnswerRate(attemptProblemService.saveAttemptedProblemResult(testId, testResultDto.getAttemptProblemDtos()));
 
         //테스트 레이팅 저장
         test.setTestRating(1111L);
 
-
+        //변경된 테스트 정답률 업데이트
 
     }
 

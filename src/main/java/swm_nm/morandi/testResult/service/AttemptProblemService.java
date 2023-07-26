@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +50,7 @@ public class AttemptProblemService {
     private final ProblemRepository problemRepository;
 
 
-    public void saveAttemptedProblemResult(Long testId, List<AttemptProblemDto> attemptProblemDtos) {
+    public Double saveAttemptedProblemResult(Long testId, List<AttemptProblemDto> attemptProblemDtos) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다."));
 
@@ -58,10 +59,16 @@ public class AttemptProblemService {
         if(bojId==null)
             throw new RuntimeException("백준 아이디를 찾을 수 없습니다.");
 
+        //람다식 내 동시성 문제 해결 위해 AtomicInteger 사용
+        AtomicInteger correctAnswerCount = new AtomicInteger(0);
+
         List<AttemptProblem> attemptProblems = attemptProblemDtos.stream().map(attemptProblemDto -> {
             Problem problem = problemRepository.findProblemByBojProblemId(attemptProblemDto.getProblemId()).orElseThrow(()-> new RuntimeException("문제를 찾을 수 없습니다."));
+            Boolean isSolved =checkAttemptedProblemResult(bojId,problem.getBojProblemId());
+            if(isSolved)
+                correctAnswerCount.getAndIncrement();
             return AttemptProblem.builder()
-                    .isSolved(checkAttemptedProblemResult(bojId,problem.getBojProblemId()))
+                    .isSolved(isSolved)
                     .testDate(attemptProblemDto.getTestDate())
                     .member(member)
                     .test(test)
@@ -69,8 +76,11 @@ public class AttemptProblemService {
                     .build();
 
         }).collect(Collectors.toList());
+
         attemptProblemRepository.saveAll(attemptProblems);
 
+        //return은 TestType에 정답률을 update하기 위해 반환하는 것임
+        return ((double)correctAnswerCount.get()/attemptProblemDtos.size())*100;
     }
 
     public Boolean checkAttemptedProblemResult(String bojId, Long bojProblemId) {
