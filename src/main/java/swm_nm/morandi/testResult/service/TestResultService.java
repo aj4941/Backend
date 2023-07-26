@@ -39,6 +39,7 @@ public class TestResultService {
                 .startDifficulty(testType.getStartDifficulty())
                 .endDifficulty(testType.getEndDifficulty())
                 .testTypename(testType.getTestTypename())
+                .testTime(testType.getTestTime())
                 .build();
 
         //테스트 결과 저장

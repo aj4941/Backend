@@ -13,7 +13,7 @@ import java.util.Map;
 @Builder
 public class TestRecordDto {
     private LocalDateTime testDate;
-    private Long testTime;
+    private Integer testTime;
     private Integer problemCount;
     private DifficultyLevel startDifficulty;
     private DifficultyLevel endDifficulty;

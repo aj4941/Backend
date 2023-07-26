@@ -19,7 +19,7 @@ public class Test {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long testId;
     private LocalDateTime testDate;
-    private Long testTime;
+    private Integer testTime;
     private Integer problemCount;
 
     @Enumerated(EnumType.STRING)
