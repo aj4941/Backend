@@ -12,21 +12,30 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Test {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long testId;
     private LocalDateTime testDate;
     private Integer testTime;
     private Integer problemCount;
+
+    @Enumerated(EnumType.STRING)
     private DifficultyLevel startDifficulty;
+
+    @Enumerated(EnumType.STRING)
     private DifficultyLevel endDifficulty;
+
     private String testTypename;
     private Long testRating;
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    public void setTestRating(Long testRating) {
+        this.testRating = testRating;
+    }
 }

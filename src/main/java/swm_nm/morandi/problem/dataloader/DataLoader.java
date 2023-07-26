@@ -62,6 +62,8 @@ public class DataLoader implements CommandLineRunner {
                 .startDifficulty(DifficultyLevel.B5)
                 .endDifficulty(DifficultyLevel.S3)
                 .difficultyRanges(difficultyRanges)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0.0)
                 .build();
 
         testTypeRepository.save(testType);

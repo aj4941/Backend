@@ -11,6 +11,8 @@ public class TestTypeMapper {
                 .problemCount(testType.getProblemCount())
                 .startDifficulty(testType.getStartDifficulty())
                 .endDifficulty(testType.getEndDifficulty())
+                .numberOfTestTrial(testType.getNumberOfTestTrial())
+                .averageCorrectAnswerRate(testType.getAverageCorrectAnswerRate())
                 .build();
 
         return testTypeDto;
