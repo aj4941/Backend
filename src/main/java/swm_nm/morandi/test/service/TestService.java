@@ -13,6 +13,7 @@ import swm_nm.morandi.test.repository.TestRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,18 +28,20 @@ public class TestService {
         for (Test test : tests) {
             Long testId = test.getTestId();
             TestRecordDto testRecordDto = TestRecordMapper.convertToDto(test);
-            List<AttemptProblem> attemptProblems
-                    = attemptProblemRepository.findAllByTest_TestId(testId);
-            int index = 1;
-            for (AttemptProblem attemptProblem : attemptProblems) {
-                if (attemptProblem.getIsSolved())
-                    testRecordDto.getSolvedInfo().put(index, true);
-                else
-                    testRecordDto.getSolvedInfo().put(index, false);
+            Optional<List<AttemptProblem>> result = attemptProblemRepository.findAllByTest_TestId(testId);
+            if (result.isPresent()) {
+                List<AttemptProblem> attemptProblems = result.get();
+                int index = 1;
+                for (AttemptProblem attemptProblem : attemptProblems) {
+                    if (attemptProblem.getIsSolved())
+                        testRecordDto.getSolvedInfo().put(index, true);
+                    else
+                        testRecordDto.getSolvedInfo().put(index, false);
 
-                index = index + 1;
+                    index = index + 1;
+                }
+                testRecordDtos.add(testRecordDto);
             }
-            testRecordDtos.add(testRecordDto);
         }
 
         return testRecordDtos;

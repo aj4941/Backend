@@ -1,9 +1,11 @@
 package swm_nm.morandi.test.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.problem.dto.DifficultyLevel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,14 +14,15 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Test {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long testId;
     private LocalDateTime testDate;
-    private Long testTime;
+    private Integer testTime;
     private Integer problemCount;
-    private Integer startDifficulty;
-    private Integer endDifficulty;
+    private DifficultyLevel startDifficulty;
+    private DifficultyLevel endDifficulty;
     private String testTypename;
     private Long testRating;
 

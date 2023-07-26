@@ -25,6 +25,8 @@ public class AttemptProblem {
 
     private LocalDate testDate;
 
+    private Integer solvedTime;
+
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;

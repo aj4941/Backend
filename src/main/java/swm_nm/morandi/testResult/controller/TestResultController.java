@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.testResult.service.AttemptProblemService;
 
@@ -13,8 +14,6 @@ import java.util.List;
 @RequestMapping("/tests")
 @RequiredArgsConstructor
 public class TestResultController {
-
-
     private final AttemptProblemService attemptProblemService;
 
     //진행한 테스트를 문제별로 저장
@@ -32,6 +31,10 @@ public class TestResultController {
         return new ResponseEntity<>(isSolved, HttpStatus.OK);
     }
 
-
-
+    @PostMapping("/{test-id}/rating")
+    public ResponseEntity<Long> calculateTestRating(@PathVariable("test-id") Long testId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        Long rating = attemptProblemService.calculateTestRating(memberId, testId);
+        return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
 }
