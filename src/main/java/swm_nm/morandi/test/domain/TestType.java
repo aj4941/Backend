@@ -40,9 +40,9 @@ public class TestType {
 
 
     public void updateAverageCorrectAnswerRate(Double newTrialCorrectAnswerRate){
-        this.averageCorrectAnswerRate = (
-                (this.averageCorrectAnswerRate* this.numberOfTestTrial) + newTrialCorrectAnswerRate
-                        /(++ this.numberOfTestTrial))
-                *100;
+        this.averageCorrectAnswerRate =
+                (((this.averageCorrectAnswerRate * this.numberOfTestTrial) + newTrialCorrectAnswerRate)
+                        /(++this.numberOfTestTrial));
+
     }
 }
