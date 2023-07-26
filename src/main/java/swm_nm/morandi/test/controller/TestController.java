@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 @RequiredArgsConstructor
 public class TestController {
 

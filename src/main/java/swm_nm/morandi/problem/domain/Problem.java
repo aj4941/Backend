@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -21,5 +18,7 @@ public class Problem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long problemId;
     private Long bojProblemId;
+
+    @Enumerated(EnumType.STRING)
     private DifficultyLevel problemDifficulty;
 }

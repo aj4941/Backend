@@ -24,7 +24,11 @@ public class TestType {
     private String testTypename;
     private Integer testTime;
     private Integer problemCount;
+
+    @Enumerated(EnumType.STRING)
     private DifficultyLevel startDifficulty;
+
+    @Enumerated(EnumType.STRING)
     private DifficultyLevel endDifficulty;
 
     @ElementCollection(fetch = FetchType.EAGER)
