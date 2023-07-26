@@ -1,6 +1,7 @@
 package swm_nm.morandi.test.dto;
 
 import lombok.*;
+import swm_nm.morandi.problem.dto.DifficultyLevel;
 
 import java.time.LocalDateTime;
 
@@ -11,10 +12,10 @@ import java.time.LocalDateTime;
 public class TestDto {
     private Long testId;
     private LocalDateTime testDate;
-    private Long testTime;
+    private Integer testTime;
     private Integer problemCount;
-    private Integer startDifficulty;
-    private Integer endDifficulty;
+    private DifficultyLevel startDifficulty;
+    private DifficultyLevel endDifficulty;
     private String testTypename;
     private Long testRating;
 }
