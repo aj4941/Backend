@@ -8,8 +8,8 @@ import swm_nm.morandi.auth.response.GoogleUserDto;
 import swm_nm.morandi.auth.response.TokenDto;
 import swm_nm.morandi.auth.security.JwtProvider;
 import swm_nm.morandi.auth.security.SecurityUtils;
-import swm_nm.morandi.exception.LoginAppException;
-import swm_nm.morandi.exception.LoginErrorCode;
+import swm_nm.morandi.exception.errorcode.AuthErrorCode;
+import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.member.dto.MemberInfoDto;
 import swm_nm.morandi.member.dto.RegisterInfoDto;
@@ -138,7 +138,7 @@ public class MemberService {
 
     public RegisterInfoDto memberInitialize(RegisterInfoDto registerInfoDto) {
         Long userId = SecurityUtils.getCurrentMemberId();
-        Member member = memberRepository.findById(userId).orElseThrow(()-> new LoginAppException(LoginErrorCode.USERNAME_NOT_FOUND,"Username not found"));
+        Member member = memberRepository.findById(userId).orElseThrow(()-> new MorandiException(AuthErrorCode.MEMBER_NOT_FOUND));
         member.setBojId(registerInfoDto.getBojId());
         memberRepository.save(member);
         return registerInfoDto;

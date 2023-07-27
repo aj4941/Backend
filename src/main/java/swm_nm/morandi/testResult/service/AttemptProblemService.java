@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.auth.security.SecurityUtils;
+import swm_nm.morandi.exception.MorandiException;
+import swm_nm.morandi.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.member.repository.MemberRepository;
@@ -52,12 +54,12 @@ public class AttemptProblemService {
 
     public Double saveAttemptedProblemResult(Long testId, List<AttemptProblemDto> attemptProblemDtos) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Test test = testRepository.findById(testId).orElseThrow(()-> new RuntimeException("테스트를 찾을 수 없습니다."));
         String bojId = member.getBojId();
         if(bojId==null)
-            throw new RuntimeException("백준 아이디를 찾을 수 없습니다.");
+            throw new MorandiException(MemberErrorCode.BAEKJOONID_NOT_FOUND);
 
         //람다식 내 동시성 문제 해결 위해 AtomicInteger 사용
         AtomicInteger correctAnswerCount = new AtomicInteger(0);
