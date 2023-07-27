@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.testResult.request.TestResultDto;
 import swm_nm.morandi.testResult.service.AttemptProblemService;
@@ -15,8 +16,6 @@ import java.util.List;
 @RequestMapping("/tests")
 @RequiredArgsConstructor
 public class TestResultController {
-
-
     private final AttemptProblemService attemptProblemService;
     private final TestResultService testResultService;
 
@@ -36,7 +35,4 @@ public class TestResultController {
         Boolean isSolved = attemptProblemService.checkAttemptedProblemResult(bojId,problemId);
         return new ResponseEntity<>(isSolved, HttpStatus.OK);
     }
-
-
-
 }

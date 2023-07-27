@@ -54,6 +54,7 @@ public class MemberService {
                     .nickname(googleUserDto.getName())
                     .thumbPhoto(googleUserDto.getPicture())
                     .socialInfo(googleUserDto.getType())
+                    .rating(1000L)
                     .build());
             memberRepository.save(findMember.get());
             TokenDto tokenDto = jwtProvider.getTokens(findMember.get());

@@ -11,8 +11,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,20 +20,20 @@ public class Member {
     private String email;
     private String nickname;
     private String bojId;
-
-    @Column(length = 200000)
+    private Long rating;
     private String thumbPhoto;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialInfo;
-
     public void setBojId(String bojId) {
         this.bojId = bojId;
     }
-
     public void editProfile(String nickname, String bojId, String thumbPhoto) {
         this.nickname = nickname;
         this.bojId = bojId;
         this.thumbPhoto = thumbPhoto;
+    }
+    public void setRating(Long rating) {
+        this.rating = rating;
     }
 }

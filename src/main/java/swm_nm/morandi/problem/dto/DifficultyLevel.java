@@ -35,4 +35,15 @@ public enum DifficultyLevel {
         }
         return -1;
     }
+
+    public static int getRatingByValue(DifficultyLevel level) {
+        int rating = 100;
+        for (int i = 0; i < DifficultyLevel.values().length; i++) {
+            if (i % 5 == 0) rating += 100;
+            if (DifficultyLevel.values()[i] == level)
+                return rating;
+            rating += 20;
+        }
+        return -1;
+    }
 }
