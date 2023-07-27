@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import swm_nm.morandi.auth.exception.JwtAuthException;
+import swm_nm.morandi.auth.filter.FilterConfig;
 
 @EnableWebSecurity
 @Configuration
@@ -16,7 +16,7 @@ import swm_nm.morandi.auth.exception.JwtAuthException;
 public class SecurityConfig {
 
     private final FilterConfig filterConfig;
-    private final JwtAuthException jwtAuthException;
+    //private final JwtAuthException jwtAuthException;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -25,9 +25,9 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .csrf().disable()
 
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthException)
-                .and()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(jwtAuthException)
+             //   .and()
                 .cors()
                 .and()
 
@@ -41,8 +41,6 @@ public class SecurityConfig {
                   .and()
                   .apply(filterConfig);
 
-
-        //.addFilterBefore(new JwtTokenFilter(userService,secretKey), UsernamePasswordAuthenticationFilter.class)
         return http.build();
     }
 }

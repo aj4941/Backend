@@ -1,4 +1,4 @@
-package swm_nm.morandi.auth.security;
+package swm_nm.morandi.auth.filter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
+import swm_nm.morandi.auth.security.JwtProvider;
 import swm_nm.morandi.auth.service.AuthUserDetailService;
 
 import javax.servlet.FilterChain;
@@ -53,7 +54,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
             UserDetails userDetails = authUserDetailService.loadUserByUsername(userId.toString());
 
             //UserDetails userDetails = new AuthDetails(userId.toString());
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,userDetails.getAuthorities());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

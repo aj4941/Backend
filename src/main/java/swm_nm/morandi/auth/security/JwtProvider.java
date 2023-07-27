@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import swm_nm.morandi.auth.constants.SecurityConstants;
 import swm_nm.morandi.auth.response.TokenDto;
+import swm_nm.morandi.exception.errorcode.AuthErrorCode;
+import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.member.domain.Member;
 
 import java.security.Key;
@@ -26,19 +28,23 @@ public class JwtProvider {
             return Optional.of(claimsJws);
 
         }  catch (ExpiredJwtException e) {
-            logger.info("Expired JWT Token");
+            logger.info("만료된 JWT Token");
+            throw new MorandiException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            logger.info("Invalid JWT signature");
+            logger.info("유효하지 않은 JWT signature");
+            throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
         } catch (UnsupportedJwtException e) {
-            logger.info("Token not supported");
+            logger.info("지원되지 않는 토큰");
+            throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
         } catch (IllegalArgumentException e) {
-            logger.info("JWT Error");
-        }
+            logger.info("IllegalArgumentException");
 
-        return Optional.empty();
+        }
+        throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
+
     }
     private Jws<Claims> getJws(String token) {
-        return parseTokenToJws(token).orElseThrow(() -> new RuntimeException("getJws Method"));
+        return parseTokenToJws(token).orElseThrow(() -> new MorandiException(AuthErrorCode.INVALID_TOKEN));
     }
     public boolean validateToken(String token){
         return parseTokenToJws(token).isPresent();

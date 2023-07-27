@@ -1,4 +1,4 @@
-package swm_nm.morandi.auth.security;
+package swm_nm.morandi.auth.filter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -13,13 +13,12 @@ import org.springframework.stereotype.Component;
 public class FilterConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-//    private final AccessDeniedFilter accessDeniedFilter;
-//    private final JwtExceptionFilter jwtExceptionFilter;
-
+    private final JwtExceptionFilter jwtExceptionFilter;
+    //    private final AccessDeniedFilter accessDeniedFilter;
     @Override
     public void configure(HttpSecurity builder) {
         builder.addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
-//        builder.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+        builder.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
 //        builder.addFilterBefore(accessDeniedFilter, FilterSecurityInterceptor.class);
     }
 }
