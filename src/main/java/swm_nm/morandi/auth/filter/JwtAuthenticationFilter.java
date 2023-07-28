@@ -9,8 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
+import swm_nm.morandi.auth.security.AuthDetails;
 import swm_nm.morandi.auth.security.JwtProvider;
 import swm_nm.morandi.auth.service.AuthUserDetailService;
+import swm_nm.morandi.exception.MorandiException;
+import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -51,9 +54,12 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
         {
             Long userId = jwtProvider.getUserIdfromToken(token);
 
-            UserDetails userDetails = authUserDetailService.loadUserByUsername(userId.toString());
+            AuthDetails userDetails = authUserDetailService.loadUserByUsername(userId.toString());
 
-            //UserDetails userDetails = new AuthDetails(userId.toString());
+            //초기 정보인 백준 ID가 아직 등록되지 않았으면 예외처리 (초기값 설정 유도)
+            if(userDetails.getBojId()==null)
+                throw new MorandiException(AuthErrorCode.BAEKJOON_ID_NULL);
+
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);

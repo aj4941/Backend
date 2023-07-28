@@ -11,5 +11,5 @@ import java.time.LocalDate;
 public class AttemptProblemDto {
     private Long problemId;
     private LocalDate testDate;
-    private Integer attemptTime;
+    private Integer solvedTime;
 }

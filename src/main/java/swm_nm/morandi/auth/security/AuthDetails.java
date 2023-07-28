@@ -15,8 +15,13 @@ import java.util.Collections;
 public class AuthDetails implements UserDetails {
 
     private String userId;
+    private String bojId;
 //    private Role role;
 
+
+    public String getBojId() {
+        return bojId;
+    }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
