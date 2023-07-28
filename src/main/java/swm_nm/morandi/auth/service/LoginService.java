@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.auth.response.GoogleUserDto;
 import swm_nm.morandi.auth.response.TokenDto;
+import swm_nm.morandi.exception.MorandiException;
+import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.member.service.MemberService;
 
 
@@ -18,12 +20,11 @@ public class LoginService {
 
         OAuthService oAuthService = oAuthServiceFactory.getServiceByType(type);
         if (oAuthService == null) {
-            throw new IllegalArgumentException("지원되지 않는 OAuth provider 입니다 : " + type);
+            throw new MorandiException(AuthErrorCode.INVALID_SOCIAL_TYPE);
         }
         String accessToken = oAuthService.getAccessToken(authorization_code);
 
         GoogleUserDto googleUserDto = oAuthService.getMemberInfo(accessToken);
-
 
         return memberService.registerMember(googleUserDto);
 

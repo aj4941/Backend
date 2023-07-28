@@ -18,13 +18,10 @@ public class AuthUserDetailService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
     @Override
-    public AuthDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        Member member = memberRepository.findById(Long.parseLong(userId))
+    public AuthDetails loadUserByUsername(String memberId) throws UsernameNotFoundException {
+        Member member = memberRepository.findById(Long.parseLong(memberId))
                 .orElseThrow(()-> new MorandiException(AuthErrorCode.MEMBER_NOT_FOUND));
 
-        //여기서 백준 id없으면 Throw 하기
-
-
-        return new AuthDetails(member.getMemberId().toString());
+        return new AuthDetails(member.getMemberId().toString(),member.getBojId());
     }
 }

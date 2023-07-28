@@ -72,6 +72,7 @@ public class AttemptProblemService {
             return AttemptProblem.builder()
                     .isSolved(isSolved)
                     .testDate(attemptProblemDto.getTestDate())
+                    .solvedTime(attemptProblemDto.getSolvedTime())
                     .member(member)
                     .test(test)
                     .problem(problem)

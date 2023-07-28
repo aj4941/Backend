@@ -18,6 +18,8 @@ public class OAuthServiceFactory {
 
     @Autowired
     public OAuthServiceFactory(List<OAuthService> oAuthServices) {
+
+        //List로 들어오는 Bean 객체들을 -> Map으로 변환하여 등록
         this.serviceMap = oAuthServices.stream()
                 .collect(Collectors.toMap(OAuthService::getType, Function.identity()));
     }

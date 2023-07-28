@@ -65,10 +65,8 @@ public class JwtProvider {
                 .build();
     }
     private Key getSecretKey() {
-
         //임시 테스트 용도
         return SecurityConstants.JWT_KEY;
-
         //return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
     }
     private String buildAccessToken(

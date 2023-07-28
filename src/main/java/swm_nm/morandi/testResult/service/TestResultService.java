@@ -56,27 +56,37 @@ public class TestResultService {
         testRepository.save(test);
 
         Long testId = test.getTestId();
-        //문제별 결과 목록 저장
+        //문제별 결과 목록 저장 및 변경된 정답률 업데이트
         testType.updateAverageCorrectAnswerRate(attemptProblemService.saveAttemptedProblemResult(testId, testResultDto.getAttemptProblemDtos()));
 
         //테스트 레이팅 저장
-        test.setTestRating(calculateTestRating(memberId, testId));
+        test.setTestRating(calculateTestRating(member, testId));
 
-        //변경된 테스트 정답률 업데이트
+
         
     }
 
     @Transactional
-    public Long calculateTestRating(Long memberId, Long testId) {
+    public Long calculateTestRating(Member member, Long testId) {
         Optional<List<AttemptProblem>> resAttemptProblems
                 = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
-        Optional<Member> resMember = memberRepository.findById(memberId);
-        Member member = resMember.get();
-        long memberRating = member.getRating();
-        long rating = 0;
+
+        Long memberRating = member.getRating();
+        long rating = 0L;
         boolean allSolved = true;
         if (resAttemptProblems.isPresent()) {
+
             List<AttemptProblem> attemptProblems = resAttemptProblems.get();
+
+
+            System.out.println("attemptProblems.size() = " + attemptProblems.size());
+
+            for (AttemptProblem attemptProblem : attemptProblems) {
+                System.out.println("attemptProblem.toString() = " + attemptProblem.toString());
+            }
+
+
+
             for (AttemptProblem attemptProblem : attemptProblems) {
                 if (attemptProblem.getIsSolved()) {
                     Problem problem = attemptProblem.getProblem();
