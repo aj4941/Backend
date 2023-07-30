@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import swm_nm.morandi.member.dto.*;
 import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.member.service.MemberService;
@@ -28,58 +27,36 @@ public class MemberController {
 
     @PostMapping("/register-info")
     public ResponseEntity<RegisterInfoDto> memberInitialize(@RequestBody RegisterInfoDto registerInfoDto) {
-        return ResponseEntity.ok(memberService.memberInitialize(registerInfoDto));
+        return new ResponseEntity<>(memberService.memberInitialize(registerInfoDto), HttpStatus.OK);
     }
-    @GetMapping("/{memberId}/record")
-    public ResponseEntity<Map<String, Object>> memberRecord(@PathVariable Long memberId) {
-        List<GrassDto> grassDtos =
-                attemptProblemService.getGrassDtosByMemberId(memberId);
-        List<TestRecordDto> testRecordDtos =
-                testService.getTestRecordDtosByMemberId(memberId);
-        List<GraphDto> graphDtos =
-                attemptProblemService.getGraphDtosByMemberId(memberId);
-        List<TestRatingDto> testRatingDtos =
-                testService.getTestRatingDtosByMemberId(memberId);
-
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("grassDto", grassDtos);
-        responseData.put("testRecordDto", testRecordDtos);
-        responseData.put("graphDto", graphDtos);
-        responseData.put("testRatingDto", testRatingDtos);
-
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    @GetMapping("/record")
+    public ResponseEntity<Map<String, Object>> memberRecord() {
+        return new ResponseEntity<>(attemptProblemService.getMemberRecords(), HttpStatus.OK);
     }
 
-    @GetMapping("/{memberId}/info")
-    public ResponseEntity<Map<String, String>> memberInfo(@PathVariable Long memberId) {
-        MemberInfoDto memberDto = memberService.getMemberInfo(memberId);
-        Map<String, String> info = new HashMap<>();
-        info.put("nickname", memberDto.getNickname());
-        info.put("bojId", memberDto.getBojId());
-        return new ResponseEntity<>(info, HttpStatus.OK);
+    @GetMapping("/info")
+    public ResponseEntity<MemberInfoDto> memberInfo() {
+        return new ResponseEntity<>(memberService.getMemberInfo(), HttpStatus.OK);
     }
 
-    @GetMapping("/{memberId}/thumbInfo")
-    public ResponseEntity<byte[]> memberThumbInfo(@PathVariable Long memberId) throws IOException {
-        ThumbURLDto thumbURLDto = memberService.getMemberThumbDto(memberId);
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.IMAGE_JPEG);
-        return new ResponseEntity<>(thumbURLDto.getThumbPhoto(), header, HttpStatus.OK);
+//    @GetMapping("/thumb-info")
+//    public ResponseEntity<byte[]> memberThumbInfo() {
+//        Long memberId = SecurityUtils.getCurrentMemberId();
+//        ThumbURLDto thumbURLDto = memberService.getMemberThumbDto(memberId);
+//        HttpHeaders header = new HttpHeaders();
+//        header.setContentType(MediaType.IMAGE_JPEG);
+//        return new ResponseEntity<>(thumbURLDto.getThumbPhoto(), header, HttpStatus.OK);
+//    }
+
+    @PostMapping("/edit")
+    public ResponseEntity<MemberInfoDto> editProfile(@RequestBody MemberInfoDto memberInfoDto) throws IOException {
+//      String thumbPhoto = memberService.editThumbPhoto(memberId, profileRequestDto.getThumbPhotoFile());
+        memberService.editProfile(memberInfoDto.getNickname(), memberInfoDto.getBojId());
+        return new ResponseEntity(memberInfoDto, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity editProfile(@PathVariable Long memberId,
-                                      @ModelAttribute ProfileRequestDto profileRequestDto) throws IOException {
-        String thumbPhoto = memberService.editThumbPhoto(memberId, profileRequestDto.getThumbPhotoFile());
-        memberService.editProfile(memberId, profileRequestDto.getNickname(), profileRequestDto.getBojId(), thumbPhoto);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @GetMapping("/{memberId}/test-info")
-    public ResponseEntity<List<TestRecordDto>> testRecordInfo(@PathVariable Long memberId) {
-        List<TestRecordDto> testRecordDtos
-                = testService.getTestRecordDtosByMemberId(memberId);
-
-        return new ResponseEntity<>(testRecordDtos, HttpStatus.OK);
+    @GetMapping("/test-info/{testId}")
+    public ResponseEntity<TestRecordDto> testRecordInfo(@PathVariable Long testId) {
+        return new ResponseEntity<>(testService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
     }
 }

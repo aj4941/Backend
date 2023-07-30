@@ -10,7 +10,7 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BojProblem {
     private Long testProblemId;
-    private Long problemId; // baekjoon problem id
+    private Long bojProblemId; // baekjoon problem id
     private Integer level;
     private String levelToString;
 }

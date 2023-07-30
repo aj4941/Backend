@@ -3,6 +3,7 @@ package swm_nm.morandi.testResult.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jdi.PrimitiveValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,7 +11,13 @@ import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
+import swm_nm.morandi.test.domain.TestType;
+import swm_nm.morandi.test.dto.TestCheckDto;
+import swm_nm.morandi.test.dto.TestRatingDto;
+import swm_nm.morandi.test.repository.TestTypeRepository;
+import swm_nm.morandi.test.service.TestService;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.problem.domain.Algorithm;
@@ -28,7 +35,9 @@ import swm_nm.morandi.member.repository.AttemptProblemRepository;
 
 import javax.transaction.Transactional;
 import java.net.URI;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -52,66 +61,96 @@ public class AttemptProblemService {
 
     private final ProblemRepository problemRepository;
 
-    public Double saveAttemptedProblemResult(Long testId, List<AttemptProblemDto> attemptProblemDtos) {
-        Long memberId = SecurityUtils.getCurrentMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
+    private final TestTypeRepository testTypeRepository;
 
-        Test test = testRepository.findById(testId).orElseThrow(()-> new RuntimeException("테스트를 찾을 수 없습니다."));
-        String bojId = member.getBojId();
-        if(bojId==null)
-            throw new MorandiException(MemberErrorCode.BAEKJOONID_NOT_FOUND);
+    private final TestService testService;
 
-        //람다식 내 동시성 문제 해결 위해 AtomicInteger 사용
-        AtomicInteger correctAnswerCount = new AtomicInteger(0);
+    private final AttemptProblemService attemptProblemService;
 
-        List<AttemptProblem> attemptProblems = attemptProblemDtos.stream().map(attemptProblemDto -> {
-            Problem problem = problemRepository.findProblemByBojProblemId(attemptProblemDto.getProblemId()).orElseThrow(()-> new RuntimeException("문제를 찾을 수 없습니다."));
-            Boolean isSolved =checkAttemptedProblemResult(bojId,problem.getBojProblemId());
-            if(isSolved)
-                correctAnswerCount.getAndIncrement();
-            return AttemptProblem.builder()
-                    .isSolved(isSolved)
-                    .testDate(attemptProblemDto.getTestDate())
-                    .solvedTime(attemptProblemDto.getSolvedTime())
+    private final TestResultService testResultService;
+
+    @Transactional
+    public List<Long> saveAttemptProblems(Long memberId, Long testId, List<BojProblem> bojProblems) {
+        Optional<Member> resultMember = memberRepository.findById(memberId);
+        Optional<Test> resultTest = testRepository.findById(testId);
+        Member member = resultMember.get();
+        Test test = resultTest.get();
+        List<Long> attemptProblemIds = new ArrayList<>();
+        for (BojProblem bojProblem : bojProblems) {
+            Optional<Problem> resultProblem = problemRepository.findProblemByBojProblemId(bojProblem.getBojProblemId());
+            Problem problem = resultProblem.get();
+            AttemptProblem attemptProblem = AttemptProblem.builder()
+                    .isSolved(false)
+                    .testDate(LocalDate.now())
+                    .executionTime(null)
                     .member(member)
                     .test(test)
                     .problem(problem)
                     .build();
-
-        }).collect(Collectors.toList());
-
-        attemptProblemRepository.saveAll(attemptProblems);
-
-        //return은 TestType에 정답률을 update하기 위해 반환하는 것임
-        return ((double)correctAnswerCount.get()/attemptProblemDtos.size())*100;
+            attemptProblemRepository.save(attemptProblem);
+            attemptProblemIds.add(attemptProblem.getAttemptProblemId());
+        }
+        return attemptProblemIds;
     }
 
-    public Boolean checkAttemptedProblemResult(String bojId, Long bojProblemId) {
-        String apiURL = "https://solved.ac/api/v3/search/problem";
-        String query = apiURL+"/?query="+"id:"+ bojProblemId.toString() + "%26@" +bojId;
+    @Transactional
+    public void checkAttemptedProblemResult(Long testId, String bojId) {
+        Optional<Test> resultTest = testRepository.findById(testId);
+        Optional<List<AttemptProblem>> resultAttemptProblem = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
+        Test test = resultTest.get();
+        List<AttemptProblem> attemptProblems = resultAttemptProblem.get();
 
-        URI uri = URI.create(query);
+        for (AttemptProblem attemptProblem : attemptProblems) {
+            if (attemptProblem.getIsSolved())
+                continue;
 
-        WebClient webClient = WebClient.builder().build();
-        String jsonString = webClient.get()
-                .uri(uri)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-        try {
-            JsonNode jsonNode = objectMapper.readTree(jsonString);
-            JsonNode checkNode = jsonNode.get("count");
+            Problem problem = attemptProblem.getProblem();
+            Long bojProblemId = problem.getBojProblemId();
 
-            if(checkNode ==null)
-            {
+            String apiURL = "https://solved.ac/api/v3/search/problem";
+            String query = apiURL + "/?query=" + "id:" + bojProblemId.toString() + "%26@" + bojId;
+
+            URI uri = URI.create(query);
+
+            WebClient webClient = WebClient.builder().build();
+            String jsonString = webClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            try {
+                JsonNode jsonNode = objectMapper.readTree(jsonString);
+                JsonNode checkNode = jsonNode.get("count");
+
+                if (checkNode == null) {
+                    throw new RuntimeException("json 파싱에 실패했습니다.");
+                }
+                // 정답을 맞춘 경우
+                if (checkNode.asLong() == 1L) {
+                    Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
+                    Long minutes = duration.toMinutes();
+                    attemptProblem.setIsSolved(true);
+                    attemptProblem.setExecutionTime(minutes);
+                }
+
+            } catch (JsonProcessingException e) {
                 throw new RuntimeException("json 파싱에 실패했습니다.");
             }
-            return checkNode.asLong()==1L;
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("json 파싱에 실패했습니다.");
         }
     }
+
+    public Map<String, Object> getMemberRecords() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        List<GrassDto> grassDtos = getGrassDtosByMemberId(memberId);
+        List<GraphDto> graphDtos = getGraphDtosByMemberId(memberId);
+        List<TestRatingDto> testRatingDtos = testService.getTestRatingDtosByMemberId(memberId);
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("grassDto", grassDtos);
+        responseData.put("graphDto", graphDtos);
+        responseData.put("testRatingDto", testRatingDtos);
+        return responseData;
+    }
+
     public List<GrassDto> getGrassDtosByMemberId(Long memberId) {
         List<GrassDto> grassDtos = new ArrayList<>();
         Optional<List<AttemptProblem>> result = attemptProblemRepository.findAllByMember_MemberId(memberId);

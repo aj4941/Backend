@@ -27,6 +27,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -93,13 +94,14 @@ public class MemberService {
         return URLEncoder.encode(fileName, "UTF-8");
     }
 
-    public MemberInfoDto getMemberInfo(Long memberId) {
+    public MemberInfoDto getMemberInfo() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
-        MemberInfoDto memberDto = new MemberInfoDto();
-        memberDto.setNickname(member.getNickname());
-        memberDto.setBojId(member.getBojId());
-        return memberDto;
+        MemberInfoDto memberInfoDto = new MemberInfoDto();
+        memberInfoDto.setNickname(member.getNickname());
+        memberInfoDto.setBojId(member.getBojId());
+        return memberInfoDto;
     }
 
     public ThumbURLDto getMemberThumbDto(Long memberId) {
@@ -126,10 +128,11 @@ public class MemberService {
         return thumbURLDto;
     }
     @Transactional
-    public void editProfile(Long memberId, String nickname, String bojId, String thumbPhoto) {
+    public void editProfile(String nickname, String bojId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
-        member.editProfile(nickname, bojId, thumbPhoto);
+        member.editProfile(nickname, bojId);
     }
     public String getBojId(Long memberId) {
         Optional<Member> result = memberRepository.findById(memberId);

@@ -11,6 +11,7 @@ import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.domain.AlgorithmProblemList;
 import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.domain.TypeProblemList;
+import swm_nm.morandi.problem.dto.OutputDto;
 import swm_nm.morandi.problem.repository.AlgorithmProblemListRepository;
 import swm_nm.morandi.problem.repository.ProblemRepository;
 import swm_nm.morandi.problem.repository.TypeProblemListRepository;
@@ -18,6 +19,7 @@ import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.dto.DifficultyRange;
+import swm_nm.morandi.test.dto.TestInputData;
 import swm_nm.morandi.test.dto.TestTypeDto;
 import swm_nm.morandi.test.mapper.TestTypeMapper;
 import swm_nm.morandi.test.repository.TestTypeRepository;
@@ -91,7 +93,7 @@ public class TestTypeService {
                     if (flag) {
                         BojProblem bojProblem = BojProblem.builder()
                                         .testProblemId(index++)
-                                        .problemId(problem.getBojProblemId())
+                                        .bojProblemId(problem.getBojProblemId())
                                         .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
                                         .levelToString(problem.getProblemDifficulty().getFullName()).build();
                         bojProblems.add(bojProblem);
@@ -103,7 +105,7 @@ public class TestTypeService {
             if (!flag) {
                 BojProblem bojProblem = BojProblem.builder()
                         .testProblemId(index++)
-                        .problemId(0L)
+                        .bojProblemId(0L)
                         .build();
                 bojProblems.add(bojProblem);
             }
@@ -117,7 +119,7 @@ public class TestTypeService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
-            if (bojProblems.get((int) (index - 1)).getProblemId() != 0) {
+            if (bojProblems.get((int) (index - 1)).getBojProblemId() != 0) {
                 index++;
                 continue;
             }
@@ -138,7 +140,7 @@ public class TestTypeService {
                 JsonNode firstProblem = itemsArray.get(0);
                 BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class); // 문제 번호, 난이도
                 BojProblem bojProblem = bojProblems.get((int) (index - 1));
-                bojProblem.setProblemId(apiProblem.getProblemId());
+                bojProblem.setBojProblemId(apiProblem.getBojProblemId());
                 bojProblem.setLevel(apiProblem.getLevel());
                 bojProblem.setTestProblemId(index++);
                 bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
@@ -146,17 +148,19 @@ public class TestTypeService {
         }
     }
 
-    public String runCode(String language, String code, String input) throws IOException, InterruptedException {
-        if (language.equals("Python")) {
-            return runPython(code, input);
-        }
-        else if (language.equals("Cpp")) {
-            return runCpp(code, input);
-        }
-        else if (language.equals("Java")) {
-            return runJava(code, input);
-        }
-        return "Error";
+    public OutputDto runCode(TestInputData testInputData) throws IOException, InterruptedException {
+        String language = testInputData.getLanguage();
+        String code = testInputData.getCode();
+        String input = testInputData.getInput();
+        OutputDto outputDto = new OutputDto();
+        if (language.equals("Python"))
+            outputDto.setOutput(runPython(code, input));
+        else if (language.equals("Cpp"))
+            outputDto.setOutput(runCpp(code, input));
+        else if (language.equals("Java"))
+            outputDto.setOutput(runJava(code, input));
+
+        return outputDto;
     }
     public String runPython(String code, String input)
             throws InterruptedException, IOException {

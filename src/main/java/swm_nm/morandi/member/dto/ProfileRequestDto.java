@@ -10,5 +10,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileRequestDto {
     private String nickname;
     private String bojId;
-    private MultipartFile thumbPhotoFile;
+    // private MultipartFile thumbPhotoFile;
 }

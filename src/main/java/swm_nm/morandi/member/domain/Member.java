@@ -28,10 +28,10 @@ public class Member {
     public void setBojId(String bojId) {
         this.bojId = bojId;
     }
-    public void editProfile(String nickname, String bojId, String thumbPhoto) {
+    public void editProfile(String nickname, String bojId) {
         this.nickname = nickname;
         this.bojId = bojId;
-        this.thumbPhoto = thumbPhoto;
+        // this.thumbPhoto = thumbPhoto;
     }
     public void setRating(Long rating) {
         this.rating = rating;

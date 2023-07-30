@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
+import swm_nm.morandi.test.dto.TestStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,11 +32,17 @@ public class Test {
     private String testTypename;
     private Long testRating;
 
+    @Enumerated(EnumType.STRING)
+    private TestStatus testStatus;
+
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
     public void setTestRating(Long testRating) {
         this.testRating = testRating;
+    }
+    public void setTestStatus(TestStatus testStatus) {
+        this.testStatus = testStatus;
     }
 }
