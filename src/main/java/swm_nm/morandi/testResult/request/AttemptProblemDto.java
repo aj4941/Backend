@@ -1,6 +1,7 @@
 package swm_nm.morandi.testResult.request;
 
 import lombok.*;
+import swm_nm.morandi.testResult.entity.AttemptProblem;
 
 import java.time.LocalDate;
 
@@ -9,7 +10,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class AttemptProblemDto {
-    private Long problemId;
-    private LocalDate testDate;
-    private Integer solvedTime;
+    private Long testProblemId;
+    private Boolean isSolved;
+    private Long executionTime;
+
+    public static AttemptProblemDto getAttemptProblemDto(AttemptProblem attemptProblem) {
+        return AttemptProblemDto.builder()
+                .isSolved(attemptProblem.getIsSolved())
+                .executionTime(attemptProblem.getExecutionTime())
+                .build();
+    }
 }

@@ -126,10 +126,10 @@ public class MemberService {
         return thumbURLDto;
     }
     @Transactional
-    public void editProfile(Long memberId, String nickname, String bojId, String thumbPhoto) {
+    public void editProfile(Long memberId, String nickname, String bojId) {
         Optional<Member> result = memberRepository.findById(memberId);
         Member member = result.get();
-        member.editProfile(nickname, bojId, thumbPhoto);
+        member.editProfile(nickname, bojId);
     }
     public String getBojId(Long memberId) {
         Optional<Member> result = memberRepository.findById(memberId);

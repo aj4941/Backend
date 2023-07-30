@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class TestRatingDto {
+    private Long testId;
     private LocalDate testDate;
     private String testTypeName;
     private Long testRating;

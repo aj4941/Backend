@@ -11,6 +11,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class TestRecordDto {
     private LocalDateTime testDate;
     private Integer testTime;

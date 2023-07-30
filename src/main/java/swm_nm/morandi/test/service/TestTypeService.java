@@ -91,7 +91,7 @@ public class TestTypeService {
                     if (flag) {
                         BojProblem bojProblem = BojProblem.builder()
                                         .testProblemId(index++)
-                                        .problemId(problem.getBojProblemId())
+                                        .bojProblemId(problem.getBojProblemId())
                                         .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
                                         .levelToString(problem.getProblemDifficulty().getFullName()).build();
                         bojProblems.add(bojProblem);
@@ -103,7 +103,7 @@ public class TestTypeService {
             if (!flag) {
                 BojProblem bojProblem = BojProblem.builder()
                         .testProblemId(index++)
-                        .problemId(0L)
+                        .bojProblemId(0L)
                         .build();
                 bojProblems.add(bojProblem);
             }
@@ -117,7 +117,7 @@ public class TestTypeService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
-            if (bojProblems.get((int) (index - 1)).getProblemId() != 0) {
+            if (bojProblems.get((int) (index - 1)).getBojProblemId() != 0) {
                 index++;
                 continue;
             }
@@ -138,7 +138,7 @@ public class TestTypeService {
                 JsonNode firstProblem = itemsArray.get(0);
                 BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class); // 문제 번호, 난이도
                 BojProblem bojProblem = bojProblems.get((int) (index - 1));
-                bojProblem.setProblemId(apiProblem.getProblemId());
+                bojProblem.setBojProblemId(apiProblem.getBojProblemId());
                 bojProblem.setLevel(apiProblem.getLevel());
                 bojProblem.setTestProblemId(index++);
                 bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));

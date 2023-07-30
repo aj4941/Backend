@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -23,7 +23,7 @@ public class AttemptProblem {
 
     private LocalDate testDate;
 
-    private Integer solvedTime;
+    private Long executionTime;
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
