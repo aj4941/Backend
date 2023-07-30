@@ -19,30 +19,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TestResultController {
 
-    private final AttemptProblemService attemptProblemService;
-
     private final TestResultService testResultService;
 
     // 진행한 테스트 저장
     // 테스트 해당하는 문제별로 저장
     @PostMapping("/exit")
-    public ResponseEntity<List<AttemptProblemDto>> saveAttemptedProblemResult
-            (@RequestBody TestCheckDto testCheckDto) {
-        Long testId = testCheckDto.getTestId();
-        String bojId = testCheckDto.getBojId();
-        Long testTypeId = testCheckDto.getTestTypeId();
-        attemptProblemService.checkAttemptedProblemResult(testId, bojId);
-        testResultService.saveTestResult(testId, testTypeId);
-        List<AttemptProblemDto> attemptProblemDtos = attemptProblemService.getAttemptProblemDtosByTestId(testId);
-        return new ResponseEntity<>(attemptProblemDtos, HttpStatus.OK);
+    public ResponseEntity<List<AttemptProblemDto>> saveAttemptedProblemResult(@RequestBody TestCheckDto testCheckDto) {
+        return new ResponseEntity<>(testResultService.testExit(testCheckDto), HttpStatus.OK);
     }
 
     // 문제별 정답여부 확인하는 API
     @PostMapping("/is-solved")
-    public ResponseEntity checkAttemptedProblemResult(@RequestBody TestCheckDto testCheckDto){
-        Long testId = testCheckDto.getTestId();
-        String bojId = testCheckDto.getBojId();
-        attemptProblemService.checkAttemptedProblemResult(testId, bojId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<List<AttemptProblemDto>> checkAttemptedProblemResult
+                                    (@RequestBody TestCheckDto testCheckDto){
+        return new ResponseEntity<>(testResultService.isSolvedCheck(testCheckDto), HttpStatus.OK);
     }
 }

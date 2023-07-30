@@ -14,7 +14,10 @@ import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.test.domain.TestType;
+import swm_nm.morandi.test.dto.TestCheckDto;
+import swm_nm.morandi.test.dto.TestRatingDto;
 import swm_nm.morandi.test.repository.TestTypeRepository;
+import swm_nm.morandi.test.service.TestService;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.problem.domain.Algorithm;
@@ -59,6 +62,12 @@ public class AttemptProblemService {
     private final ProblemRepository problemRepository;
 
     private final TestTypeRepository testTypeRepository;
+
+    private final TestService testService;
+
+    private final AttemptProblemService attemptProblemService;
+
+    private final TestResultService testResultService;
 
     @Transactional
     public List<Long> saveAttemptProblems(Long memberId, Long testId, List<BojProblem> bojProblems) {
@@ -130,20 +139,18 @@ public class AttemptProblemService {
         }
     }
 
-    public List<AttemptProblemDto> getAttemptProblemDtosByTestId(Long testId) {
-        Optional<Test> resultTest = testRepository.findById(testId);
-        Optional<List<AttemptProblem>> resultAttemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
-        Test test = resultTest.get();
-        List<AttemptProblem> attemptProblems = resultAttemptProblems.get();
-        List<AttemptProblemDto> attemptProblemDtos = new ArrayList<>();
-        long number = 1;
-        for (AttemptProblem attemptProblem : attemptProblems) {
-            AttemptProblemDto attemptProblemDto = AttemptProblemDto.getAttemptProblemDto(attemptProblem);
-            attemptProblemDto.setTestProblemId(number++);
-            attemptProblemDtos.add(attemptProblemDto);
-        }
-        return attemptProblemDtos;
+    public Map<String, Object> getMemberRecords() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        List<GrassDto> grassDtos = getGrassDtosByMemberId(memberId);
+        List<GraphDto> graphDtos = getGraphDtosByMemberId(memberId);
+        List<TestRatingDto> testRatingDtos = testService.getTestRatingDtosByMemberId(memberId);
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("grassDto", grassDtos);
+        responseData.put("graphDto", graphDtos);
+        responseData.put("testRatingDto", testRatingDtos);
+        return responseData;
     }
+
     public List<GrassDto> getGrassDtosByMemberId(Long memberId) {
         List<GrassDto> grassDtos = new ArrayList<>();
         Optional<List<AttemptProblem>> result = attemptProblemRepository.findAllByMember_MemberId(memberId);

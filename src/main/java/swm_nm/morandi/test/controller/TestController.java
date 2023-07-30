@@ -32,49 +32,25 @@ public class TestController {
     private final TestTypeService testTypeService;
 
     private final TestService testService;
-
-    private final MemberService memberService;
-
-    private final AttemptProblemService attemptProblemService;
     @GetMapping("/test-types")
     public ResponseEntity<List<TestTypeDto>> getTestTypeDtos() {
-        List<TestTypeDto> testTypeDtos = testTypeService.getTestTypeDtos();
-        return new ResponseEntity<>(testTypeDtos, HttpStatus.OK);
+        return new ResponseEntity<>(testTypeService.getTestTypeDtos(), HttpStatus.OK);
     }
     @GetMapping("/test-types/{testTypeId}")
     public ResponseEntity<TestTypeDto> getTestTypeInfo(@PathVariable Long testTypeId) {
-        TestTypeDto testTypeDto = testTypeService.getTestTypeDto(testTypeId);
-        return new ResponseEntity<>(testTypeDto, HttpStatus.OK);
+        return new ResponseEntity<>(testTypeService.getTestTypeDto(testTypeId), HttpStatus.OK);
     }
 
     @PostMapping("/tests")
     public ResponseEntity<Map<String, Object>> testStart
             (@RequestBody Map<String, Long> testTypeMap) throws JsonProcessingException {
         Long testTypeId = testTypeMap.get("testTypeId");
-        Long memberId = SecurityUtils.getCurrentMemberId();
-        Long testId = testService.getTestByTestTypeId(testTypeId, memberId);
-        String bojId = memberService.getBojId(memberId);
-        List<BojProblem> bojProblems = new ArrayList<>();
-        testTypeService.getProblemsByTestType(testTypeId, bojProblems);
-        testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
-        List<Long> attemptProblemIds = attemptProblemService.saveAttemptProblems(memberId, testId, bojProblems);
-        Map<String, Object> map = new HashMap<>();
-        map.put("testId", testId);
-        map.put("attemptProblemIds", attemptProblemIds);
-        map.put("bojProblems", bojProblems);
-        return new ResponseEntity<>(map, HttpStatus.OK);
+        return new ResponseEntity<>(testService.getTestStartsData(testTypeId), HttpStatus.OK);
     }
 
     @PostMapping("/tests/output")
     public ResponseEntity<OutputDto> getOutputResult
             (@RequestBody TestInputData testInputData) throws IOException, InterruptedException {
-        String language = testInputData.getLanguage();
-        String code = testInputData.getCode();
-        String input = testInputData.getInput();
-        String output = testTypeService.runCode(language, code, input);
-        OutputDto outputDto = OutputDto.builder()
-                .output(output)
-                .build();
-        return ResponseEntity.ok(outputDto);
+        return new ResponseEntity(testTypeService.runCode(testInputData), HttpStatus.OK);
     }
 }

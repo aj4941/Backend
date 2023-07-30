@@ -11,6 +11,7 @@ import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.domain.AlgorithmProblemList;
 import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.domain.TypeProblemList;
+import swm_nm.morandi.problem.dto.OutputDto;
 import swm_nm.morandi.problem.repository.AlgorithmProblemListRepository;
 import swm_nm.morandi.problem.repository.ProblemRepository;
 import swm_nm.morandi.problem.repository.TypeProblemListRepository;
@@ -18,6 +19,7 @@ import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.dto.DifficultyRange;
+import swm_nm.morandi.test.dto.TestInputData;
 import swm_nm.morandi.test.dto.TestTypeDto;
 import swm_nm.morandi.test.mapper.TestTypeMapper;
 import swm_nm.morandi.test.repository.TestTypeRepository;
@@ -146,17 +148,19 @@ public class TestTypeService {
         }
     }
 
-    public String runCode(String language, String code, String input) throws IOException, InterruptedException {
-        if (language.equals("Python")) {
-            return runPython(code, input);
-        }
-        else if (language.equals("Cpp")) {
-            return runCpp(code, input);
-        }
-        else if (language.equals("Java")) {
-            return runJava(code, input);
-        }
-        return "Error";
+    public OutputDto runCode(TestInputData testInputData) throws IOException, InterruptedException {
+        String language = testInputData.getLanguage();
+        String code = testInputData.getCode();
+        String input = testInputData.getInput();
+        OutputDto outputDto = new OutputDto();
+        if (language.equals("Python"))
+            outputDto.setOutput(runPython(code, input));
+        else if (language.equals("Cpp"))
+            outputDto.setOutput(runCpp(code, input));
+        else if (language.equals("Java"))
+            outputDto.setOutput(runJava(code, input));
+
+        return outputDto;
     }
     public String runPython(String code, String input)
             throws InterruptedException, IOException {

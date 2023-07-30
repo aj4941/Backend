@@ -10,10 +10,12 @@ import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.test.domain.Test;
 import swm_nm.morandi.test.domain.TestType;
+import swm_nm.morandi.test.dto.TestCheckDto;
 import swm_nm.morandi.test.dto.TestStatus;
 import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
+import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.testResult.request.TestResultDto;
 
 import javax.transaction.Transactional;
@@ -48,14 +50,47 @@ public class TestResultService {
                 .filter(AttemptProblem::getIsSolved)
                 .count();
         long total = attemptProblems.size();
+
         //문제별 결과 목록 저장 및 변경된 정답률 업데이트
         testType.updateAverageCorrectAnswerRate((double)correct / (double)total);
 
         //테스트 레이팅 저장
         test.setTestRating(calculateTestRating(member, testId));
+    }
+    public List<AttemptProblemDto> testExit(TestCheckDto testCheckDto) {
+        Long testId = testCheckDto.getTestId();
+        String bojId = testCheckDto.getBojId();
+        Long testTypeId = testCheckDto.getTestTypeId();
+        attemptProblemService.checkAttemptedProblemResult(testId, bojId);
+        saveTestResult(testId, testTypeId);
+        Optional<Test> resultTest = testRepository.findById(testId);
+        Optional<List<AttemptProblem>> resultAttemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
+        Test test = resultTest.get();
+        List<AttemptProblem> attemptProblems = resultAttemptProblems.get();
+        List<AttemptProblemDto> attemptProblemDtos = new ArrayList<>();
+        long number = 1;
+        for (AttemptProblem attemptProblem : attemptProblems) {
+            AttemptProblemDto attemptProblemDto = AttemptProblemDto.getAttemptProblemDto(attemptProblem);
+            attemptProblemDto.setTestProblemId(number++);
+            attemptProblemDtos.add(attemptProblemDto);
+        }
+        return attemptProblemDtos;
+    }
 
-
-
+    public List<AttemptProblemDto> isSolvedCheck(TestCheckDto testCheckDto) {
+        Long testId = testCheckDto.getTestId();
+        String bojId = testCheckDto.getBojId();
+        attemptProblemService.checkAttemptedProblemResult(testId, bojId);
+        Optional<List<AttemptProblem>> resultAttemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
+        List<AttemptProblem> attemptProblems = resultAttemptProblems.get();
+        List<AttemptProblemDto> attemptProblemDtos = new ArrayList<>();
+        long number = 1;
+        for (AttemptProblem attemptProblem : attemptProblems) {
+            AttemptProblemDto attemptProblemDto = AttemptProblemDto.getAttemptProblemDto(attemptProblem);
+            attemptProblemDto.setTestProblemId(number++);
+            attemptProblemDtos.add(attemptProblemDto);
+        }
+        return attemptProblemDtos;
     }
 
     @Transactional

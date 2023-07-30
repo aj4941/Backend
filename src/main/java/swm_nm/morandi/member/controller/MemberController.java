@@ -6,8 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.member.dto.*;
 import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.member.service.MemberService;
@@ -29,34 +27,16 @@ public class MemberController {
 
     @PostMapping("/register-info")
     public ResponseEntity<RegisterInfoDto> memberInitialize(@RequestBody RegisterInfoDto registerInfoDto) {
-        return ResponseEntity.ok(memberService.memberInitialize(registerInfoDto));
+        return new ResponseEntity<>(memberService.memberInitialize(registerInfoDto), HttpStatus.OK);
     }
     @GetMapping("/record")
     public ResponseEntity<Map<String, Object>> memberRecord() {
-        Long memberId = SecurityUtils.getCurrentMemberId();
-        List<GrassDto> grassDtos =
-                attemptProblemService.getGrassDtosByMemberId(memberId);
-        List<GraphDto> graphDtos =
-                attemptProblemService.getGraphDtosByMemberId(memberId);
-        List<TestRatingDto> testRatingDtos =
-                testService.getTestRatingDtosByMemberId(memberId);
-
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("grassDto", grassDtos);
-        responseData.put("graphDto", graphDtos);
-        responseData.put("testRatingDto", testRatingDtos);
-
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
+        return new ResponseEntity<>(attemptProblemService.getMemberRecords(), HttpStatus.OK);
     }
 
     @GetMapping("/info")
-    public ResponseEntity<Map<String, String>> memberInfo() {
-        Long memberId = SecurityUtils.getCurrentMemberId();
-        MemberInfoDto memberDto = memberService.getMemberInfo(memberId);
-        Map<String, String> info = new HashMap<>();
-        info.put("nickname", memberDto.getNickname());
-        info.put("bojId", memberDto.getBojId());
-        return new ResponseEntity<>(info, HttpStatus.OK);
+    public ResponseEntity<MemberInfoDto> memberInfo() {
+        return new ResponseEntity<>(memberService.getMemberInfo(), HttpStatus.OK);
     }
 
 //    @GetMapping("/thumb-info")
@@ -70,15 +50,13 @@ public class MemberController {
 
     @PostMapping("/edit")
     public ResponseEntity<MemberInfoDto> editProfile(@RequestBody MemberInfoDto memberInfoDto) throws IOException {
-        Long memberId = SecurityUtils.getCurrentMemberId();
-//        String thumbPhoto = memberService.editThumbPhoto(memberId, profileRequestDto.getThumbPhotoFile());
-        memberService.editProfile(memberId, memberInfoDto.getNickname(), memberInfoDto.getBojId());
+//      String thumbPhoto = memberService.editThumbPhoto(memberId, profileRequestDto.getThumbPhotoFile());
+        memberService.editProfile(memberInfoDto.getNickname(), memberInfoDto.getBojId());
         return new ResponseEntity(memberInfoDto, HttpStatus.OK);
     }
 
     @GetMapping("/test-info/{testId}")
     public ResponseEntity<TestRecordDto> testRecordInfo(@PathVariable Long testId) {
-        TestRecordDto testRecordDto = testService.getTestRecordDtoByTestId(testId);
-        return new ResponseEntity<>(testRecordDto, HttpStatus.OK);
+        return new ResponseEntity<>(testService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
     }
 }
