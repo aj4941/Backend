@@ -10,6 +10,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.errorcode.MemberErrorCode;
+import swm_nm.morandi.exception.errorcode.ProblemErrorCode;
+import swm_nm.morandi.exception.errorcode.TestErrorCode;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
@@ -33,16 +35,9 @@ import swm_nm.morandi.problem.repository.AlgorithmProblemListRepository;
 import swm_nm.morandi.problem.repository.AlgorithmRepository;
 import swm_nm.morandi.member.repository.AttemptProblemRepository;
 
-import javax.transaction.Transactional;
-import java.net.URI;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-import static java.lang.Math.max;
 
 @Service
 @RequiredArgsConstructor
@@ -55,89 +50,14 @@ public class AttemptProblemService {
 
     private final AlgorithmRepository algorithmRepository;
 
-    private final MemberRepository memberRepository;
 
     private final TestRepository testRepository;
 
-    private final ProblemRepository problemRepository;
 
-    private final TestTypeRepository testTypeRepository;
 
     private final TestService testService;
 
-    private final AttemptProblemService attemptProblemService;
 
-    private final TestResultService testResultService;
-
-    @Transactional
-    public List<Long> saveAttemptProblems(Long memberId, Long testId, List<BojProblem> bojProblems) {
-        Optional<Member> resultMember = memberRepository.findById(memberId);
-        Optional<Test> resultTest = testRepository.findById(testId);
-        Member member = resultMember.get();
-        Test test = resultTest.get();
-        List<Long> attemptProblemIds = new ArrayList<>();
-        for (BojProblem bojProblem : bojProblems) {
-            Optional<Problem> resultProblem = problemRepository.findProblemByBojProblemId(bojProblem.getBojProblemId());
-            Problem problem = resultProblem.get();
-            AttemptProblem attemptProblem = AttemptProblem.builder()
-                    .isSolved(false)
-                    .testDate(LocalDate.now())
-                    .executionTime(null)
-                    .member(member)
-                    .test(test)
-                    .problem(problem)
-                    .build();
-            attemptProblemRepository.save(attemptProblem);
-            attemptProblemIds.add(attemptProblem.getAttemptProblemId());
-        }
-        return attemptProblemIds;
-    }
-
-    @Transactional
-    public void checkAttemptedProblemResult(Long testId, String bojId) {
-        Optional<Test> resultTest = testRepository.findById(testId);
-        Optional<List<AttemptProblem>> resultAttemptProblem = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
-        Test test = resultTest.get();
-        List<AttemptProblem> attemptProblems = resultAttemptProblem.get();
-
-        for (AttemptProblem attemptProblem : attemptProblems) {
-            if (attemptProblem.getIsSolved())
-                continue;
-
-            Problem problem = attemptProblem.getProblem();
-            Long bojProblemId = problem.getBojProblemId();
-
-            String apiURL = "https://solved.ac/api/v3/search/problem";
-            String query = apiURL + "/?query=" + "id:" + bojProblemId.toString() + "%26@" + bojId;
-
-            URI uri = URI.create(query);
-
-            WebClient webClient = WebClient.builder().build();
-            String jsonString = webClient.get()
-                    .uri(uri)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-            try {
-                JsonNode jsonNode = objectMapper.readTree(jsonString);
-                JsonNode checkNode = jsonNode.get("count");
-
-                if (checkNode == null) {
-                    throw new RuntimeException("json 파싱에 실패했습니다.");
-                }
-                // 정답을 맞춘 경우
-                if (checkNode.asLong() == 1L) {
-                    Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
-                    Long minutes = duration.toMinutes();
-                    attemptProblem.setIsSolved(true);
-                    attemptProblem.setExecutionTime(minutes);
-                }
-
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("json 파싱에 실패했습니다.");
-            }
-        }
-    }
 
     public Map<String, Object> getMemberRecords() {
         Long memberId = SecurityUtils.getCurrentMemberId();
@@ -145,17 +65,16 @@ public class AttemptProblemService {
         List<GraphDto> graphDtos = getGraphDtosByMemberId(memberId);
         List<TestRatingDto> testRatingDtos = testService.getTestRatingDtosByMemberId(memberId);
         Map<String, Object> responseData = new HashMap<>();
-        responseData.put("grassDto", grassDtos);
-        responseData.put("graphDto", graphDtos);
-        responseData.put("testRatingDto", testRatingDtos);
+            responseData.put("grassDto", grassDtos);
+            responseData.put("graphDto", graphDtos);
+            responseData.put("testRatingDto", testRatingDtos);
         return responseData;
     }
 
     public List<GrassDto> getGrassDtosByMemberId(Long memberId) {
         List<GrassDto> grassDtos = new ArrayList<>();
-        Optional<List<AttemptProblem>> result = attemptProblemRepository.findAllByMember_MemberId(memberId);
-        if (result.isPresent()) {
-            List<AttemptProblem> attemptProblems = result.get();
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByMember_MemberId(memberId);
+        if (!attemptProblems.isEmpty()) {
             Map<LocalDate, Integer> grassMap = new HashMap<>();
             for (AttemptProblem attemptProblem : attemptProblems) {
                 LocalDate testDate = attemptProblem.getTestDate();
@@ -189,11 +108,10 @@ public class AttemptProblemService {
             Count.put(algorithmName, 0);
         }
 
-        Optional<List<AttemptProblem>> result = attemptProblemRepository.findAllByMember_MemberId(memberId);
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByMember_MemberId(memberId);
 
         List<GraphDto> graphDtos = new ArrayList<>();
-        if (result.isPresent()) {
-            List<AttemptProblem> attemptProblems = result.get();
+        if (!attemptProblems.isEmpty()) {
             for (AttemptProblem attemptProblem : attemptProblems) {
                 Long problemId = attemptProblem.getProblem().getProblemId();
                 List<AlgorithmProblemList> algorithmProblemLists =

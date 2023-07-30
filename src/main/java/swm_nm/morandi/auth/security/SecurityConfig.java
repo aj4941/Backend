@@ -24,15 +24,11 @@ public class SecurityConfig {
      http
                 .httpBasic().disable()
                 .csrf().disable()
-
-//                .exceptionHandling()
-//                .authenticationEntryPoint(jwtAuthException)
-             //   .and()
                 .cors()
                 .and()
 
                 .authorizeRequests()
-                .antMatchers("/users/**").permitAll()
+                .antMatchers("/oauths/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
 

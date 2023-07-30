@@ -41,6 +41,8 @@ public class TestController {
         return new ResponseEntity<>(testTypeService.getTestTypeDto(testTypeId), HttpStatus.OK);
     }
 
+
+    //DTO사용해서 반환하게 바꾸자 나중에는
     @PostMapping("/tests")
     public ResponseEntity<Map<String, Object>> testStart
             (@RequestBody Map<String, Long> testTypeMap) throws JsonProcessingException {

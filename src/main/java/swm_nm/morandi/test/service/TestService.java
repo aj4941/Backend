@@ -4,9 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.auth.security.SecurityUtils;
+import swm_nm.morandi.exception.MorandiException;
+import swm_nm.morandi.exception.errorcode.MemberErrorCode;
+import swm_nm.morandi.exception.errorcode.ProblemErrorCode;
+import swm_nm.morandi.exception.errorcode.TestErrorCode;
+import swm_nm.morandi.exception.errorcode.TestTypeErrorCode;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.member.service.MemberService;
+import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.test.dto.TestDto;
@@ -20,6 +26,7 @@ import swm_nm.morandi.test.mapper.TestRecordMapper;
 import swm_nm.morandi.member.repository.AttemptProblemRepository;
 import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.testResult.service.AttemptProblemService;
+import swm_nm.morandi.testResult.service.TestResultService;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -39,33 +46,36 @@ public class TestService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
-    private final TestService testService;
 
     private final MemberService memberService;
 
     private final TestTypeService testTypeService;
-
-    private final AttemptProblemService attemptProblemService;
+    private final TestResultService testResultService;
     public Map<String, Object> getTestStartsData(Long testTypeId) throws JsonProcessingException {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Long testId = testService.getTestByTestTypeId(testTypeId, memberId);
+        Long testId = startTestByTestTypeId(testTypeId, memberId);
         String bojId = memberService.getBojId(memberId);
+
         List<BojProblem> bojProblems = new ArrayList<>();
-        testTypeService.getProblemsByTestType(testTypeId, bojProblems);
-        testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
-        List<Long> attemptProblemIds = attemptProblemService.saveAttemptProblems(memberId, testId, bojProblems);
+            testTypeService.getProblemsByTestType(testTypeId, bojProblems);
+            testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
+
+        List<Long> attemptProblemIds = testResultService.saveAttemptProblems(memberId, testId, bojProblems);
+
         Map<String, Object> responseData = new HashMap<>();
-        responseData.put("testId", testId);
-        responseData.put("attemptProblemIds", attemptProblemIds);
-        responseData.put("bojProblems", bojProblems);
+            responseData.put("testId", testId);
+            responseData.put("attemptProblemIds", attemptProblemIds);
+            responseData.put("bojProblems", bojProblems);
+
         return responseData;
     }
+
+
     @Transactional
-    public Long getTestByTestTypeId(Long testTypeId, Long memberId) {
-        Optional<TestType> resultTestType = testTypeRepository.findById(testTypeId);
-        TestType testType = resultTestType.get();
-        Optional<Member> resultMember = memberRepository.findById(memberId);
-        Member member = resultMember.get();
+    public Long startTestByTestTypeId(Long testTypeId, Long memberId) {
+        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(()-> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
+
         Test test = Test.builder()
                 .testDate(LocalDateTime.now())
                 .testTime(testType.getTestTime())
@@ -81,13 +91,11 @@ public class TestService {
         return test.getTestId();
     }
     public TestRecordDto getTestRecordDtoByTestId(Long testId) {
-        Optional<Test> testResult = testRepository.findById(testId);
-        Test test = testResult.get();
+        Test test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         TestRecordDto testRecordDto = TestRecordMapper.convertToDto(test);
-        Optional<List<AttemptProblem>> attemptProblemResult
+        List<AttemptProblem> attemptProblems
                 = attemptProblemRepository.findAllByTest_TestId(testId);
-        if (attemptProblemResult.isPresent()) {
-            List<AttemptProblem> attemptProblems = attemptProblemResult.get();
+        if (!attemptProblems.isEmpty()) {
             int index = 1;
             for (AttemptProblem attemptProblem : attemptProblems) {
                 if (attemptProblem.getIsSolved())

@@ -8,14 +8,14 @@ import swm_nm.morandi.auth.service.LoginService;
 
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/oauths")
 @RequiredArgsConstructor
 public class OAuthController {
 
 
     private final LoginService loginService;
 
-    //개발 테스트용
+    //Authorization Code도 모두 가져오는 경우에 사용하는 callback api
     @GetMapping("/{type}/callback")
     public TokenDto googleLogin(@PathVariable String type, @RequestParam String code) {
         return loginService.login(type, code);
@@ -23,10 +23,10 @@ public class OAuthController {
 
     }
 
-    //실제로 사용할 용도
-    @GetMapping("/login/{type}")
-    public TokenDto login(@PathVariable String type, @RequestParam String code) {
-        return loginService.OAuthJoinOrLogin(type, code);
+    //만약 이미 access Toekn을 가지고 있는 경우에는 이 api를 사용한다.
+    @GetMapping("/{type}/login")
+    public TokenDto login(@PathVariable String type, @RequestParam String accessToken) {
+        return loginService.OAuthJoinOrLogin(type, accessToken);
     }
 
 

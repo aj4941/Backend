@@ -9,7 +9,7 @@ import swm_nm.morandi.auth.constants.OAuthConstants;
 
 @Controller
 @PropertySource("classpath:application-oauth.properties")
-@RequestMapping("/users")
+@RequestMapping("/oauths")
 public class OAuthURIController {
 
     @Value("${oauth.google.client-id}")
@@ -18,7 +18,7 @@ public class OAuthURIController {
     @Value("${oauth.google.redirect-uri}")
     private String google_redirect_uri;
 
-    @GetMapping("/google/redirect")
+    @GetMapping("/google")
     public String googleRedirect() {
 
         //이것도 service로 빼기
