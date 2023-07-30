@@ -26,18 +26,18 @@ public class LoginService {
 
         GoogleUserDto googleUserDto = oAuthService.getMemberInfo(accessToken);
 
-        return memberService.registerMember(googleUserDto);
+        return memberService.loginOrRegisterMember(googleUserDto);
 
 
     }
     public TokenDto OAuthJoinOrLogin(String type, String accessToken){
         OAuthService oAuthService = oAuthServiceFactory.getServiceByType(type);
         if (oAuthService == null) {
-            throw new IllegalArgumentException("지원되지 않는 OAuth provider 입니다 : " + type);
+            throw new MorandiException(AuthErrorCode.INVALID_SOCIAL_TYPE);
         }
         GoogleUserDto googleUserDto = oAuthService.getMemberInfo(accessToken);
         
-        return memberService.registerMember(googleUserDto);
+        return memberService.loginOrRegisterMember(googleUserDto);
 
 
     }

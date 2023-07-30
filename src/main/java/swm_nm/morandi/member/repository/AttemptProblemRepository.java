@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, Long> {
-    Optional<List<AttemptProblem>> findAllByMember_MemberId(Long memberId);
-    Optional<List<AttemptProblem>> findAllByTest_TestId(Long testId);
-    Optional<List<AttemptProblem>> findAttemptProblemsByTest_TestId(Long testId);
+    List<AttemptProblem> findAllByMember_MemberId(Long memberId);
+    List<AttemptProblem> findAllByTest_TestId(Long testId);
+    List<AttemptProblem> findAttemptProblemsByTest_TestId(Long testId);
 }
 
 

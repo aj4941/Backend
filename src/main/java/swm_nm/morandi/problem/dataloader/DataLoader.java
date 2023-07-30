@@ -149,7 +149,7 @@ public class DataLoader implements CommandLineRunner {
             AttemptProblem attemptProblem = AttemptProblem.builder()
                     .isSolved(true)
                     .testDate(LocalDate.now())
-                    .solvedTime(10)
+                    .executionTime(10L)
                     .member(null)
                     .test(test)
                     .problem(problem)

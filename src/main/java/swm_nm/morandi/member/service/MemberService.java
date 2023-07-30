@@ -38,34 +38,20 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
-    public TokenDto registerMember(GoogleUserDto googleUserDto){
-    //TODO
-        //이부분에 oidc 검증로직 넣기
+    public TokenDto loginOrRegisterMember(GoogleUserDto googleUserDto){
+        Member member = memberRepository.findByEmail(googleUserDto.getEmail())
+                .orElseGet(() -> memberRepository.save(
+                                Member.builder()
+                                        .email(googleUserDto.getEmail())
+                                        .nickname(googleUserDto.getName())
+                                        .thumbPhoto(googleUserDto.getPicture())
+                                        .socialInfo(googleUserDto.getType())
+                                        .rating(1000L)
+                                        .build()
+                        )
+                );
 
-
-
-
-
-        // 이메일이나 아이디가 이미 존재하는지 검증하는 로직도 넣기
-        Optional<Member> findMember = memberRepository.findByEmail(googleUserDto.getEmail());
-        // 이메일이나 아이디가 존재하지 않으면 회원가입 진행
-        if(findMember.isEmpty()) {
-            findMember = Optional.of(Member.builder()
-                    .email(googleUserDto.getEmail())
-                    .nickname(googleUserDto.getName())
-                    .thumbPhoto(googleUserDto.getPicture())
-                    .socialInfo(googleUserDto.getType())
-                    .rating(1000L)
-                    .build());
-            memberRepository.save(findMember.get());
-            TokenDto tokenDto = jwtProvider.getTokens(findMember.get());
-            return tokenDto;
-        }
-        //토큰 발급 로직 넣기
-        TokenDto tokenDto = jwtProvider.getTokens(findMember.get());
-
-        return tokenDto;
-
+        return jwtProvider.getTokens(member);
     }
     private String userHome = System.getProperty("user.home");
     private String uploadFolder = userHome + "/SWM/morandi-backend/morandi-backend/uploads";
