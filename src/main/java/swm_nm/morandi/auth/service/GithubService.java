@@ -13,7 +13,7 @@ public class GithubService implements OAuthService {
     }
 
     @Override
-    public String getAccessToken(String authorization_code) {
+    public String getAccessToken(String authorization_code, Boolean isDev) {
         System.out.println("GithubService.getAccessToken");
         return null;
     }
@@ -24,13 +24,4 @@ public class GithubService implements OAuthService {
         return null;
     }
 
-    @Override
-    public String getAccessTokenDev(String authorization_code) {
-        return null;
-    }
-
-    @Override
-    public GoogleUserDto getMemberInfoDev(String accessToken) {
-        return null;
-    }
 }

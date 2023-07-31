@@ -56,8 +56,10 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
             AuthDetails userDetails = authUserDetailService.loadUserByUsername(userId.toString());
 
             //초기 정보인 백준 ID가 아직 등록되지 않았으면 예외처리 (초기값 설정 유도)
-            String path = request.getRequestURI();
-            if(!(path.equals("/members/register-info") && request.getMethod().equals("POST"))&&userDetails.getBojId()==null)
+
+            if(!(request.getRequestURI().equals("/members/register-info")
+                    && request.getMethod().equals("POST"))
+                    &&userDetails.getBojId()==null)
                 throw new MorandiException(AuthErrorCode.BAEKJOON_ID_NULL);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
