@@ -10,6 +10,7 @@ import swm_nm.morandi.auth.security.JwtProvider;
 import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.exception.MorandiException;
+import swm_nm.morandi.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.member.dto.MemberInfoDto;
 import swm_nm.morandi.member.dto.RegisterInfoDto;
@@ -82,8 +83,7 @@ public class MemberService {
 
     public MemberInfoDto getMemberInfo() {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Optional<Member> result = memberRepository.findById(memberId);
-        Member member = result.get();
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
         MemberInfoDto memberInfoDto = new MemberInfoDto();
         memberInfoDto.setNickname(member.getNickname());
         memberInfoDto.setBojId(member.getBojId());
@@ -116,13 +116,12 @@ public class MemberService {
     @Transactional
     public void editProfile(String nickname, String bojId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Optional<Member> result = memberRepository.findById(memberId);
-        Member member = result.get();
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
         member.editProfile(nickname, bojId);
     }
     public String getBojId(Long memberId) {
-        Optional<Member> result = memberRepository.findById(memberId);
-        Member member = result.get();
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(AuthErrorCode.BAEKJOON_ID_NULL));
         return member.getBojId();
     }
 

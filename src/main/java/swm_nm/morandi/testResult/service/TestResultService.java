@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.MorandiException;
-import swm_nm.morandi.exception.errorcode.AuthErrorCode;
-import swm_nm.morandi.exception.errorcode.MemberErrorCode;
-import swm_nm.morandi.exception.errorcode.ProblemErrorCode;
-import swm_nm.morandi.exception.errorcode.TestErrorCode;
+import swm_nm.morandi.exception.errorcode.*;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.member.repository.AttemptProblemRepository;
 import swm_nm.morandi.member.repository.MemberRepository;
@@ -47,7 +44,6 @@ public class TestResultService {
 
     private final TestRepository testRepository;
 
-
     private final AttemptProblemRepository attemptProblemRepository;
 
     private final ProblemRepository problemRepository;
@@ -71,6 +67,7 @@ public class TestResultService {
                     .test(test)
                     .problem(problem)
                     .build();
+
             attemptProblemRepository.save(attemptProblem);
             attemptProblemIds.add(attemptProblem.getAttemptProblemId());
         }
@@ -83,11 +80,12 @@ public class TestResultService {
     //한 메서드를 진행하는데 같은 데이터를 DB에서 여러 번 읽어오는 것이 비효율적임
 
 
+    @Transactional
     public void saveTestResult(Long testId, Long testTypeId){
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(AuthErrorCode.MEMBER_NOT_FOUND));
-        Test test = testRepository.findById(testId).orElseThrow(() -> new RuntimeException("테스트를 찾을 수 없습니다."));
-        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new RuntimeException("테스트 유형을 찾을 수 없습니다."));
+        Test test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         test.setTestStatus(TestStatus.COMPLETED);
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTest_TestId(testId);
         long correct = attemptProblems.stream()
@@ -138,7 +136,7 @@ public class TestResultService {
 
         attemptProblems.stream()
                 .filter(attemptProblem -> !attemptProblem.getIsSolved())
-                .filter(attemptProblem -> isSolvedProblem(attemptProblem,bojId))
+                .filter(attemptProblem -> isSolvedProblem(attemptProblem, bojId))
                 .forEach(attemptProblem -> {
                     Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
                     Long minutes = duration.toMinutes();
@@ -191,16 +189,6 @@ public class TestResultService {
         long rating = 0L;
         boolean allSolved = true;
         if (!attemptProblems.isEmpty()) {
-
-
-            System.out.println("attemptProblems.size() = " + attemptProblems.size());
-
-            for (AttemptProblem attemptProblem : attemptProblems) {
-                System.out.println("attemptProblem.toString() = " + attemptProblem.toString());
-            }
-
-
-
             for (AttemptProblem attemptProblem : attemptProblems) {
                 if (attemptProblem.getIsSolved()) {
                     Problem problem = attemptProblem.getProblem();

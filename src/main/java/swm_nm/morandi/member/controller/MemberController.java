@@ -30,7 +30,7 @@ public class MemberController {
         return new ResponseEntity<>(memberService.memberInitialize(registerInfoDto), HttpStatus.OK);
     }
     @GetMapping("/record")
-    public ResponseEntity<Map<String, Object>> memberRecord() {
+    public ResponseEntity<MemberRecordDto> memberRecord() {
         return new ResponseEntity<>(attemptProblemService.getMemberRecords(), HttpStatus.OK);
     }
 
