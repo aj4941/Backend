@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
-    Optional<Problem> findProblemByBojProblemId(Long bojId);
+    Optional<Problem> findProblemByBojProblemId(Long bojProblemId);
 }

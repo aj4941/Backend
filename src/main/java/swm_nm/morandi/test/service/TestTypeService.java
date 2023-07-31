@@ -4,16 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import swm_nm.morandi.exception.MorandiException;
+import swm_nm.morandi.exception.errorcode.TestTypeErrorCode;
 import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.domain.AlgorithmProblemList;
 import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.domain.TypeProblemList;
 import swm_nm.morandi.problem.dto.OutputDto;
 import swm_nm.morandi.problem.repository.AlgorithmProblemListRepository;
-import swm_nm.morandi.problem.repository.ProblemRepository;
 import swm_nm.morandi.problem.repository.TypeProblemListRepository;
 import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.problem.dto.BojProblem;
@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,29 +46,20 @@ public class TestTypeService {
 
     public List<TestTypeDto> getTestTypeDtos() {
         List<TestType> testTypes = testTypeRepository.findAll();
-        List<TestTypeDto> testTypeDtos = new ArrayList<>();
-        for (TestType testType : testTypes) {
-            TestTypeDto testTypeDto = TestTypeMapper.convertToDto(testType);
-            testTypeDtos.add(testTypeDto);
-        }
+        List<TestTypeDto> testTypeDtos = testTypes.stream().map(TestTypeMapper::convertToDto).collect(Collectors.toList());
         return testTypeDtos;
     }
 
     public TestTypeDto getTestTypeDto(Long testTypeId) {
-        Optional<TestType> res = testTypeRepository.findById(testTypeId);
-        TestType testType = res.get();
+        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         TestTypeDto testTypeDto = TestTypeMapper.convertToDto(testType);
         return testTypeDto;
     }
 
     public void getProblemsByTestType(Long testTypeId, List<BojProblem> bojProblems) {
-        Optional<TestType> result = testTypeRepository.findById(testTypeId);
+        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testTypeId);
-        List<Problem> problems = new ArrayList<>();
-        for (TypeProblemList typeProblemList : typeProblemLists) {
-            problems.add(typeProblemList.getProblem());
-        }
-        TestType testType = result.get();
+        List<Problem> problems = typeProblemLists.stream().map(TypeProblemList::getProblem).collect(Collectors.toList());
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         Random random = new Random();
         long randomNumber = random.nextInt(10);
@@ -80,10 +72,7 @@ public class TestTypeService {
                 int problemLevel = DifficultyLevel.getLevelByValue(problem.getProblemDifficulty());
                 List<AlgorithmProblemList> algorithmProblemLists
                         = algorithmProblemListRepository.findByProblem_ProblemId(problem.getProblemId());
-                List<Algorithm> algorithms = new ArrayList<>();
-                for (AlgorithmProblemList algorithmProblemList : algorithmProblemLists) {
-                    algorithms.add(algorithmProblemList.getAlgorithm());
-                }
+                List<Algorithm> algorithms = algorithmProblemLists.stream().map(AlgorithmProblemList::getAlgorithm).collect(Collectors.toList());
                 if (start <= problemLevel && problemLevel <= end) {
                     long testTypeAlgorithmId = randomNumber + 1;
                     for (Algorithm algorithm : algorithms) {
@@ -92,10 +81,10 @@ public class TestTypeService {
                     }
                     if (flag) {
                         BojProblem bojProblem = BojProblem.builder()
-                                        .testProblemId(index++)
-                                        .bojProblemId(problem.getBojProblemId())
-                                        .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
-                                        .levelToString(problem.getProblemDifficulty().getFullName()).build();
+                                .testProblemId(index++)
+                                .bojProblemId(problem.getBojProblemId())
+                                .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
+                                .levelToString(problem.getProblemDifficulty().getFullName()).build();
                         bojProblems.add(bojProblem);
                         randomNumber = (randomNumber + 1) % 10;
                         break;
@@ -114,8 +103,7 @@ public class TestTypeService {
 
     public void getProblemsByApi(Long testTypeId, String bojId, List<BojProblem> bojProblems)
             throws JsonProcessingException {
-        Optional<TestType> result = testTypeRepository.findById(testTypeId);
-        TestType testType = result.get();
+        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
@@ -138,7 +126,7 @@ public class TestTypeService {
             JsonNode itemsArray = rootNode.get("items");
             if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
                 JsonNode firstProblem = itemsArray.get(0);
-                BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class); // 문제 번호, 난이도
+                BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
                 BojProblem bojProblem = bojProblems.get((int) (index - 1));
                 bojProblem.setBojProblemId(apiProblem.getBojProblemId());
                 bojProblem.setLevel(apiProblem.getLevel());

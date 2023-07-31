@@ -3,6 +3,7 @@ package swm_nm.morandi.test.mapper;
 import swm_nm.morandi.test.domain.Test;
 import swm_nm.morandi.test.dto.TestRecordDto;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TestRecordMapper {
@@ -15,7 +16,7 @@ public class TestRecordMapper {
                 .endDifficulty(test.getEndDifficulty())
                 .testTypename(test.getTestTypename())
                 .testRating(test.getTestRating())
-                .solvedInfo(new HashMap<>())
+                .attemptProblemDto(new ArrayList<>())
                 .build();
 
         return testRecordDto;

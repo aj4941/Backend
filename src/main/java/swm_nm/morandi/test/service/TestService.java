@@ -15,16 +15,14 @@ import swm_nm.morandi.member.service.MemberService;
 import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.test.domain.TestType;
-import swm_nm.morandi.test.dto.TestDto;
-import swm_nm.morandi.test.dto.TestStatus;
+import swm_nm.morandi.test.dto.*;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
 import swm_nm.morandi.test.domain.Test;
-import swm_nm.morandi.test.dto.TestRatingDto;
-import swm_nm.morandi.test.dto.TestRecordDto;
 import swm_nm.morandi.test.mapper.TestRecordMapper;
 import swm_nm.morandi.member.repository.AttemptProblemRepository;
 import swm_nm.morandi.test.repository.TestRepository;
+import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.testResult.service.TestResultService;
 
@@ -46,28 +44,30 @@ public class TestService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
-
     private final MemberService memberService;
 
     private final TestTypeService testTypeService;
+
     private final TestResultService testResultService;
-    public Map<String, Object> getTestStartsData(Long testTypeId) throws JsonProcessingException {
+    public TestStartResponseDto getTestStartsData(Long testTypeId) throws JsonProcessingException {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Long testId = startTestByTestTypeId(testTypeId, memberId);
         String bojId = memberService.getBojId(memberId);
 
         List<BojProblem> bojProblems = new ArrayList<>();
-            testTypeService.getProblemsByTestType(testTypeId, bojProblems);
-            testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
+        testTypeService.getProblemsByTestType(testTypeId, bojProblems);
+        testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
 
         List<Long> attemptProblemIds = testResultService.saveAttemptProblems(memberId, testId, bojProblems);
 
-        Map<String, Object> responseData = new HashMap<>();
-            responseData.put("testId", testId);
-            responseData.put("attemptProblemIds", attemptProblemIds);
-            responseData.put("bojProblems", bojProblems);
+        TestStartResponseDto testStartResponseDto
+                = TestStartResponseDto.builder()
+                .testId(testId)
+                .attemptProblemIds(attemptProblemIds)
+                .bojProblems(bojProblems)
+                .build();
 
-        return responseData;
+        return testStartResponseDto;
     }
 
 
@@ -87,6 +87,7 @@ public class TestService {
                 .testStatus(TestStatus.IN_PROGRESS)
                 .member(member)
                 .build();
+
         testRepository.save(test);
         return test.getTestId();
     }
@@ -96,14 +97,16 @@ public class TestService {
         List<AttemptProblem> attemptProblems
                 = attemptProblemRepository.findAllByTest_TestId(testId);
         if (!attemptProblems.isEmpty()) {
-            int index = 1;
+            long index = 1;
             for (AttemptProblem attemptProblem : attemptProblems) {
-                if (attemptProblem.getIsSolved())
-                    testRecordDto.getSolvedInfo().put(index, true);
-                else
-                    testRecordDto.getSolvedInfo().put(index, false);
-
-                index++;
+                AttemptProblemDto attemptProblemDto =
+                        AttemptProblemDto.builder()
+                                .testProblemId(index++)
+                                .bojProblemId(attemptProblem.getProblem().getBojProblemId())
+                                .isSolved(attemptProblem.getIsSolved())
+                                .executionTime(attemptProblem.getExecutionTime())
+                                .build();
+                testRecordDto.getAttemptProblemDto().add(attemptProblemDto);
             }
         }
         return testRecordDto;
@@ -112,7 +115,9 @@ public class TestService {
     public List<TestRatingDto> getTestRatingDtosByMemberId(Long memberId) {
         List<Test> tests = testRepository.findAllByMember_MemberId(memberId);
         List<TestRatingDto> testRatingDtos = new ArrayList<>();
-        for (Test test : tests) {
+        tests.stream()
+                .filter(test -> test.getTestStatus() != TestStatus.IN_PROGRESS)
+                .forEach(test -> {
             LocalDate testDate = LocalDate.from(test.getTestDate());
             String testTypename = test.getTestTypename();
             Long testRating = test.getTestRating();
@@ -124,7 +129,7 @@ public class TestService {
                     .testRating(testRating)
                     .build();
             testRatingDtos.add(testRatingDto);
-        }
+        });
 
         return testRatingDtos;
     }

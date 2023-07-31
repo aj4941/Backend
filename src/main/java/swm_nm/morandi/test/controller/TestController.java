@@ -5,22 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swm_nm.morandi.auth.security.SecurityUtils;
-import swm_nm.morandi.problem.dto.BojProblem;
-import swm_nm.morandi.problem.dto.BojProblemRequestDto;
 import swm_nm.morandi.problem.dto.OutputDto;
 import swm_nm.morandi.test.dto.TestInputData;
+import swm_nm.morandi.test.dto.TestStartRequestDto;
+import swm_nm.morandi.test.dto.TestStartResponseDto;
 import swm_nm.morandi.test.dto.TestTypeDto;
-import swm_nm.morandi.member.service.MemberService;
 import swm_nm.morandi.test.service.TestService;
 import swm_nm.morandi.test.service.TestTypeService;
-import swm_nm.morandi.testResult.service.AttemptProblemService;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +33,10 @@ public class TestController {
         return new ResponseEntity<>(testTypeService.getTestTypeDto(testTypeId), HttpStatus.OK);
     }
 
-
-    //DTO사용해서 반환하게 바꾸자 나중에는
     @PostMapping("/tests")
-    public ResponseEntity<Map<String, Object>> testStart
-            (@RequestBody Map<String, Long> testTypeMap) throws JsonProcessingException {
-        Long testTypeId = testTypeMap.get("testTypeId");
+    public ResponseEntity<TestStartResponseDto> testStart
+            (@RequestBody TestStartRequestDto testStartRequestDto) throws JsonProcessingException {
+        Long testTypeId = testStartRequestDto.getTestTypeId();
         return new ResponseEntity<>(testService.getTestStartsData(testTypeId), HttpStatus.OK);
     }
 
