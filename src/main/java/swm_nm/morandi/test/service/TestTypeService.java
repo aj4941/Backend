@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.exception.MorandiException;
+import swm_nm.morandi.exception.errorcode.TestErrorCode;
 import swm_nm.morandi.exception.errorcode.TestTypeErrorCode;
 import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.domain.AlgorithmProblemList;
@@ -101,8 +102,7 @@ public class TestTypeService {
         }
     }
 
-    public void getProblemsByApi(Long testTypeId, String bojId, List<BojProblem> bojProblems)
-            throws JsonProcessingException {
+    public void getProblemsByApi(Long testTypeId, String bojId, List<BojProblem> bojProblems) {
         TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
@@ -122,11 +122,21 @@ public class TestTypeService {
                     .bodyToMono(String.class)
                     .block();
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jsonString);
+            JsonNode rootNode = null;
+            try {
+                rootNode = mapper.readTree(jsonString);
+            } catch (JsonProcessingException e) {
+                throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
+            }
             JsonNode itemsArray = rootNode.get("items");
             if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
                 JsonNode firstProblem = itemsArray.get(0);
-                BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
+                BojProblem apiProblem = null;
+                try {
+                    apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
+                } catch (JsonProcessingException e) {
+                    throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
+                }
                 BojProblem bojProblem = bojProblems.get((int) (index - 1));
                 bojProblem.setBojProblemId(apiProblem.getBojProblemId());
                 bojProblem.setLevel(apiProblem.getLevel());
@@ -136,7 +146,7 @@ public class TestTypeService {
         }
     }
 
-    public OutputDto runCode(TestInputData testInputData) throws IOException, InterruptedException {
+    public OutputDto runCode(TestInputData testInputData) throws IOException {
         String language = testInputData.getLanguage();
         String code = testInputData.getCode();
         String input = testInputData.getInput();
@@ -147,12 +157,13 @@ public class TestTypeService {
             outputDto.setOutput(runCpp(code, input));
         else if (language.equals("Java"))
             outputDto.setOutput(runJava(code, input));
+        else
+            throw new MorandiException(TestErrorCode.CODE_TYPE_NOT_FOUND);
 
         return outputDto;
     }
     public String runPython(String code, String input)
-            throws InterruptedException, IOException {
-
+    {
         try {
 //          File codeFile = new File("temp.py");
 //          code = new String(Files.readAllBytes(codeFile.toPath()), StandardCharsets.UTF_8);
@@ -180,18 +191,18 @@ public class TestTypeService {
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
                 if (System.currentTimeMillis() - startTime >= 12000) {
-                    return "Time Limit Exceed";
+                    throw new MorandiException(TestErrorCode.TIME_LIMITED);
                 }
             }
 
             return output.toString();
 
         } catch (IOException e) {
-            throw new RuntimeException("Error running Python process: " + e.getMessage(), e);
+            throw new MorandiException(TestErrorCode.RUNTIME_ERROR);
         }
     }
 
-    public String runCpp(String code, String input) throws InterruptedException, IOException {
+    public String runCpp(String code, String input) {
         try {
             String tempFileName = "temp.cpp";
             saveCodeToFile(tempFileName, code); // file 입력 시 주석 처리
@@ -202,14 +213,15 @@ public class TestTypeService {
             compileProcess.waitFor();
 
             if (compileProcess.exitValue() != 0) {
-                StringBuilder errorMessage = new StringBuilder();
-                try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream()))) {
-                    String line;
-                    while ((line = errorReader.readLine()) != null) {
-                        errorMessage.append(line).append("\n");
-                    }
-                }
-                return errorMessage.toString();
+                throw new MorandiException(TestErrorCode.COMPILE_ERROR);
+//                StringBuilder errorMessage = new StringBuilder();
+//                try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream()))) {
+//                    String line;
+//                    while ((line = errorReader.readLine()) != null) {
+//                        errorMessage.append(line).append("\n");
+//                    }
+//                }
+//                return errorMessage.toString();
             }
 
             String runCommand = "./" + executableFileName;
@@ -239,14 +251,14 @@ public class TestTypeService {
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
                 if (System.currentTimeMillis() - startTime >= 12000) {
-                    return "Time Limit Exceed";
+                    throw new MorandiException(TestErrorCode.TIME_LIMITED);
                 }
             }
 
             return output.toString();
 
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Error running C++ process: " + e.getMessage(), e);
+            throw new MorandiException(TestErrorCode.RUNTIME_ERROR);
         }
     }
 
@@ -258,7 +270,7 @@ public class TestTypeService {
         }
     }
 
-    public String runJava(String code, String input) throws IOException {
+    public String runJava(String code, String input) {
         try {
             File javaFile = new File("Main.java");
 //          code = new String(Files.readAllBytes(javaFile.toPath()), StandardCharsets.UTF_8);
@@ -278,7 +290,7 @@ public class TestTypeService {
                 compileOutput.append(compileLine).append("\n");
             }
             if (compileOutput.length() > 0) {
-                return "Compile Error:\n" + compileOutput.toString();
+                throw new MorandiException(TestErrorCode.COMPILE_ERROR);
             }
 
             // 실행
@@ -306,20 +318,20 @@ public class TestTypeService {
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
                 if (System.currentTimeMillis() - startTime >= 12000) {
-                    return "Time Limit Exceeded";
+                    throw new MorandiException(TestErrorCode.TIME_LIMITED);
                 }
             }
 
             boolean processFinished = p.waitFor(10, TimeUnit.SECONDS);
             if (!processFinished) {
                 p.destroy();
-                return "Execution Time Exceeded";
+                throw new MorandiException(TestErrorCode.TIME_LIMITED);
             }
 
             return output.toString();
 
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Error running Java process: " + e.getMessage(), e);
+            throw new MorandiException(TestErrorCode.RUNTIME_ERROR);
         }
     }
 }

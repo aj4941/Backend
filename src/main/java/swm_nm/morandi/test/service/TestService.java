@@ -49,7 +49,7 @@ public class TestService {
     private final TestTypeService testTypeService;
 
     private final TestResultService testResultService;
-    public TestStartResponseDto getTestStartsData(Long testTypeId) throws JsonProcessingException {
+    public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Long testId = startTestByTestTypeId(testTypeId, memberId);
         String bojId = memberService.getBojId(memberId);
