@@ -40,7 +40,7 @@ public class OAuthController {
     //개발자 모드에서는 redirect를 하지 않고 access Token을 가져오는 api
     @GetMapping("/{type}/callback/dev")
     public TokenDto googleLoginforDevelop(@PathVariable String type, @RequestParam String code) {
-        return loginService.login(type, code);
+        return loginService.loginforDev(type, code);
     }
 
     //만약 이미 access Toekn을 가지고 있는 경우에는 이 api를 사용한다.
