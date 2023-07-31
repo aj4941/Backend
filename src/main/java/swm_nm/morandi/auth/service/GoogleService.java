@@ -20,7 +20,6 @@ import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.member.domain.SocialType;
 
 @Service
-@PropertySource("classpath:application-oauth.properties")
 @RequiredArgsConstructor
 public class GoogleService implements OAuthService{
     private final RestTemplate restTemplate;

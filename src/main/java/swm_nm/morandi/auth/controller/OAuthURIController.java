@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import swm_nm.morandi.auth.constants.OAuthConstants;
 
 @Controller
-@PropertySource("classpath:application-oauth.properties")
 @RequestMapping("/oauths")
 public class OAuthURIController {
 
