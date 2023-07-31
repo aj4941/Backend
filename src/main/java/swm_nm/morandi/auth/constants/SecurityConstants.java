@@ -12,4 +12,7 @@ public class SecurityConstants {
     public static final long REFRESH_TOKEN_EXPIRATION = 36000000;
     public static final Key JWT_KEY =Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
+    public static final Boolean FOR_DEVELOPER= true;
+
+    public static final Boolean FOR_SERVICE= false;
 }

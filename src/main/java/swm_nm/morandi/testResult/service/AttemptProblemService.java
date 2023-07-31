@@ -25,10 +25,6 @@ import swm_nm.morandi.testResult.request.AttemptProblemDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.problem.domain.Algorithm;
 import swm_nm.morandi.problem.domain.AlgorithmProblemList;
-import swm_nm.morandi.problem.domain.Problem;
-import swm_nm.morandi.problem.repository.ProblemRepository;
-import swm_nm.morandi.test.domain.Test;
-import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
 import swm_nm.morandi.member.dto.GraphDto;
 import swm_nm.morandi.member.dto.GrassDto;
@@ -38,7 +34,6 @@ import swm_nm.morandi.member.repository.AttemptProblemRepository;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.Map.Entry;
 
 
 @Service
