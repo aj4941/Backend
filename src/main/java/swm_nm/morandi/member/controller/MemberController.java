@@ -1,5 +1,7 @@
 package swm_nm.morandi.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/members")
+@Tag(name = "MemberController", description = "사용자와 관련된 컨트롤러")
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -26,15 +29,18 @@ public class MemberController {
     private final TestService testService;
 
     @PostMapping("/register-info")
+    @Operation(summary = "사용자 최초 등록", description = "사용자 최초 등록시 백준 아이디가 필수적으로 필요합니다.")
     public ResponseEntity<RegisterInfoDto> memberInitialize(@RequestBody RegisterInfoDto registerInfoDto) {
         return new ResponseEntity<>(memberService.memberInitialize(registerInfoDto), HttpStatus.OK);
     }
     @GetMapping("/record")
+    @Operation(summary = "사용자 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 분석 데이터를 보여줍니다.")
     public ResponseEntity<MemberRecordDto> memberRecord() {
         return new ResponseEntity<>(attemptProblemService.getMemberRecords(), HttpStatus.OK);
     }
 
     @GetMapping("/info")
+    @Operation(summary = "사용자 정보", description = "사용자의 닉네임과 백준 아이디를 보여줍니다.")
     public ResponseEntity<MemberInfoDto> memberInfo() {
         return new ResponseEntity<>(memberService.getMemberInfo(), HttpStatus.OK);
     }
@@ -49,6 +55,7 @@ public class MemberController {
 //    }
 
     @PostMapping("/edit")
+    @Operation(summary = "사용자 정보 수정", description = "사용자의 닉네임 또는 백준 아이디를 수정합니다.")
     public ResponseEntity<MemberInfoDto> editProfile(@RequestBody MemberInfoDto memberInfoDto) throws IOException {
 //      String thumbPhoto = memberService.editThumbPhoto(memberId, profileRequestDto.getThumbPhotoFile());
         memberService.editProfile(memberInfoDto.getNickname(), memberInfoDto.getBojId());
@@ -56,6 +63,7 @@ public class MemberController {
     }
 
     @GetMapping("/test-info/{testId}")
+    @Operation(summary = "테스트 상세 보기", description = "특정 테스트의 상세보기를 클릭한 경우 테스트 상세 기록을 보여줍니다.")
     public ResponseEntity<TestRecordDto> testRecordInfo(@PathVariable Long testId) {
         return new ResponseEntity<>(testService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
     }
