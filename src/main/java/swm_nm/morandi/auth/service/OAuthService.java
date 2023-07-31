@@ -6,4 +6,8 @@ public interface OAuthService {
     String getType();
     String getAccessToken(String authorization_code);
     GoogleUserDto getMemberInfo(String accessToken);
+
+    String getAccessTokenDev(String authorization_code);
+
+    GoogleUserDto getMemberInfoDev(String accessToken);
 }

@@ -23,4 +23,14 @@ public class GithubService implements OAuthService {
         System.out.println("GithubService.getMemberInfo");
         return null;
     }
+
+    @Override
+    public String getAccessTokenDev(String authorization_code) {
+        return null;
+    }
+
+    @Override
+    public GoogleUserDto getMemberInfoDev(String accessToken) {
+        return null;
+    }
 }
