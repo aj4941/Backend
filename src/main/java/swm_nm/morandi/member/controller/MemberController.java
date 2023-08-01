@@ -28,6 +28,13 @@ public class MemberController {
     private final MemberService memberService;
     private final AttemptProblemService attemptProblemService;
     private final TestService testService;
+
+    @GetMapping("/check")
+    @Operation(summary = "백준 id 등록되어있는지 확인", description ="백준 id가 등록되어있는지 확인합니다. 200반환 시 정상,  \"code\": \"BAEKJOON_ID_NULL\" 반환 시 백준 id가 등록되지 않은 상태, 토큰 오류 시 403")
+    public ResponseEntity<?> checkMemberInitialized(){
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/register-info")
     @Operation(summary = "사용자 최초 등록", description = "사용자 최초 등록시 백준 아이디가 필수적으로 필요합니다.")
     public ResponseEntity<RegisterInfoDto> memberInitialize(@RequestBody RegisterInfoDto registerInfoDto) {
