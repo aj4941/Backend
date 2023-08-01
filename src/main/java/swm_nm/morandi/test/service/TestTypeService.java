@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 @Service
 @RequiredArgsConstructor
@@ -45,12 +46,18 @@ public class TestTypeService {
 
     private final AlgorithmProblemListRepository algorithmProblemListRepository;
 
-    public List<TestTypeDto> getTestTypeDtos() {
-        List<TestType> testTypes = testTypeRepository.findAll();
-        List<TestTypeDto> testTypeDtos = testTypes.stream().map(TestTypeMapper::convertToDto).collect(Collectors.toList());
+    public List<TestTypeDto> getPracticeTestTypeDtos() {
+        List<TestTypeDto> testTypeDtos = LongStream.rangeClosed(1, 6).mapToObj(i -> testTypeRepository.findById(i)
+                .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND)))
+                .map(TestTypeMapper::convertToDto).collect(Collectors.toList());
         return testTypeDtos;
     }
-
+    public List<TestTypeDto> getCompanyTestTypeDtos() {
+        List<TestTypeDto> testTypeDtos = LongStream.rangeClosed(7, 9).mapToObj(i -> testTypeRepository.findById(i)
+                        .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND)))
+                .map(TestTypeMapper::convertToDto).collect(Collectors.toList());
+        return testTypeDtos;
+    }
     public TestTypeDto getTestTypeDto(Long testTypeId) {
         TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         TestTypeDto testTypeDto = TestTypeMapper.convertToDto(testType);
