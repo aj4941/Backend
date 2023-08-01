@@ -3,26 +3,10 @@ package swm_nm.morandi.problem.dataloader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import swm_nm.morandi.member.domain.Member;
-import swm_nm.morandi.member.repository.AttemptProblemRepository;
-import swm_nm.morandi.problem.domain.Algorithm;
-import swm_nm.morandi.problem.domain.AlgorithmProblemList;
-import swm_nm.morandi.problem.domain.Problem;
-import swm_nm.morandi.problem.domain.TypeProblemList;
-import swm_nm.morandi.problem.repository.AlgorithmProblemListRepository;
-import swm_nm.morandi.problem.repository.AlgorithmRepository;
-import swm_nm.morandi.problem.repository.ProblemRepository;
-import swm_nm.morandi.problem.repository.TypeProblemListRepository;
-import swm_nm.morandi.test.domain.Test;
 import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.dto.DifficultyRange;
-import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.test.repository.TestTypeRepository;
-import swm_nm.morandi.testResult.entity.AttemptProblem;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -30,29 +14,16 @@ import java.util.*;
 public class DataLoader implements CommandLineRunner {
 
     private final TestTypeRepository testTypeRepository;
-    private final ProblemRepository problemRepository;
-    private final TypeProblemListRepository typeProblemListRepository;
-    private final AlgorithmRepository algorithmRepository;
-    private final AlgorithmProblemListRepository algorithmProblemListRepository;
-    private final AttemptProblemRepository attemptProblemRepository;
-    private final TestRepository testRepository;
-    String[] algorithmNames = {
-            "구현", "그래프", "그리디", "문자열", "이분탐색",
-            "자료 구조", "정렬", "최단 경로", "bfs와 dfs", "dp"
-    };
     @Override
     public void run(String... args) {
-        // Sample Data
-        insertAlgorithmData(algorithmNames);
-        insertTestTypeData();
-        // insertProblemData();
-        // connectProblemsToTestType();
-        // connectAttemptProblemToTest();
+        List<TestType> testTypes = testTypeRepository.findAll();
+        if (testTypes.size() == 0)
+            insertTestTypeData();
     }
     private void insertTestTypeData() {
         // PK 1번 : 코딩테스트 대비 초급 (Small)
         List<DifficultyRange> difficultyRanges1 = new ArrayList<>();
-        difficultyRanges1.add(new DifficultyRange(DifficultyLevel.B5, DifficultyLevel.B2));
+        difficultyRanges1.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
         difficultyRanges1.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.S5));
         difficultyRanges1.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S3));
 
@@ -109,8 +80,8 @@ public class DataLoader implements CommandLineRunner {
 
         // PK 4번 : 코딩테스트 대비 초급 (Large)
         List<DifficultyRange> difficultyRanges4 = new ArrayList<>();
-        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B5, DifficultyLevel.B3));
-        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B1));
+        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
+        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
         difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B1, DifficultyLevel.S5));
         difficultyRanges4.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
         difficultyRanges4.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
@@ -234,58 +205,5 @@ public class DataLoader implements CommandLineRunner {
                 .build();
 
         testTypeRepository.save(testType9);
-    }
-    private int getRandomAlgorithmId() {
-        return new Random().nextInt(10) + 1;
-    }
-
-    private void connectProblemsToTestType() {
-        TestType testType = testTypeRepository.findById(1L).orElse(null);
-        List<Problem> problems = problemRepository.findAll();
-        for (Problem problem : problems) {
-            TypeProblemList typeProblemList = TypeProblemList.builder()
-                    .testType(testType)
-                    .problem(problem)
-                    .build();
-            typeProblemListRepository.save(typeProblemList);
-        }
-    }
-
-    private void insertAlgorithmData(String[] algorithmNames) {
-        for (long i = 0; i < algorithmNames.length; i++) {
-            Algorithm algorithm = Algorithm.builder()
-                            .algorithmId(i + 1)
-                            .algorithmName(algorithmNames[(int) i])
-                            .build();
-            algorithmRepository.save(algorithm);
-        }
-    }
-    private void connectAttemptProblemToTest() {
-        Optional<TestType> result = testTypeRepository.findById(1L);
-        TestType testType = result.get();
-        Test test = Test.builder()
-                .testDate(LocalDateTime.now())
-                .testTime(testType.getTestTime())
-                .problemCount(testType.getProblemCount())
-                .startDifficulty(testType.getStartDifficulty())
-                .endDifficulty(testType.getEndDifficulty())
-                .testTypename(testType.getTestTypename())
-                .build();
-        testRepository.save(test);
-
-        for (long i = 1; i <= test.getProblemCount(); i++) {
-            Optional<Problem> res = problemRepository.findById(i);
-            Problem problem = res.get();
-            AttemptProblem attemptProblem = AttemptProblem.builder()
-                    .isSolved(true)
-                    .testDate(LocalDate.now())
-                    .executionTime(10L)
-                    .member(null)
-                    .test(test)
-                    .problem(problem)
-                    .build();
-
-            attemptProblemRepository.save(attemptProblem);
-        }
     }
 }
