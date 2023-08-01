@@ -5,11 +5,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
 import swm_nm.morandi.member.domain.Member;
 import swm_nm.morandi.member.repository.MemberRepository;
+import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
+import swm_nm.morandi.problem.repository.ProblemRepository;
 import swm_nm.morandi.test.dto.TestRecordDto;
 import swm_nm.morandi.test.repository.TestRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @SpringBootTest
 class TestServiceTest {
@@ -19,6 +22,9 @@ class TestServiceTest {
 
     @Autowired
     private TestRepository testRepository;
+
+    @Autowired
+    private ProblemRepository problemRepository;
 
     @Autowired
     private TestService testService;
@@ -48,5 +54,12 @@ class TestServiceTest {
             TestRecordDto testRecordDto = testService.getTestRecordDtoByTestId((long) i);
             System.out.println(testRecordDto.toString());
         }
+    }
+
+    @Test
+    public void testEnumValue() {
+        Optional<Problem> result = problemRepository.findById(201L);
+        Problem problem = result.get();
+        System.out.println(problem.getProblemDifficulty());
     }
 }

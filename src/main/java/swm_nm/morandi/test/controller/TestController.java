@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swm_nm.morandi.problem.dto.OutputDto;
-import swm_nm.morandi.test.dto.TestInputData;
-import swm_nm.morandi.test.dto.TestStartRequestDto;
-import swm_nm.morandi.test.dto.TestStartResponseDto;
-import swm_nm.morandi.test.dto.TestTypeDto;
+import swm_nm.morandi.test.dto.*;
 import swm_nm.morandi.test.service.TestService;
 import swm_nm.morandi.test.service.TestTypeService;
 import java.io.IOException;
@@ -27,10 +24,21 @@ public class TestController {
     private final TestTypeService testTypeService;
 
     private final TestService testService;
-    @GetMapping("/test-types")
-    @Operation(summary = "테스트 목록", description = "메인 페이지에서 현재 있는 테스트 정보를 제공합니다.")
-    public ResponseEntity<List<TestTypeDto>> getTestTypeDtos() {
-        return new ResponseEntity<>(testTypeService.getTestTypeDtos(), HttpStatus.OK);
+    @GetMapping("/test-types/latest")
+    @Operation(summary = "최근에 본 테스트 목록", description = "메인 페이지에서 최근에 본 테스트 5개를 제공합니다.")
+    public ResponseEntity<List<TestRecordDto>> getLatestTestDtos() {
+        return new ResponseEntity<>(testService.getTestRecordDtosLatest(), HttpStatus.OK);
+    }
+    @GetMapping("/test-types/practice")
+    @Operation(summary = "연습 테스트 목록", description = "메인 페이지에서 현재 있는 연습 테스트 정보를 제공합니다.")
+    public ResponseEntity<List<TestTypeDto>> getPracticeTestTypeDtos() {
+        return new ResponseEntity<>(testTypeService.getPracticeTestTypeDtos(), HttpStatus.OK);
+    }
+
+    @GetMapping("/test-types/company")
+    @Operation(summary = "기업 테스트 목록", description = "메인 페이지에서 현재 있는 기업 테스트 정보를 제공합니다.")
+    public ResponseEntity<List<TestTypeDto>> getCompanyTestTypeDtos() {
+        return new ResponseEntity<>(testTypeService.getCompanyTestTypeDtos(), HttpStatus.OK);
     }
     @GetMapping("/test-types/{testTypeId}")
     @Operation(summary = "특정 테스트 정보", description = "사용자가 원하는 테스트를 눌렀을 때 상세 테스트 정보를 제공합니다.")

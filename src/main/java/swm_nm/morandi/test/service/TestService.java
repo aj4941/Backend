@@ -2,6 +2,8 @@ package swm_nm.morandi.test.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.MorandiException;
@@ -10,6 +12,7 @@ import swm_nm.morandi.exception.errorcode.ProblemErrorCode;
 import swm_nm.morandi.exception.errorcode.TestErrorCode;
 import swm_nm.morandi.exception.errorcode.TestTypeErrorCode;
 import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.member.dto.CurrentRatingDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.member.service.MemberService;
 import swm_nm.morandi.problem.domain.Problem;
@@ -30,10 +33,10 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
 public class TestService {
 
     private final MemberRepository memberRepository;
@@ -91,6 +94,24 @@ public class TestService {
         testRepository.save(test);
         return test.getTestId();
     }
+    public List<TestRecordDto> getTestRecordDtosLatest() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        Pageable pageable = PageRequest.of(0, 5);
+        List<Test> recentTests = testRepository.findAllByMember_MemberIdOrderByTestDateDesc(memberId, pageable);
+        List<TestRecordDto> testRecordDtos = recentTests.stream().map(TestRecordMapper::convertToDto).collect(Collectors.toList());
+        return testRecordDtos;
+    }
+
+    public CurrentRatingDto getCurrentRatingDto() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        Pageable pageable = PageRequest.of(0, 1);
+        List<Test> recentTests = testRepository.findAllByMember_MemberIdOrderByTestDateDesc(memberId, pageable);
+        CurrentRatingDto currentRatingDto = new CurrentRatingDto();
+        if (recentTests.isEmpty()) currentRatingDto.setRating(1000L);
+        else currentRatingDto.setRating(recentTests.get(0).getTestRating());
+        return currentRatingDto;
+    }
+
     public TestRecordDto getTestRecordDtoByTestId(Long testId) {
         Test test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         TestRecordDto testRecordDto = TestRecordMapper.convertToDto(test);
@@ -112,7 +133,8 @@ public class TestService {
         return testRecordDto;
     }
 
-    public List<TestRatingDto> getTestRatingDtosByMemberId(Long memberId) {
+    public List<TestRatingDto> getTestRatingDtos() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         List<Test> tests = testRepository.findAllByMember_MemberId(memberId);
         List<TestRatingDto> testRatingDtos = new ArrayList<>();
         tests.stream()

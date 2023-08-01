@@ -46,22 +46,8 @@ public class AttemptProblemService {
 
     private final AlgorithmRepository algorithmRepository;
 
-    private final TestService testService;
-
-    public MemberRecordDto getMemberRecords() {
+    public List<GrassDto> getGrassDtos() {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        List<GrassDto> grassDtos = getGrassDtosByMemberId(memberId);
-        List<GraphDto> graphDtos = getGraphDtosByMemberId(memberId);
-        List<TestRatingDto> testRatingDtos = testService.getTestRatingDtosByMemberId(memberId);
-        MemberRecordDto memberRecordDto = MemberRecordDto.builder()
-                .grassDtos(grassDtos)
-                .graphDtos(graphDtos)
-                .testRatingDtos(testRatingDtos)
-                .build();
-        return memberRecordDto;
-    }
-
-    public List<GrassDto> getGrassDtosByMemberId(Long memberId) {
         List<GrassDto> grassDtos = new ArrayList<>();
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByMember_MemberId(memberId);
         if (!attemptProblems.isEmpty()) {
@@ -87,7 +73,8 @@ public class AttemptProblemService {
         return grassDtos;
     }
 
-    public List<GraphDto> getGraphDtosByMemberId(Long memberId) {
+    public List<GraphDto> getGraphDtos() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         Map<String, Integer> totalCount = new HashMap<>();
         Map<String, Integer> Count = new HashMap<>();
         List<Algorithm> algorithms = algorithmRepository.findAll();
