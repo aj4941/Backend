@@ -23,6 +23,7 @@ import swm_nm.morandi.test.dto.TestStatus;
 import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
+import swm_nm.morandi.testResult.request.AttemptCodeDto;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
 
 import javax.transaction.Transactional;
@@ -32,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.Math.max;
 
@@ -56,7 +58,7 @@ public class TestResultService {
         Test test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         List<Long> attemptProblemIds = new ArrayList<>();
         for (BojProblem bojProblem : bojProblems) {
-            Problem problem = problemRepository.findProblemByBojProblemId(bojProblem.getBojProblemId())
+            Problem problem = problemRepository.findProblemByBojProblemId(bojProblem.getProblemId())
                     .orElseThrow(()-> new MorandiException(ProblemErrorCode.PROBLEM_NOT_FOUND));
 
             AttemptProblem attemptProblem = AttemptProblem.builder()
@@ -207,6 +209,20 @@ public class TestResultService {
         else memberRating = resultRating;
         member.setRating(memberRating);
         return memberRating;
+    }
+
+    public void saveEachCodeinAttemptProblems(AttemptCodeDto attemptCodeDto) {
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(attemptCodeDto.getTestId());
+        attemptProblems.forEach(attemptProblem -> {
+            Long attemptProblemId = attemptProblem.getAttemptProblemId();
+            attemptProblem.setSubmitCode(
+                    Optional.of(attemptCodeDto.getSubmitCode().get(attemptProblemId))
+                            .orElseThrow(() -> new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND)));
+
+
+        });
+        attemptProblemRepository.saveAll(attemptProblems);
+
     }
 }
 
