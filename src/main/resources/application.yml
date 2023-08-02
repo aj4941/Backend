@@ -1,40 +1,40 @@
 spring:
   datasource:
-    driver-class-name: ${DB-Driver}
-    url: ${DB-url}
-    username: ${DB-username}
-    password: "${DB-password}"
+    driver-class-name: '${DB-Driver}'
+    url: '${DB-url}'
+    username: '${DB-username}'
+    password: '${DB-password}'
 
   jpa:
     hibernate:
-      ddl-auto: ${ddl-type}
+      ddl-auto: '${ddl-type}'
     properties:
-      hibernate.format_sql: ${format_sql}
-      hibernate.show_sql: ${show_sql}
+      hibernate.format_sql: '${format_sql}'
+      hibernate.show_sql: '${show_sql}'
 
   mvc:
     pathmatch:
-      matching-strategy: ${mvc-pathmatch}
+      matching-strategy: '${mvc-pathmatch}'
 
   doc:
-    packages-to-scan: ${to-scan}
-    default-consumes-media-type: ${media-type}
-    default-produces-media-type: ${media-type}
+    packages-to-scan: '${to-scan}'
+    default-consumes-media-type: '${media-type}'
+    default-produces-media-type: '${media-type}'
     swagger-ui:
-      tags-sorter: ${swagger-sorter}
-      operations-sorter: ${swagger-sorter}
+      tags-sorter: '${swagger-sorter}'
+      operations-sorter: '${swagger-sorter}'
     api-docs:
-      path: ${api-docs-path}
+      path: '${api-docs-path}'
     cache:
-      disabled: ${cache-disabled}
+      disabled: '${cache-disabled}'
 
 oauth:
   google:
-    client-id: "${google-client-id}"
-    client-secret: "${google-client-secret}"
-    redirect-uri: ${google-redirect-uri}
+    client-id: '${google-client-id}'
+    client-secret: '${google-client-secret}'
+    redirect-uri: '${google-redirect-uri}'
 
   github:
-    client-id: "${github-client-id}"
-    client-secret: "${github-client-secret}"
-    redirect-uri: ${github-redirect-uri}
+    client-id: '${github-client-id}'
+    client-secret: '${github-client-secret}'
+    redirect-uri: '${github-redirect-uri}'

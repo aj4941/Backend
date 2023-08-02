@@ -12,9 +12,9 @@ pipeline {
         stage('Prepare') {
             steps {
                 echo 'Clonning Repository'
-                git url: '${git-url}',
-                    branch: '${git-branch}',
-                    credentialsId: '${githubKey}'
+                git url: 'https://github.com/SWM-NM/morandi-backend',
+                    branch: 'master',
+                    credentialsId: 'github_personal_access_token'
             }
             post {
                 failure {
@@ -36,9 +36,7 @@ pipeline {
         stage('Build Docker') {
             steps {
                 echo 'Build Docker'
-                script {
-                    ${build-docker}
-                }
+                sh '${build-docker}'
             }
             post {
                 failure {
@@ -49,9 +47,7 @@ pipeline {
         stage('Push Docker') {
             steps {
                 echo 'Push Docker'
-                script {
-                    ${push-docker}
-                }
+                sh '${push-docker}'
             }
             post {
                 failure {
@@ -62,9 +58,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'SSH'
-                script {
-                    ${deploy}
-                }
+                sh '${deploy}'
             }
         }
     }
