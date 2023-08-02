@@ -25,6 +25,8 @@ public class AttemptProblem {
 
     private Long executionTime;
 
+    private String submitCode;
+
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
