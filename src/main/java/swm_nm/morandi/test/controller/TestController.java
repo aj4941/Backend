@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import swm_nm.morandi.logging.Logging;
 import swm_nm.morandi.problem.dto.OutputDto;
 import swm_nm.morandi.test.dto.*;
 import swm_nm.morandi.test.service.TestService;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Logging
 @RestController
 @RequestMapping
 @RequiredArgsConstructor

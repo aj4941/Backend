@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import swm_nm.morandi.auth.constants.OAuthConstants;
+import swm_nm.morandi.logging.Logging;
 
 @Controller
+@Logging
 @RequestMapping("/oauths")
 public class OAuthURIController {
 
