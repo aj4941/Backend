@@ -40,7 +40,7 @@ pipeline {
             steps {
                 echo 'Bulid Docker'
                 script {
-                    dockerImage = docker.build imageName
+                    dockerImage = docker.build "${image}"
                 }
             }
             post {
@@ -77,7 +77,7 @@ pipeline {
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rm ${container} || true'"
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rmi ${container} || true'"
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker pull ${image}'"
-                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker run -d -p 8080:8080 —name ${container} ${imageName}'"
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker run -d -p 8080:8080 —name ${container} ${image}'"
                   }
               }
           }
