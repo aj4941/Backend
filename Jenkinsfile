@@ -15,7 +15,7 @@ pipeline {
         stage('Prepare') {
           steps {
             echo 'Clonning Repository'
-            git url: 'https://github.com/SWM-NM/morandi-backend',
+            git url: 'https://github.com/SWM-NM/morandi-backend.git',
                 branch: 'master',
                 credentialsId: 'github-personal-access-token'
             }
