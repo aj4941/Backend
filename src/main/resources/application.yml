@@ -1,40 +1,40 @@
 spring:
   datasource:
-    driver-class-name: '${DB-Driver}'
-    url: '${DB-url}'
-    username: '${DB-username}'
-    password: '${DB-password}'
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: "${db-url}"
+    username: "${db-username}"
+    password: "${db-password}"
 
   jpa:
     hibernate:
-      ddl-auto: '${ddl-type}'
+      ddl-auto: create
     properties:
-      hibernate.format_sql: '${format_sql}'
-      hibernate.show_sql: '${show_sql}'
+      hibernate.format_sql: true
+      hibernate.show_sql: true
 
   mvc:
     pathmatch:
-      matching-strategy: '${mvc-pathmatch}'
+      matching-strategy: ant_path_matcher
 
   doc:
-    packages-to-scan: '${to-scan}'
-    default-consumes-media-type: '${media-type}'
-    default-produces-media-type: '${media-type}'
+    packages-to-scan: com.test.demo
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
     swagger-ui:
-      tags-sorter: '${swagger-sorter}'
-      operations-sorter: '${swagger-sorter}'
+      tags-sorter: alpha
+      operations-sorter: alpha
     api-docs:
-      path: '${api-docs-path}'
+      path: /api-docs/json
     cache:
-      disabled: '${cache-disabled}'
+      disabled: true
 
 oauth:
   google:
-    client-id: '${google-client-id}'
-    client-secret: '${google-client-secret}'
-    redirect-uri: '${google-redirect-uri}'
+    client-id: "${google-client-id}"
+    client-secret: "${google-client-secret}"
+    redirect-uri: "${google-redirect-uri}"
 
   github:
-    client-id: '${github-client-id}'
-    client-secret: '${github-client-secret}'
-    redirect-uri: '${github-redirect-uri}'
+    client-id: "${github-client-id}"
+    client-secret: "${github-client-secret}"
+    redirect-uri: "${github-redirct-uri}"
