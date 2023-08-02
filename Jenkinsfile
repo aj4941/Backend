@@ -1,22 +1,71 @@
 pipeline {
     agent any
+    triggers {
+        pollSCM('*/3 * * * *')
+    }
+    environment {
+        imageName = "${imageName}"
+        registryCredential = '${dockerKey}'
+        dockerImage = ''
+    }
     stages {
-        stage('build') {
+        stage('Prepare') {
             steps {
-                echo 'building the application...'
+                echo 'Clonning Repository'
+                git url: '${git-url}',
+                    branch: '${git-branch}',
+                    credentialsId: '${githubKey}'
+            }
+            post {
+                failure {
+                    error 'This pipeline stops here..'
+                }
             }
         }
-        stage('test') {
+        stage('Build Gradle') {
             steps {
-                echo 'testing the application...'
+                echo 'Build Gradle'
+                sh '${Build}'
+            }
+            post {
+                failure {
+                    error 'This pipeline stops here..'
+                }
             }
         }
-        stage('deploy') {
+        stage('Build Docker') {
             steps {
-                echo 'deploying the application...'
+                echo 'Build Docker'
+                script {
+                    ${build-docker}
+                }
+            }
+            post {
+                failure {
+                    error 'This pipeline stops here..'
+                }
+            }
+        }
+        stage('Push Docker') {
+            steps {
+                echo 'Push Docker'
+                script {
+                    ${push-docker}
+                }
+            }
+            post {
+                failure {
+                    error 'This pipeline stops here..'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'SSH'
+                script {
+                    ${deploy}
+                }
             }
         }
     }
 }
-
-// 젠킨스 테스트
