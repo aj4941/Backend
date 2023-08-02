@@ -50,36 +50,37 @@ pipeline {
             }
         }
         stage('Push Docker') {
-          steps {
-            echo 'Push Docker'
-            script {
-                docker.withRegistry('', registryCredential) {
-                    dockerImage.push("latest")
+            steps {
+                echo 'Push Docker'
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push("latest")
+                    }
                 }
             }
-          }
-          post {
-            failure {
-                error 'This pipeline stops here...'
-            }
-          }
-          stage('Deploy') {
-            steps {
-                echo 'SSH'
-                script {
-                    def imageExists = sh(returnStdout: true, script: "docker images -q ${image}").trim()
-                    if (imageExists) {
-                        sh "docker rmi ${image}"
-                    }
-                    sshagent(['server-key']) {
-                        sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker stop ${container} || true'"
-                        sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rm ${container} || true'"
-                        sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rmi ${container} || true'"
-                        sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker pull ${image}'"
-                        sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker run -d -p 8080:8080 —name ${container} ${imageName}'"
-                    }
+            post {
+                failure {
+                    error 'This pipeline stops here...'
                 }
             }
         }
-    }
+        stage('Deploy') {
+          steps {
+              echo 'SSH'
+              script {
+                  def imageExists = sh(returnStdout: true, script: "docker images -q ${image}").trim()
+                  if (imageExists) {
+                      sh "docker rmi ${image}"
+                  }
+                  sshagent(['server-key']) {
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker stop ${container} || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rm ${container} || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rmi ${container} || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker pull ${image}'"
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker run -d -p 8080:8080 —name ${container} ${imageName}'"
+                  }
+              }
+          }
+       }
+   }
 }
