@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import swm_nm.morandi.auth.constants.SecurityConstants;
 import swm_nm.morandi.auth.response.TokenDto;
 import swm_nm.morandi.auth.service.LoginService;
+import swm_nm.morandi.logging.Logging;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 
-
+@Logging
 @RestController
 @RequestMapping("/oauths")
 @RequiredArgsConstructor

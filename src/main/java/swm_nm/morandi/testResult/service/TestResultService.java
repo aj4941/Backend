@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.auth.security.SecurityUtils;
@@ -38,6 +39,7 @@ import java.util.Optional;
 import static java.lang.Math.max;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TestResultService {
     private final MemberRepository memberRepository;
@@ -213,15 +215,23 @@ public class TestResultService {
 
     public void saveEachCodeinAttemptProblems(AttemptCodeDto attemptCodeDto) {
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(attemptCodeDto.getTestId());
+        if(attemptProblems.isEmpty()) {
+            log.error("attemptCodeDto TestId = {}, ", attemptCodeDto.getTestId());
+            throw new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND);
+        }
         attemptProblems.forEach(attemptProblem -> {
             Long attemptProblemId = attemptProblem.getAttemptProblemId();
             attemptProblem.setSubmitCode(
                     Optional.of(attemptCodeDto.getSubmitCode().get(attemptProblemId))
-                            .orElseThrow(() -> new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND)));
+                            .orElseThrow(() -> {
+                                log.error("attemptProblem = {}, attemptCodeDto = {}", attemptProblem, attemptCodeDto);
+                                return new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND);
+                            }));
 
 
         });
         attemptProblemRepository.saveAll(attemptProblems);
+        log.info("테스트 Id에 해당하는 푼 문제들의 코드를 모두 저장했습니다: {}", attemptCodeDto.getTestId());
 
     }
 }
