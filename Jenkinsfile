@@ -63,7 +63,7 @@ pipeline {
                     if (imageExists) {
                         sh "docker rmi ${imagename}"
                     }
-                    sshagent(['${serverKey}']) {
+                    sshagent(["${serverKey}"]) {
                         sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker stop ${containerName} || true'"
                         sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker rm ${containerName} || true'"
                         sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker rmi ${image} || true'"
