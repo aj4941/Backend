@@ -14,7 +14,7 @@ pipeline {
                 echo 'Clonning Repository'
                 git url: '${git-url}',
                     branch: '${git-branch}',
-                    credentialsId: '${githubKey}'
+                    credentialsId: 'github_personal_access_token'
             }
             post {
                 failure {
