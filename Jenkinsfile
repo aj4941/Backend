@@ -63,7 +63,17 @@ pipeline {
             steps {
                 echo 'SSH'
                 script {
-                    ${deploy}
+                    def imageExists = sh(returnStdout: true, script: "docker images -q ${imageName}").trim()
+                    if (imageExists) {
+                        sh "docker rmi ${imageName}"
+                    }
+                    sshagent(['${serverKey}']) {
+                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker stop ${containerName} || true'"
+                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker rm ${containerName} || true'"
+                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker rmi ${image} || true'"
+                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker pull ${imageName}'"
+                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker run -d -p 8080:8080 —name ${containerName} ${imageName}'"
+                    }
                 }
             }
         }
