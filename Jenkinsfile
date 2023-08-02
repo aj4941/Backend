@@ -47,9 +47,7 @@ pipeline {
         stage('Push Docker') {
             steps {
                 echo 'Push Docker'
-                script {
-                    ${push-docker}
-                }
+                sh '${push-docker}'
             }
             post {
                 failure {
@@ -60,9 +58,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'SSH'
-                script {
-                    ${deploy}
-                }
+                sh '${deploy}'
             }
         }
     }
