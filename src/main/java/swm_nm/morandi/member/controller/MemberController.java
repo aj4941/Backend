@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import swm_nm.morandi.logging.Logging;
 import swm_nm.morandi.member.dto.*;
 import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.member.service.MemberService;
@@ -19,6 +20,8 @@ import swm_nm.morandi.test.service.TestService;
 import java.io.IOException;
 import java.util.*;
 
+
+@Logging
 @RestController
 @RequestMapping("/members")
 @Tag(name = "MemberController", description = "사용자와 관련된 컨트롤러")
