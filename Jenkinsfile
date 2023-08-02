@@ -36,9 +36,7 @@ pipeline {
         stage('Build Docker') {
             steps {
                 echo 'Build Docker'
-                script {
-                    ${build-docker}
-                }
+                sh '${build-docker}'
             }
             post {
                 failure {
