@@ -6,15 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.test.dto.TestCheckDto;
+import swm_nm.morandi.testResult.request.AttemptCodeDto;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
-import swm_nm.morandi.testResult.request.TestResultDto;
-import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.testResult.service.TestResultService;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/tests")
@@ -38,5 +35,12 @@ public class TestResultController {
     public ResponseEntity<List<AttemptProblemDto>> checkAttemptedProblemResult
                                     (@RequestBody TestCheckDto testCheckDto){
         return new ResponseEntity<>(testResultService.isSolvedCheck(testCheckDto), HttpStatus.OK);
+    }
+
+    @PostMapping("/submit")
+    @Operation(summary = "테스트 종료 시점 코드 저장", description = "테스트 종료 시점에서 종료하기 직전 API를 호출하여 사용자가 풀어둔 코드를 저장해야 합니다.")
+    public ResponseEntity<?> saveCode(@RequestBody AttemptCodeDto attemptCodeDto) {
+        testResultService.saveEachCodeinAttemptProblems(attemptCodeDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

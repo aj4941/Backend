@@ -28,9 +28,7 @@ import swm_nm.morandi.test.repository.TestTypeRepository;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -90,19 +88,21 @@ public class TestTypeService {
                     if (flag) {
                         BojProblem bojProblem = BojProblem.builder()
                                 .testProblemId(index++)
-                                .bojProblemId(problem.getBojProblemId())
+                                .problemId(problem.getBojProblemId())
                                 .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
                                 .levelToString(problem.getProblemDifficulty().getFullName()).build();
                         bojProblems.add(bojProblem);
                         randomNumber = (randomNumber + 1) % 10;
                         break;
                     }
+
                 }
             }
+
             if (!flag) {
                 BojProblem bojProblem = BojProblem.builder()
                         .testProblemId(index++)
-                        .bojProblemId(0L)
+                        .problemId(0L)
                         .build();
                 bojProblems.add(bojProblem);
             }
@@ -114,7 +114,7 @@ public class TestTypeService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
-            if (bojProblems.get((int) (index - 1)).getBojProblemId() != 0) {
+            if (bojProblems.get((int) (index - 1)).getProblemId() != 0) {
                 index++;
                 continue;
             }
@@ -128,27 +128,25 @@ public class TestTypeService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
+
+
+
+
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = null;
             try {
-                rootNode = mapper.readTree(jsonString);
+                JsonNode rootNode = mapper.readTree(jsonString);
+                JsonNode itemsArray = rootNode.get("items");
+                if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
+                    JsonNode firstProblem = itemsArray.get(0);
+                    BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
+                    BojProblem bojProblem = bojProblems.get((int) (index - 1));
+                    bojProblem.setProblemId(apiProblem.getProblemId());
+                    bojProblem.setLevel(apiProblem.getLevel());
+                    bojProblem.setTestProblemId(index++);
+                    bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
+                }
             } catch (JsonProcessingException e) {
                 throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
-            }
-            JsonNode itemsArray = rootNode.get("items");
-            if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
-                JsonNode firstProblem = itemsArray.get(0);
-                BojProblem apiProblem = null;
-                try {
-                    apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
-                } catch (JsonProcessingException e) {
-                    throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
-                }
-                BojProblem bojProblem = bojProblems.get((int) (index - 1));
-                bojProblem.setBojProblemId(apiProblem.getBojProblemId());
-                bojProblem.setLevel(apiProblem.getLevel());
-                bojProblem.setTestProblemId(index++);
-                bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
             }
         }
     }
