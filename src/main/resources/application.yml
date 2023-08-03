@@ -2,7 +2,7 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://10.0.132.17:3306/morandi
-    username: morandi
+    username: root
     password: Pepsi1943@
 
   jpa:
