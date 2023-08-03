@@ -61,6 +61,7 @@ pipeline {
             }
         }
         stage('Deploy') {
+<<<<<<< HEAD
           steps {
               echo 'SSH'
               script {
@@ -80,3 +81,16 @@ pipeline {
        }
    }
 }
+=======
+            steps {
+                echo 'SSH'
+                script {
+                    ${deploy}
+                }
+            }
+        }
+    }
+}
+
+// pr test
+>>>>>>> 8fbc210 (jenkins test)
