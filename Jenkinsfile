@@ -4,6 +4,14 @@ pipeline {
     environment {
         registryCredential = 'docker-key'
         dockerImage = ''
+        dbUrl = 'your_db_url'
+        dbPassword = 'your_db_password'
+        googleClientId = 'your_google_client_id'
+        googleClientSecret = 'your_google_client_secret'
+        googleRedirectUri = 'your_google_redirect_uri'
+        githubClientId = 'your_github_client_id'
+        githubClientSecret = 'your_github_client_secret'
+        githubRedirectUri = 'your_github_redirect_uri'
     }
 
     stages {
