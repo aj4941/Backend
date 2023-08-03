@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: "${db-url}"
-    username: "${db-username}"
-    password: "${db-password}"
+    url: jdbc:mariadb://10.0.132.17:3306/morandi
+    username: morandi
+    password: Pepsi1943@
 
   jpa:
     hibernate:
@@ -30,11 +30,11 @@ spring:
 
 oauth:
   google:
-    client-id: "${google-client-id}"
-    client-secret: "${google-client-secret}"
-    redirect-uri: "${google-redirect-uri}"
+    client-id: "1047762864117-c4i1inqqugoesvruk7gkjv0itdnm9mov.apps.googleusercontent.com"
+    client-secret: "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"
+    redirect-uri: http://3.38.152.28:8080/oauths/github/callback
 
   github:
-    client-id: "${github-client-id}"
-    client-secret: "${github-client-secret}"
-    redirect-uri: "${github-redirct-uri}"
+    client-id: "202fee18f40f0edd7e64"
+    client-secret: "8bd777f3df672d764b51051e658d829e41d23d37"
+    redirect-uri: http://3.38.152.28:8080/oauths/google/callback
