@@ -77,7 +77,7 @@ pipeline {
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rm ${container} || true'"
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rmi ${image-small} || true'"
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker pull ${image}'"
-                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker run -d -p 8080:8080 —name ${container} ${image}'"
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker run -d -p 8080:8080 --name ${container} ${image}'"
                   }
               }
           }
