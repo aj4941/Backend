@@ -52,7 +52,7 @@ class TestServiceTest {
 
             testRepository.save(test);
             TestRecordDto testRecordDto = testService.getTestRecordDtoByTestId((long) i);
-            System.out.println(testRecordDto.toString());
+
         }
     }
 

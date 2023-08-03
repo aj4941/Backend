@@ -19,10 +19,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * MorandiException 핸들러
      */
     @ExceptionHandler(MorandiException.class)
-    public ResponseEntity<?> AuthExceptionHandler(MorandiException e){
+    public ResponseEntity<?> MorandiExceptionHandler(MorandiException e){
 
         String message = e.getMessage();
-        log.warn(message);
+        log.error(message, e);
         return handleExceptionInternal(e.getErrorCode(),message);
 
 
@@ -31,14 +31,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     //나중에 @Valid용도
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException e) {
-        log.warn("IllegalArgument handling",e);
+        log.error("IllegalArgument handling",e);
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         return handleExceptionInternal(errorCode, e.getMessage());
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<?> handleAllException(Exception ex) {
-        log.warn("handleAllException", ex);
+    public ResponseEntity<?> handleAllException(Exception e) {
+        log.error("INTERNAL_SERVER_ERROR", e);
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         return handleExceptionInternal(errorCode);
     }

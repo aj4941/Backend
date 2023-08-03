@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.auth.security.SecurityUtils;
@@ -23,6 +24,7 @@ import swm_nm.morandi.test.dto.TestStatus;
 import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
+import swm_nm.morandi.testResult.request.AttemptCodeDto;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
 
 import javax.transaction.Transactional;
@@ -32,10 +34,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.Math.max;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TestResultService {
     private final MemberRepository memberRepository;
@@ -56,7 +60,7 @@ public class TestResultService {
         Test test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         List<Long> attemptProblemIds = new ArrayList<>();
         for (BojProblem bojProblem : bojProblems) {
-            Problem problem = problemRepository.findProblemByBojProblemId(bojProblem.getBojProblemId())
+            Problem problem = problemRepository.findProblemByBojProblemId(bojProblem.getProblemId())
                     .orElseThrow(()-> new MorandiException(ProblemErrorCode.PROBLEM_NOT_FOUND));
 
             AttemptProblem attemptProblem = AttemptProblem.builder()
@@ -207,6 +211,28 @@ public class TestResultService {
         else memberRating = resultRating;
         member.setRating(memberRating);
         return memberRating;
+    }
+
+    public void saveEachCodeinAttemptProblems(AttemptCodeDto attemptCodeDto) {
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(attemptCodeDto.getTestId());
+        if(attemptProblems.isEmpty()) {
+            log.error("attemptCodeDto TestId = {}, ", attemptCodeDto.getTestId());
+            throw new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND);
+        }
+        attemptProblems.forEach(attemptProblem -> {
+            Long attemptProblemId = attemptProblem.getAttemptProblemId();
+            attemptProblem.setSubmitCode(
+                    Optional.of(attemptCodeDto.getSubmitCode().get(attemptProblemId))
+                            .orElseThrow(() -> {
+                                log.error("attemptProblem = {}, attemptCodeDto = {}", attemptProblem, attemptCodeDto);
+                                return new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND);
+                            }));
+
+
+        });
+        attemptProblemRepository.saveAll(attemptProblems);
+        log.info("테스트 Id에 해당하는 푼 문제들의 코드를 모두 저장했습니다: {}", attemptCodeDto.getTestId());
+
     }
 }
 

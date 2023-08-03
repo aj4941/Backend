@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
 public class AttemptProblem {
 
@@ -25,6 +24,8 @@ public class AttemptProblem {
 
     private Long executionTime;
 
+    private String submitCode;
+
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
@@ -36,4 +37,19 @@ public class AttemptProblem {
     @ManyToOne
     @JoinColumn(name = "PROBLEM_ID")
     private Problem problem;
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("AttemptProblem{");
+        sb.append("attemptProblemId=").append(attemptProblemId);
+        sb.append(", isSolved=").append(isSolved);
+        sb.append(", testDate=").append(testDate);
+        sb.append(", executionTime=").append(executionTime);
+        sb.append(", submitCode='").append(submitCode).append('\'');
+        sb.append(", member=").append(member);
+        sb.append(", test=").append(test);
+        sb.append(", problem=").append(problem);
+        sb.append('}');
+        return sb.toString();
+    }
 }
