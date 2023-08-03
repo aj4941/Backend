@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('*/3 * * * *')
-    }
-
     environment {
         registryCredential = 'docker-key'
         dockerImage = ''
