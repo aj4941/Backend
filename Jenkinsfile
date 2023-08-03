@@ -25,6 +25,14 @@ pipeline {
             steps {
                 echo 'Bulid Gradle'
                 sh './gradlew clean bootJar'
+                sh "sed -i 's/\\${db-url}/${db-url}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
+                sh "sed -i 's/\\${db-password}/${db-password}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
+                sh "sed -i 's/\\${google-client-id}/${google-client-id}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
+                sh "sed -i 's/\\${google-client-secret}/${google-client-secret}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
+                sh "sed -i 's/\\${google-redirect-uri}/${google-redirect-uri}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
+                sh "sed -i 's/\\${github-client-id}/${github-client-id}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
+                sh "sed -i 's/\\${github-client-secret}/${github-client-secret}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
+                sh "sed -i 's/\\${github-redirect-uri}/${github-redirect-uri}/g' /var/jenkins_home/workspace/morandi-backend-server/src/main/resources/application.yml"
             }
             post {
                 failure {
