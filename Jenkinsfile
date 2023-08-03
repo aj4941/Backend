@@ -75,7 +75,7 @@ pipeline {
                   sshagent(['server-key']) {
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker stop ${container} || true'"
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rm ${container} || true'"
-                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rmi ${container} || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker rmi ${image-small} || true'"
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker pull ${image}'"
                       sh "ssh -o StrictHostKeyChecking=no ${server-ip} 'docker run -d -p 8080:8080 —name ${container} ${image}'"
                   }
