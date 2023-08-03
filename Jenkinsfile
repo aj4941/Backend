@@ -1,48 +1,47 @@
 pipeline {
     agent any
-    triggers {
-        pollSCM('*/3 * * * *')
-    }
+
     environment {
-        imageName = "${imageName}"
-        registryCredential = '${dockerKey}'
+        registryCredential = 'docker-key'
         dockerImage = ''
     }
+
     stages {
+        // git에서 repository clone
         stage('Prepare') {
-            steps {
-                echo 'Clonning Repository'
-                git url: '${git-url}',
-                    branch: '${git-branch}',
-                    credentialsId: '${githubKey}'
+          steps {
+            echo 'Clonning Repository'
+            git url: 'https://github.com/SWM-NM/morandi-backend.git',
+                branch: 'master',
+                credentialsId: 'github-personal-access-token'
             }
             post {
-                failure {
-                    error 'This pipeline stops here..'
+           	    failure {
+                    error 'This pipeline stops here...'
                 }
             }
         }
-        stage('Build Gradle') {
+        stage('Bulid Gradle') {
             steps {
-                echo 'Build Gradle'
-                sh '${Build}'
+                echo 'Bulid Gradle'
+                sh './gradlew clean bootJar'
             }
             post {
                 failure {
-                    error 'This pipeline stops here..'
+                    error 'This pipeline stops here...'
                 }
             }
         }
-        stage('Build Docker') {
+        stage('Bulid Docker') {
             steps {
-                echo 'Build Docker'
+                echo 'Bulid Docker'
                 script {
-                    ${build-docker}
+                    dockerImage = docker.build "${image}"
                 }
             }
             post {
                 failure {
-                    error 'This pipeline stops here..'
+                    error 'This pipeline stops here...'
                 }
             }
         }
@@ -50,34 +49,35 @@ pipeline {
             steps {
                 echo 'Push Docker'
                 script {
-                    ${push-docker}
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push("latest")
+                    }
                 }
             }
             post {
                 failure {
-                    error 'This pipeline stops here..'
+                    error 'This pipeline stops here...'
                 }
             }
         }
         stage('Deploy') {
-            steps {
-                echo 'SSH'
-                script {
-                    def imageExists = sh(returnStdout: true, script: "docker images -q ${imageName}").trim()
-                    if (imageExists) {
-                        sh "docker rmi ${imageName}"
-                    }
-                    sshagent(['${serverKey}']) {
-                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker stop ${containerName} || true'"
-                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker rm ${containerName} || true'"
-                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker rmi ${image} || true'"
-                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker pull ${imageName}'"
-                        sh "ssh -o StrictHostKeyChecking=no ${serverIp} 'docker run -d -p 8080:8080 —name ${containerName} ${imageName}'"
-                    }
-                }
-            }
-        }
-    }
+          steps {
+              echo 'SSH'
+              script {
+                  def imageExists = sh(returnStdout: true, script: "docker images -q ${image}").trim()
+                  if (imageExists) {
+                      sh "docker rmi ${image}"
+                  }
+                  sshagent(['server-key']) {
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker stop morandi-container || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker rm morandi-container || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker rmi aj4941/morandi-server || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker pull aj4941/morandi-server'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker run -d -p 8080:8080 --name morandi-container aj4941/morandi-server'"
+                  }
+              }
+          }
+       }
+   }
 }
 
-// pr test
