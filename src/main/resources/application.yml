@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mysql://10.0.132.17:3306/morandi
+    url: jdbc:mariadb://10.0.132.17:3306/morandi
     username: root
     password: Pepsi1943@
 
