@@ -39,7 +39,7 @@
 
     <springProfile name="LOCAL">
         <root level="INFO">
-            <appender-ref ref="Consoler"/>
+            <appender-ref ref="Console"/>
         </root>
     </springProfile>
 
