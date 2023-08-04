@@ -7,7 +7,6 @@ pipeline {
     }
 
     stages {
-        // git에서 repository clone
         stage('Prepare') {
           steps {
             echo 'Clonning Repository'
