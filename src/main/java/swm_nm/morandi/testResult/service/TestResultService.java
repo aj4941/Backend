@@ -61,7 +61,12 @@ public class TestResultService {
         List<Long> attemptProblemIds = new ArrayList<>();
         for (BojProblem bojProblem : bojProblems) {
             Problem problem = problemRepository.findProblemByBojProblemId(bojProblem.getProblemId())
-                    .orElseThrow(()-> new MorandiException(ProblemErrorCode.PROBLEM_NOT_FOUND));
+                    .orElseThrow(()-> {
+                                log.error("저장하려는 문제 정보를 찾지 못했습니다. 문제 번호: {}", bojProblem.getProblemId());
+                               return new MorandiException(ProblemErrorCode.PROBLEM_NOT_FOUND);
+                    }
+
+                    );
 
             AttemptProblem attemptProblem = AttemptProblem.builder()
                     .isSolved(false)
