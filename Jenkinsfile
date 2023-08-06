@@ -7,16 +7,19 @@ pipeline {
     }
 
     stages {
-        stage('Prepare') {
-          steps {
-            echo 'Clonning Repository'
-            git url: 'https://github.com/SWM-NM/morandi-backend.git',
-                branch: 'master',
-                credentialsId: 'github-personal-access-token'
-            }
-            post {
-           	    failure {
-                    error 'This pipeline stops here...'
+        stage('Change File') {
+            steps {
+                script {
+                    def applicationYmlPath = './src/main/resources/application.yml'
+                    def oAuthConstantsPath = './src/main/java/swm_nm/morandi/auth/constants/OAuthConstants.java'
+                    if (fileExists(applicationYmlPath)) {
+                        sh "rm ${applicationYmlPath}"
+                    }
+                    if (fileExists(oAuthConstantsPath)) {
+                        sh "rm ${oAuthConstantsPath}"
+                    }
+                    sh "cp /var/jenkins_home/application.yml ${applicationYmlPath}"
+                    sh "cp /var/jenkins_home/OAuthConstants.java ${oAuthConstantsPath}"
                 }
             }
         }
@@ -79,4 +82,3 @@ pipeline {
        }
    }
 }
-
