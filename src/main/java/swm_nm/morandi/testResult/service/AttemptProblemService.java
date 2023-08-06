@@ -70,6 +70,14 @@ public class AttemptProblemService {
                 grassDtos.add(grassDto);
             });
         }
+
+        if (grassDtos.size() == 0) {
+            GrassDto grassDto = GrassDto.builder()
+                    .testDate(null)
+                    .solvedCount(null)
+                    .build();
+            grassDtos.add(grassDto);
+        }
         return grassDtos;
     }
 
@@ -103,7 +111,8 @@ public class AttemptProblemService {
             });
 
             algorithms.stream().map(Algorithm::getAlgorithmName).forEach(algorithmName -> {
-                Double solvedRate = (double) Count.get(algorithmName) / (double) totalCount.get(algorithmName) * 100;
+                Double solvedRate = totalCount.get(algorithmName) == 0 ? 0 :
+                        (double) Count.get(algorithmName) / (double) totalCount.get(algorithmName) * 100;
                 GraphDto graphDto = GraphDto.builder()
                         .algorithmName(algorithmName)
                         .solvedRate(solvedRate)
