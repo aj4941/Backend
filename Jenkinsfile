@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         stage('Change File') {
             steps {
                 script {
@@ -71,11 +72,11 @@ pipeline {
                       sh "docker rmi ${image}"
                   }
                   sshagent(['server-key']) {
-                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker stop morandi-container || true'"
-                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker rm morandi-container || true'"
-                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker rmi aj4941/morandi-server || true'"
-                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker pull aj4941/morandi-server'"
-                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'sudo docker run -d -p 8080:8080 --name morandi-container aj4941/morandi-server'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'docker stop morandi-container || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'docker rm morandi-container || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'docker rmi aj4941/morandi-server || true'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'docker pull aj4941/morandi-server'"
+                      sh "ssh -o StrictHostKeyChecking=no ubuntu@10.0.11.225 'docker run -d -p 8080:8080 --name morandi-container aj4941/morandi-server'"
                   }
               }
           }
