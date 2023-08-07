@@ -107,8 +107,8 @@ public class TestService {
         Pageable pageable = PageRequest.of(0, 1);
         List<Test> recentTests = testRepository.findAllByMember_MemberIdOrderByTestDateDesc(memberId, pageable);
         CurrentRatingDto currentRatingDto = new CurrentRatingDto();
-        if (recentTests.isEmpty()) currentRatingDto.setRating(1000L);
-        else currentRatingDto.setRating(recentTests.get(0).getTestRating());
+        if (!recentTests.isEmpty()) currentRatingDto.setRating(recentTests.get(0).getTestRating());
+        if (currentRatingDto.getRating() == null) currentRatingDto.setRating(1000L);
         return currentRatingDto;
     }
 
@@ -152,6 +152,16 @@ public class TestService {
                     .build();
             testRatingDtos.add(testRatingDto);
         });
+
+        if (testRatingDtos.size() == 0) {
+            TestRatingDto testRatingDto = TestRatingDto.builder()
+                    .testId(null)
+                    .testTypeName(null)
+                    .testDate(null)
+                    .testRating(null)
+                    .build();
+            testRatingDtos.add(testRatingDto);
+        }
 
         return testRatingDtos;
     }
