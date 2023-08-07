@@ -203,6 +203,7 @@ public class TestTypeService {
             return output.toString();
 
         } catch (IOException e) {
+            e.printStackTrace();
             throw new MorandiException(TestErrorCode.RUNTIME_ERROR);
         }
     }
@@ -263,6 +264,7 @@ public class TestTypeService {
             return output.toString();
 
         } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
             throw new MorandiException(TestErrorCode.RUNTIME_ERROR);
         }
     }
@@ -271,6 +273,7 @@ public class TestTypeService {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write(code);
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -336,6 +339,7 @@ public class TestTypeService {
             return output.toString();
 
         } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
             throw new MorandiException(TestErrorCode.RUNTIME_ERROR);
         }
     }
