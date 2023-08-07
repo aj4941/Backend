@@ -30,13 +30,17 @@ public class OAuthController {
 
         Cookie jwtCookie = new Cookie("accessToken", accessToken);
         jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/"); //모든 경로에서 접근 가능하도록 설정
+        jwtCookie.setDomain(".morandi.co.kr");; // 최상위 도메인 설정
+
+        //로컬에서 개발할 때는 setDomain지우고
+        //jwtCookie.setPath("/");   // 이거 사용해
+
         jwtCookie.setMaxAge(24 * 60 * 60); //쿠키 24시간
-        jwtCookie.setSecure(true); // secure flag (HTTPS)
+        //jwtCookie.setSecure(true); // secure flag (HTTPS)
 
         response.addCookie(jwtCookie);
 
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:3000/dashboard")).build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://morandi.co.kr/dashboard")).build();
     }
 
     //개발자 모드에서는 redirect를 하지 않고 access Token을 가져오는 api

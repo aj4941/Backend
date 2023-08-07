@@ -61,9 +61,9 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
 
             //초기 정보인 백준 ID가 아직 등록되지 않았으면 예외처리 (초기값 설정 유도)
 
-            if(!(request.getRequestURI().equals("/members/register-info")
-                    && request.getMethod().equals("POST"))
-                    &&userDetails.getBojId()==null) {
+            if (!(request.getRequestURI().equals("/members/register-info") && request.getMethod().equals("POST"))
+                    && !(request.getRequestURI().startsWith("/swagger-ui/") || request.getRequestURI().startsWith("/v3/api-docs"))
+                    && userDetails.getBojId() == null) {
                 String msg = String.format("[clientIP]: %s, [clientURL]: %s,",
                         request.getRemoteAddr(),
                         request.getRequestURL().toString()
