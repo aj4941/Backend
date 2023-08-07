@@ -30,9 +30,10 @@ public class OAuthController {
 
         Cookie jwtCookie = new Cookie("accessToken", accessToken);
         jwtCookie.setHttpOnly(true);
-
         jwtCookie.setDomain(".morandi.co.kr");; // 최상위 도메인 설정
-        jwtCookie.setPath("/");   // 이거 사용해
+
+        //로컬에서 개발할 때는 setDomain지우고
+        //jwtCookie.setPath("/");   // 이거 사용해
 
         jwtCookie.setMaxAge(24 * 60 * 60); //쿠키 24시간
         //jwtCookie.setSecure(true); // secure flag (HTTPS)
