@@ -67,7 +67,7 @@ public class TestService {
             Long currentTestId = member.getCurrentTestId();
             Test test = testRepository.findById(currentTestId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
             Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
-            test.setRemainingTime(max(2L, duration.getSeconds()));
+            test.setRemainingTime(max(2L, test.getTestTime() * 60 - duration.getSeconds()));
             List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(currentTestId);
             List<Long> bojProblemIds = attemptProblems.stream().map(AttemptProblem::getProblem)
                                                                 .map(Problem::getBojProblemId).collect(Collectors.toList());
@@ -75,11 +75,13 @@ public class TestService {
                     = TestStartResponseDto.builder()
                     .testId(currentTestId)
                     .bojProblemIds(bojProblemIds)
+                    .remainingTime(test.getRemainingTime())
                     .build();
 
             return testStartResponseDto;
         }
         Long testId = startTestByTestTypeId(testTypeId, memberId);
+        Test test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         member.setCurrentTestId(testId);
 
         String bojId = memberService.getBojId(memberId);
@@ -93,6 +95,7 @@ public class TestService {
                 = TestStartResponseDto.builder()
                 .testId(testId)
                 .bojProblemIds(bojProblemIds)
+                .remainingTime(test.getRemainingTime())
                 .build();
 
         return testStartResponseDto;
