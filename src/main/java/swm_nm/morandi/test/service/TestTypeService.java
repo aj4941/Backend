@@ -123,7 +123,7 @@ public class TestTypeService {
             String start = difficultyRange.getStart().getShortName();
             String end = difficultyRange.getEnd().getShortName();
             String apiUrl = "https://solved.ac/api/v3/search/problem";
-            String query = String.format("tier:%s..%s ~solved_by:%s solved:100..", start, end, bojId);
+            String query = String.format("tier:%s..%s ~solved_by:%s solved:1000..", start, end, bojId);
             WebClient webClient = WebClient.builder().build();
             String jsonString = webClient.get()
                     .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
