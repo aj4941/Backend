@@ -51,7 +51,7 @@ public class TestTypeService {
         return testTypeDtos;
     }
     public List<TestTypeDto> getCompanyTestTypeDtos() {
-        List<TestTypeDto> testTypeDtos = LongStream.rangeClosed(7, 9).mapToObj(i -> testTypeRepository.findById(i)
+        List<TestTypeDto> testTypeDtos = LongStream.rangeClosed(7, 12).mapToObj(i -> testTypeRepository.findById(i)
                         .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND)))
                 .map(TestTypeMapper::convertToDto).collect(Collectors.toList());
         return testTypeDtos;
