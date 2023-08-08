@@ -168,7 +168,7 @@ public class DataLoader implements CommandLineRunner {
                 .problemCount(4)
                 .startDifficulty(DifficultyLevel.S2)
                 .endDifficulty(DifficultyLevel.P5)
-                .difficultyRanges(difficultyRanges7)
+                .difficultyRanges(difficultyRanges8)
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0.0)
                 .build();
@@ -191,7 +191,7 @@ public class DataLoader implements CommandLineRunner {
                 .problemCount(7)
                 .startDifficulty(DifficultyLevel.S3)
                 .endDifficulty(DifficultyLevel.P5)
-                .difficultyRanges(difficultyRanges7)
+                .difficultyRanges(difficultyRanges9)
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0.0)
                 .build();
@@ -213,7 +213,7 @@ public class DataLoader implements CommandLineRunner {
                 .problemCount(6)
                 .startDifficulty(DifficultyLevel.S4)
                 .endDifficulty(DifficultyLevel.G1)
-                .difficultyRanges(difficultyRanges9)
+                .difficultyRanges(difficultyRanges10)
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0.0)
                 .build();
