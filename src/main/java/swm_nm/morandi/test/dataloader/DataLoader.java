@@ -1,4 +1,4 @@
-package swm_nm.morandi.problem.dataloader;
+package swm_nm.morandi.test.dataloader;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -141,18 +141,52 @@ public class DataLoader implements CommandLineRunner {
 
         testTypeRepository.save(testType6);
 
-        // PK 7번 : 카카오 코딩테스트 대비
+        // 삼성
         List<DifficultyRange> difficultyRanges7 = new ArrayList<>();
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G5));
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G3));
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G1, DifficultyLevel.P5));
-
         TestType testType7 = TestType.builder()
-                .testTypename("카카오 코딩테스트 대비")
+                .testTypename("삼성")
+                .testTime(180)
+                .problemCount(2)
+                .startDifficulty(DifficultyLevel.B1)
+                .endDifficulty(DifficultyLevel.B1)
+                .difficultyRanges(difficultyRanges7)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0.0)
+                .build();
+        testTypeRepository.save(testType7);
+
+        // 네이버
+        List<DifficultyRange> difficultyRanges8 = new ArrayList<>();
+        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G5));
+        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
+        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
+        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.P5));
+
+        TestType testType8 = TestType.builder()
+                .testTypename("네이버")
+                .testTime(120)
+                .problemCount(4)
+                .startDifficulty(DifficultyLevel.S2)
+                .endDifficulty(DifficultyLevel.P5)
+                .difficultyRanges(difficultyRanges7)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0.0)
+                .build();
+
+        testTypeRepository.save(testType8);
+
+        // 카카오
+        List<DifficultyRange> difficultyRanges9 = new ArrayList<>();
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G5));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G3));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G1, DifficultyLevel.P5));
+
+        TestType testType9 = TestType.builder()
+                .testTypename("카카오")
                 .testTime(300)
                 .problemCount(7)
                 .startDifficulty(DifficultyLevel.S3)
@@ -162,39 +196,19 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0.0)
                 .build();
 
-        testTypeRepository.save(testType7);
+        testTypeRepository.save(testType9);
 
-        // PK 8번 : 네이버 코딩테스트 대비
-        List<DifficultyRange> difficultyRanges8 = new ArrayList<>();
-        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G5));
-        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
-        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
-        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.P5));
+        // 라인
+        List<DifficultyRange> difficultyRanges10 = new ArrayList<>();
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
 
-        TestType testType8 = TestType.builder()
-                .testTypename("네이버 코딩테스트 대비")
-                .testTime(120)
-                .problemCount(4)
-                .startDifficulty(DifficultyLevel.S2)
-                .endDifficulty(DifficultyLevel.P5)
-                .difficultyRanges(difficultyRanges8)
-                .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
-                .build();
-
-        testTypeRepository.save(testType8);
-
-        // PK 9번 : 라인 코딩테스트 대비
-        List<DifficultyRange> difficultyRanges9 = new ArrayList<>();
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
-
-        TestType testType9 = TestType.builder()
-                .testTypename("라인 코딩테스트 대비")
+        TestType testType10 = TestType.builder()
+                .testTypename("라인")
                 .testTime(180)
                 .problemCount(6)
                 .startDifficulty(DifficultyLevel.S4)
@@ -204,6 +218,36 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0.0)
                 .build();
 
-        testTypeRepository.save(testType9);
+        testTypeRepository.save(testType10);
+
+        // 쿠팡
+        List<DifficultyRange> difficultyRanges11 = new ArrayList<>();
+        TestType testType11 = TestType.builder()
+                .testTypename("쿠팡")
+                .testTime(180)
+                .problemCount(2)
+                .startDifficulty(DifficultyLevel.B1)
+                .endDifficulty(DifficultyLevel.B1)
+                .difficultyRanges(difficultyRanges11)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0.0)
+                .build();
+
+        testTypeRepository.save(testType11);
+
+        // 배달의민족
+        List<DifficultyRange> difficultyRanges12 = new ArrayList<>();
+        TestType testType12 = TestType.builder()
+                .testTypename("배달의민족")
+                .testTime(180)
+                .problemCount(2)
+                .startDifficulty(DifficultyLevel.B1)
+                .endDifficulty(DifficultyLevel.B1)
+                .difficultyRanges(difficultyRanges12)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0.0)
+                .build();
+
+        testTypeRepository.save(testType12);
     }
 }

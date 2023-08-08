@@ -6,6 +6,7 @@ import swm_nm.morandi.test.dto.TestTypeDto;
 public class TestTypeMapper {
     public static TestTypeDto convertToDto(TestType testType) {
         TestTypeDto testTypeDto = TestTypeDto.builder()
+                .testTypeId(testType.getTestTypeId())
                 .testTypename(testType.getTestTypename())
                 .testTime(testType.getTestTime())
                 .problemCount(testType.getProblemCount())
