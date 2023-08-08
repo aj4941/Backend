@@ -3,10 +3,7 @@ package swm_nm.morandi.member.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.graph.Graph;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swm_nm.morandi.logging.Logging;
@@ -17,6 +14,7 @@ import swm_nm.morandi.test.dto.TestRatingDto;
 import swm_nm.morandi.test.dto.TestRecordDto;
 import swm_nm.morandi.test.service.TestService;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.*;
 
@@ -40,7 +38,7 @@ public class MemberController {
 
     @PostMapping("/register-info")
     @Operation(summary = "사용자 최초 등록", description = "사용자 최초 등록시 백준 아이디가 필수적으로 필요합니다.")
-    public ResponseEntity<RegisterInfoDto> memberInitialize(@RequestBody RegisterInfoDto registerInfoDto) {
+    public ResponseEntity<RegisterInfoDto> memberInitialize(@RequestBody @Valid RegisterInfoDto registerInfoDto) {
         return new ResponseEntity<>(memberService.memberInitialize(registerInfoDto), HttpStatus.OK);
     }
     @GetMapping("/record-grass")

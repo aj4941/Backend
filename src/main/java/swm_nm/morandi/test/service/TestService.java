@@ -152,6 +152,16 @@ public class TestService {
             testRatingDtos.add(testRatingDto);
         });
 
+        if (testRatingDtos.size() == 0) {
+            TestRatingDto testRatingDto = TestRatingDto.builder()
+                    .testId(null)
+                    .testTypeName(null)
+                    .testDate(null)
+                    .testRating(null)
+                    .build();
+            testRatingDtos.add(testRatingDto);
+        }
+
         return testRatingDtos;
     }
 

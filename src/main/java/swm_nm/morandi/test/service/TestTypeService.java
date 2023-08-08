@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.exception.MorandiException;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TestTypeService {
 
@@ -146,6 +148,7 @@ public class TestTypeService {
                     bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
                 }
             } catch (JsonProcessingException e) {
+                log.error("JsonProcessingException : {}", e.getMessage());
                 throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
             }
         }
