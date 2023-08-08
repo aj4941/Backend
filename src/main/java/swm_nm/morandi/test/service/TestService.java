@@ -62,6 +62,7 @@ public class TestService {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
+        if (member.getCurrentTestId() == null) member.setCurrentTestId(-1L);
         if (member.getCurrentTestId() != -1) {
             Long currentTestId = member.getCurrentTestId();
             Test test = testRepository.findById(currentTestId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
