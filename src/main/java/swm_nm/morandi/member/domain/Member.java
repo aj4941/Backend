@@ -22,6 +22,7 @@ public class Member {
     private String bojId;
     private Long rating;
     private String thumbPhoto;
+    private Long currentTestId;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialInfo;
@@ -35,5 +36,9 @@ public class Member {
     }
     public void setRating(Long rating) {
         this.rating = rating;
+    }
+
+    public void setCurrentTestId(Long currentTestId) {
+        this.currentTestId = currentTestId;
     }
 }

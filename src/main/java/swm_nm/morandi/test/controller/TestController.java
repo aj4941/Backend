@@ -51,7 +51,7 @@ public class TestController {
     @PostMapping("/tests")
     @Operation(summary = "테스트 입장", description = "사용자가 테스트에 입장할 때 테스트 문제 세트를 구성합니다.")
     public ResponseEntity<TestStartResponseDto> testStart
-            (@RequestBody TestStartRequestDto testStartRequestDto) throws JsonProcessingException {
+            (@RequestBody TestStartRequestDto testStartRequestDto) {
         Long testTypeId = testStartRequestDto.getTestTypeId();
         return new ResponseEntity<>(testService.getTestStartsData(testTypeId), HttpStatus.OK);
     }
