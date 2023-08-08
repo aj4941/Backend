@@ -8,6 +8,7 @@ import swm_nm.morandi.problem.dto.DifficultyLevel;
 @AllArgsConstructor
 @Builder
 public class TestTypeDto {
+    private Long testTypeId;
     private String testTypename;
     private Integer testTime;
     private Integer problemCount;
