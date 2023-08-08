@@ -150,8 +150,10 @@ public class TestResultService {
                 .forEach(attemptProblem -> {
                     Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
                     Long minutes = duration.toMinutes();
-                    attemptProblem.setIsSolved(true);
-                    attemptProblem.setExecutionTime(minutes);
+                    if (minutes <= test.getTestTime()) {
+                        attemptProblem.setIsSolved(true);
+                        attemptProblem.setExecutionTime(minutes);
+                    }
                 });
     }
     @Transactional
