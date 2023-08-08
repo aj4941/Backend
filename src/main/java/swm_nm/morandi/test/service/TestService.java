@@ -104,11 +104,10 @@ public class TestService {
 
     public CurrentRatingDto getCurrentRatingDto() {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Pageable pageable = PageRequest.of(0, 1);
-        List<Test> recentTests = testRepository.findAllByMember_MemberIdOrderByTestDateDesc(memberId, pageable);
-        CurrentRatingDto currentRatingDto = new CurrentRatingDto();
-        if (recentTests.isEmpty()) currentRatingDto.setRating(1000L);
-        else currentRatingDto.setRating(recentTests.get(0).getTestRating());
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
+        CurrentRatingDto currentRatingDto = CurrentRatingDto.builder()
+                .rating(member.getRating())
+                .build();
         return currentRatingDto;
     }
 
