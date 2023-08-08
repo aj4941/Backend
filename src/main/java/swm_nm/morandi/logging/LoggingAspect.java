@@ -69,17 +69,24 @@ public class LoggingAspect {
                 ,mapper.writeValueAsString(request.getParameterMap())
                 ,msg);
 
-        Object result = pjp.proceed();
+        Object result = "";
+        try {
+            result = pjp.proceed();
+            return result;
+        }
+        finally {
+
+            log.info("[RESPONSE] [callFunction]: {}, [parameter]: {}, {}", callFunction,
+                    mapper.writeValueAsString(result),
+                    msg);
+
+            Sentry.configureScope(Scope::clear);
 
 
-        log.info("[RESPONSE] [callFunction]: {}, [parameter]: {}, {}", callFunction,
-                mapper.writeValueAsString(result),
-                msg);
+        }
 
-        Sentry.configureScope(Scope::clear);
+    }
 
-        return result;
-}
 //
 //
 //    @Before("pointCut()")
