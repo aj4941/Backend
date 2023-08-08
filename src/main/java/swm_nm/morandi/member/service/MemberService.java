@@ -47,6 +47,7 @@ public class MemberService {
                                         .thumbPhoto(googleUserDto.getPicture())
                                         .socialInfo(googleUserDto.getType())
                                         .rating(1000L)
+                                        .currentTestId(-1L)
                                         .build()
                         )
                 );

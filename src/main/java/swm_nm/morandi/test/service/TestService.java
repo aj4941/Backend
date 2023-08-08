@@ -17,6 +17,7 @@ import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.member.service.MemberService;
 import swm_nm.morandi.problem.domain.Problem;
 import swm_nm.morandi.problem.dto.BojProblem;
+import swm_nm.morandi.problem.repository.ProblemRepository;
 import swm_nm.morandi.test.domain.TestType;
 import swm_nm.morandi.test.dto.*;
 import swm_nm.morandi.test.repository.TestTypeRepository;
@@ -30,10 +31,13 @@ import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.testResult.service.TestResultService;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.max;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +51,8 @@ public class TestService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
+    private final ProblemRepository problemRepository;
+
     private final MemberService memberService;
 
     private final TestTypeService testTypeService;
@@ -54,20 +60,38 @@ public class TestService {
     private final TestResultService testResultService;
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Long testId = startTestByTestTypeId(testTypeId, memberId);
-        String bojId = memberService.getBojId(memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
+        if (member.getCurrentTestId() != -1) {
+            Long currentTestId = member.getCurrentTestId();
+            Test test = testRepository.findById(currentTestId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+            Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
+            test.setRemainingTime(max(2L, duration.getSeconds()));
+            List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(currentTestId);
+            List<Long> bojProblemIds = attemptProblems.stream().map(AttemptProblem::getProblem)
+                                                                .map(Problem::getBojProblemId).collect(Collectors.toList());
+            TestStartResponseDto testStartResponseDto
+                    = TestStartResponseDto.builder()
+                    .testId(currentTestId)
+                    .bojProblemIds(bojProblemIds)
+                    .build();
 
+            return testStartResponseDto;
+        }
+        Long testId = startTestByTestTypeId(testTypeId, memberId);
+        member.setCurrentTestId(testId);
+
+        String bojId = memberService.getBojId(memberId);
         List<BojProblem> bojProblems = new ArrayList<>();
         testTypeService.getProblemsByTestType(testTypeId, bojProblems);
         testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
 
-        List<Long> attemptProblemIds = testResultService.saveAttemptProblems(memberId, testId, bojProblems);
+        List<Long> bojProblemIds = testResultService.saveAttemptProblems(memberId, testId, bojProblems);
 
         TestStartResponseDto testStartResponseDto
                 = TestStartResponseDto.builder()
                 .testId(testId)
-                .attemptProblemIds(attemptProblemIds)
-                .bojProblems(bojProblems)
+                .bojProblemIds(bojProblemIds)
                 .build();
 
         return testStartResponseDto;
@@ -80,9 +104,10 @@ public class TestService {
         Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Test test = Test.builder()
-                .testDate(LocalDateTime.now())
+                .testDate(LocalDateTime.now()) // 테스트가 시작된 시간
                 .testTime(testType.getTestTime())
                 .problemCount(testType.getProblemCount())
+                .remainingTime(testType.getTestTime() * 60L)
                 .startDifficulty(testType.getStartDifficulty())
                 .endDifficulty(testType.getEndDifficulty())
                 .testTypename(testType.getTestTypename())

@@ -19,9 +19,10 @@ import java.time.LocalDateTime;
 public class Test {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long testId;
-    private LocalDateTime testDate;
-    private Integer testTime;
+    private LocalDateTime testDate; // 테스트 시작 시간
+    private Integer testTime; // minutes
     private Integer problemCount;
+    private Long remainingTime; // seconds
 
     @Enumerated(EnumType.STRING)
     private DifficultyLevel startDifficulty;
@@ -44,5 +45,8 @@ public class Test {
     }
     public void setTestStatus(TestStatus testStatus) {
         this.testStatus = testStatus;
+    }
+    public void setRemainingTime(Long remainingTime) {
+        this.remainingTime = remainingTime;
     }
 }

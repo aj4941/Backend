@@ -58,15 +58,15 @@ public class TestResultService {
     public List<Long> saveAttemptProblems(Long memberId, Long testId, List<BojProblem> bojProblems) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
         Test test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
-        List<Long> attemptProblemIds = new ArrayList<>();
+        List<Long> bojProblemIds = new ArrayList<>();
         for (BojProblem bojProblem : bojProblems) {
             Problem problem = problemRepository.findProblemByBojProblemId(bojProblem.getProblemId())
                     .orElseThrow(()-> {
                                 log.error("저장하려는 문제 정보를 찾지 못했습니다. 문제 번호: {}", bojProblem.getProblemId());
                                return new MorandiException(ProblemErrorCode.PROBLEM_NOT_FOUND);
-                    }
+                    });
 
-                    );
+            bojProblemIds.add(bojProblem.getProblemId());
 
             AttemptProblem attemptProblem = AttemptProblem.builder()
                     .isSolved(false)
@@ -78,9 +78,8 @@ public class TestResultService {
                     .build();
 
             attemptProblemRepository.save(attemptProblem);
-            attemptProblemIds.add(attemptProblem.getAttemptProblemId());
         }
-        return attemptProblemIds;
+        return bojProblemIds;
     }
 
     //TODO
@@ -107,6 +106,8 @@ public class TestResultService {
 
         //테스트 레이팅 저장
         test.setTestRating(calculateTestRating(member, testId));
+
+        member.setCurrentTestId(-1L);
     }
 
     private boolean isSolvedProblem(AttemptProblem attemptProblem, String bojId) {
