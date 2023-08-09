@@ -82,22 +82,22 @@ public class TestTypeService {
                         = algorithmProblemListRepository.findByProblem_ProblemId(problem.getProblemId());
                 List<Algorithm> algorithms = algorithmProblemLists.stream().map(AlgorithmProblemList::getAlgorithm).collect(Collectors.toList());
                 if (start <= problemLevel && problemLevel <= end) {
-                    long testTypeAlgorithmId = randomNumber + 1;
-                    for (Algorithm algorithm : algorithms) {
-                        if (algorithm.getAlgorithmId() == testTypeAlgorithmId)
-                            flag = true;
-                    }
-                    if (flag) {
+//                    long testTypeAlgorithmId = randomNumber + 1;
+//                    for (Algorithm algorithm : algorithms) {
+//                        if (algorithm.getAlgorithmId() == testTypeAlgorithmId)
+//                            flag = true;
+//                    }
+//                    if (flag) {
                         BojProblem bojProblem = BojProblem.builder()
                                 .testProblemId(index++)
                                 .problemId(problem.getBojProblemId())
                                 .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
                                 .levelToString(problem.getProblemDifficulty().getFullName()).build();
                         bojProblems.add(bojProblem);
-                        randomNumber = (randomNumber + 1) % 10;
+                        flag = true;
+//                        randomNumber = (randomNumber + 1) % 10;
                         break;
-                    }
-
+//                    }
                 }
             }
 
@@ -123,33 +123,44 @@ public class TestTypeService {
             String start = difficultyRange.getStart().getShortName();
             String end = difficultyRange.getEnd().getShortName();
             String apiUrl = "https://solved.ac/api/v3/search/problem";
-            String query = String.format("tier:%s..%s ~solved_by:%s solved:1000..", start, end, bojId);
-            WebClient webClient = WebClient.builder().build();
-            String jsonString = webClient.get()
-                    .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+            while (true) {
+                String query = testTypeId == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation solved:100..", start, end, bojId) :
+                        String.format("tier:%s..%s ~solved_by:%s solved:100.. solved:..3000", start, end, bojId);
+                WebClient webClient = WebClient.builder().build();
+                String jsonString = webClient.get()
+                        .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
 
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    JsonNode rootNode = mapper.readTree(jsonString);
+                    JsonNode itemsArray = rootNode.get("items");
+                    if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
+                        JsonNode firstItemNode = itemsArray.get(0);
+                        String title = firstItemNode.get("titleKo").asText();
+                        JsonNode titlesNode = firstItemNode.get("titles");
+                        if (titlesNode != null && titlesNode.isArray() && titlesNode.size() > 0) {
+                            JsonNode firstTitleNode = titlesNode.get(0);
+                            String language = firstTitleNode.get("language").asText();
+                            if ("en".equals(language))
+                                continue;
+                        }
 
-
-
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                JsonNode rootNode = mapper.readTree(jsonString);
-                JsonNode itemsArray = rootNode.get("items");
-                if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
-                    JsonNode firstProblem = itemsArray.get(0);
-                    BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
-                    BojProblem bojProblem = bojProblems.get((int) (index - 1));
-                    bojProblem.setProblemId(apiProblem.getProblemId());
-                    bojProblem.setLevel(apiProblem.getLevel());
-                    bojProblem.setTestProblemId(index++);
-                    bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
+                        JsonNode firstProblem = itemsArray.get(0);
+                        BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
+                        BojProblem bojProblem = bojProblems.get((int) (index - 1));
+                        bojProblem.setProblemId(apiProblem.getProblemId());
+                        bojProblem.setLevel(apiProblem.getLevel());
+                        bojProblem.setTestProblemId(index++);
+                        bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
+                        break;
+                    }
+                } catch (JsonProcessingException e) {
+                    log.error("JsonProcessingException : {}", e.getMessage());
+                    throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
                 }
-            } catch (JsonProcessingException e) {
-                log.error("JsonProcessingException : {}", e.getMessage());
-                throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
             }
         }
     }
