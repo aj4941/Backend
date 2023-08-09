@@ -143,12 +143,15 @@ public class DataLoader implements CommandLineRunner {
 
         // 삼성
         List<DifficultyRange> difficultyRanges7 = new ArrayList<>();
+        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G4));
+        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G1));
+
         TestType testType7 = TestType.builder()
                 .testTypename("삼성")
                 .testTime(180)
                 .problemCount(2)
-                .startDifficulty(DifficultyLevel.B1)
-                .endDifficulty(DifficultyLevel.B1)
+                .startDifficulty(DifficultyLevel.S1)
+                .endDifficulty(DifficultyLevel.G1)
                 .difficultyRanges(difficultyRanges7)
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0.0)
@@ -222,12 +225,16 @@ public class DataLoader implements CommandLineRunner {
 
         // 쿠팡
         List<DifficultyRange> difficultyRanges11 = new ArrayList<>();
+        difficultyRanges11.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S3));
+        difficultyRanges11.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
+        difficultyRanges11.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G5));
+        difficultyRanges11.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G3));
         TestType testType11 = TestType.builder()
                 .testTypename("쿠팡")
                 .testTime(180)
-                .problemCount(2)
-                .startDifficulty(DifficultyLevel.B1)
-                .endDifficulty(DifficultyLevel.B1)
+                .problemCount(4)
+                .startDifficulty(DifficultyLevel.S5)
+                .endDifficulty(DifficultyLevel.G3)
                 .difficultyRanges(difficultyRanges11)
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0.0)
@@ -235,14 +242,18 @@ public class DataLoader implements CommandLineRunner {
 
         testTypeRepository.save(testType11);
 
-        // 배달의민족
+        // 우아한형제들
         List<DifficultyRange> difficultyRanges12 = new ArrayList<>();
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G5));
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G4));
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G3));
         TestType testType12 = TestType.builder()
-                .testTypename("배달의민족")
+                .testTypename("우아한형제들")
                 .testTime(180)
-                .problemCount(2)
-                .startDifficulty(DifficultyLevel.B1)
-                .endDifficulty(DifficultyLevel.B1)
+                .problemCount(4)
+                .startDifficulty(DifficultyLevel.S4)
+                .endDifficulty(DifficultyLevel.G3)
                 .difficultyRanges(difficultyRanges12)
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0.0)
