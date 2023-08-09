@@ -24,8 +24,8 @@ public class DataLoader implements CommandLineRunner {
         // PK 1번 : 코딩테스트 대비 초급 (Small)
         List<DifficultyRange> difficultyRanges1 = new ArrayList<>();
         difficultyRanges1.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
-        difficultyRanges1.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.S5));
-        difficultyRanges1.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S3));
+        difficultyRanges1.add(new DifficultyRange(DifficultyLevel.B1, DifficultyLevel.S5));
+        difficultyRanges1.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
 
         TestType testType1 = TestType.builder()
                 .testTypename("코딩테스트 대비 초급 (Small)")
@@ -43,8 +43,8 @@ public class DataLoader implements CommandLineRunner {
         // PK 2번 : 코딩테스트 대비 중급 (Small)
         List<DifficultyRange> difficultyRanges2 = new ArrayList<>();
         difficultyRanges2.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.S5));
-        difficultyRanges2.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S2));
-        difficultyRanges2.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G4));
+        difficultyRanges2.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S2));
+        difficultyRanges2.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G4));
 
         TestType testType2 = TestType.builder()
                 .testTypename("코딩테스트 대비 중급 (Small)")
@@ -61,8 +61,8 @@ public class DataLoader implements CommandLineRunner {
 
         // PK 3번 : 코딩테스트 대비 고급 (Small)
         List<DifficultyRange> difficultyRanges3 = new ArrayList<>();
-        difficultyRanges3.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.G5));
-        difficultyRanges3.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G2));
+        difficultyRanges3.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S1));
+        difficultyRanges3.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G3));
         difficultyRanges3.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.P5));
 
         TestType testType3 = TestType.builder()
@@ -80,11 +80,11 @@ public class DataLoader implements CommandLineRunner {
 
         // PK 4번 : 코딩테스트 대비 초급 (Large)
         List<DifficultyRange> difficultyRanges4 = new ArrayList<>();
-        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
-        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
-        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B1, DifficultyLevel.S5));
-        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
-        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
+        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B4));
+        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B3));
+        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.S5));
+        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S4));
+        difficultyRanges4.add(new DifficultyRange(DifficultyLevel.S3, DifficultyLevel.S3));
 
         TestType testType4 = TestType.builder()
                 .testTypename("코딩테스트 대비 초급 (Large)")
@@ -102,10 +102,10 @@ public class DataLoader implements CommandLineRunner {
         // PK 5번 : 코딩테스트 대비 중급 (Large)
         List<DifficultyRange> difficultyRanges5 = new ArrayList<>();
         difficultyRanges5.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.S5));
-        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S3));
-        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.S3, DifficultyLevel.S1));
-        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G5));
-        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
+        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
+        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
+        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G5));
+        difficultyRanges5.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G4));
 
         TestType testType5 = TestType.builder()
                 .testTypename("코딩테스트 대비 중급 (Large)")
@@ -123,9 +123,9 @@ public class DataLoader implements CommandLineRunner {
         // PK 6번 : 코딩테스트 대비 고급 (Large)
         List<DifficultyRange> difficultyRanges6 = new ArrayList<>();
         difficultyRanges6.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S2));
-        difficultyRanges6.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G5));
-        difficultyRanges6.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G3));
-        difficultyRanges6.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G1));
+        difficultyRanges6.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G5));
+        difficultyRanges6.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G3));
+        difficultyRanges6.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
         difficultyRanges6.add(new DifficultyRange(DifficultyLevel.G1, DifficultyLevel.P5));
 
         TestType testType6 = TestType.builder()
@@ -143,8 +143,8 @@ public class DataLoader implements CommandLineRunner {
 
         // 삼성
         List<DifficultyRange> difficultyRanges7 = new ArrayList<>();
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G4));
-        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G1));
+        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G5));
+        difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G1));
 
         TestType testType7 = TestType.builder()
                 .testTypename("삼성")
@@ -161,9 +161,9 @@ public class DataLoader implements CommandLineRunner {
         // 네이버
         List<DifficultyRange> difficultyRanges8 = new ArrayList<>();
         difficultyRanges8.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G5));
+        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G4));
         difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
-        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
-        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.P5));
+        difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G1, DifficultyLevel.P5));
 
         TestType testType8 = TestType.builder()
                 .testTypename("네이버")
@@ -181,10 +181,10 @@ public class DataLoader implements CommandLineRunner {
         // 카카오
         List<DifficultyRange> difficultyRanges9 = new ArrayList<>();
         difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S3, DifficultyLevel.S2));
         difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G5));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
-        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G3));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G4));
+        difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G3));
         difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
         difficultyRanges9.add(new DifficultyRange(DifficultyLevel.G1, DifficultyLevel.P5));
 
@@ -205,10 +205,10 @@ public class DataLoader implements CommandLineRunner {
         List<DifficultyRange> difficultyRanges10 = new ArrayList<>();
         difficultyRanges10.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
         difficultyRanges10.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
-        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
-        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G5));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G4));
         difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
-        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
+        difficultyRanges10.add(new DifficultyRange(DifficultyLevel.G1, DifficultyLevel.G1));
 
         TestType testType10 = TestType.builder()
                 .testTypename("라인")
