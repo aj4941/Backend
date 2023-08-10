@@ -41,6 +41,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             if(e.getErrorCode().getHttpStatus()==(HttpStatus.UNAUTHORIZED)){
                 Cookie cookie = new Cookie("accessToken", null);
                 cookie.setMaxAge(0);
+                cookie.setDomain("morandi.co.kr");
                 cookie.setPath("/");
                 response.addCookie(cookie);
                 response.sendRedirect("http://morandi.co.kr/auth/signup");
