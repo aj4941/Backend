@@ -38,11 +38,12 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             log.error("{}, [typs]: {}, [parameter]: {}", msg, "CONTROLLER_REQUEST", objectMapper.writeValueAsString(request.getParameterMap()));
             //log
 
-            if(e.getErrorCode().getHttpStatus().equals(HttpStatus.UNAUTHORIZED)){
+            if(e.getErrorCode().getHttpStatus()==(HttpStatus.UNAUTHORIZED)){
                 Cookie cookie = new Cookie("accessToken", null);
                 cookie.setMaxAge(0);
                 cookie.setPath("/");
                 response.addCookie(cookie);
+                response.sendRedirect("http://morandi.co.kr/auth/signup");
             }
 
             setErrorResponse(response, e.getErrorCode());
