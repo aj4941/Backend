@@ -18,6 +18,7 @@ import swm_nm.morandi.exception.errorcode.ErrorCode;
 import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.response.ErrorResponse;
 
+import javax.servlet.http.Cookie;
 import java.net.URI;
 
 @RestControllerAdvice
@@ -35,8 +36,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         //log.error(message, e);
         Sentry.configureScope(Scope::clear);
 
+
+        //인증 에러 발생 시 로그인 페이지로 이동 시키기, 인증 에러가 아닐 경우에는 에러 메시지만 반환하기
         if (e.getErrorCode().getHttpStatus() ==HttpStatus.UNAUTHORIZED) {
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://morandi.co.kr/auth/signup")).build();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("http://morandi.co.kr/auth/signup"));
+
+            // 쿠키 생성
+            Cookie cookie = new Cookie("accessToken", null);
+            cookie.setMaxAge(0); // 쿠키 삭제
+            cookie.setPath("/");
+            cookie.setDomain("morandi.co.kr");
+            // 쿠키를 헤더에 추가
+            headers.add("Set-Cookie", cookie.toString());
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }
         return handleExceptionInternal(e.getErrorCode(),message);
 
