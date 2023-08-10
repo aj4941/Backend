@@ -2,6 +2,7 @@ package swm_nm.morandi.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -11,6 +12,7 @@ import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.response.ErrorResponse;
 
 import javax.servlet.FilterChain;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -35,6 +37,14 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             );
             log.error("{}, [typs]: {}, [parameter]: {}", msg, "CONTROLLER_REQUEST", objectMapper.writeValueAsString(request.getParameterMap()));
             //log
+
+            if(e.getErrorCode().getHttpStatus().equals(HttpStatus.UNAUTHORIZED)){
+                Cookie cookie = new Cookie("accessToken", null);
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
+
             setErrorResponse(response, e.getErrorCode());
         }
         catch (Exception e) {
