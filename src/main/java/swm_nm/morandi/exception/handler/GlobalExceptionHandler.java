@@ -10,11 +10,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.exception.errorcode.CommonErrorCode;
 import swm_nm.morandi.exception.errorcode.ErrorCode;
 import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.response.ErrorResponse;
+
+import java.net.URI;
 
 @RestControllerAdvice
 @Slf4j
@@ -30,6 +34,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String message = e.getMessage();
         //log.error(message, e);
         Sentry.configureScope(Scope::clear);
+
+        if (e.getErrorCode().getHttpStatus() ==HttpStatus.UNAUTHORIZED) {
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://morandi.co.kr/auth/signup")).build();
+        }
         return handleExceptionInternal(e.getErrorCode(),message);
 
 
