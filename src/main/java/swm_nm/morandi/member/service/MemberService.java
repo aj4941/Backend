@@ -43,7 +43,7 @@ public class MemberService {
                 .orElseGet(() -> memberRepository.save(
                                 Member.builder()
                                         .email(googleUserDto.getEmail())
-                                        .nickname(googleUserDto.getName())
+                                        .introduceInfo("")
                                         .thumbPhoto(googleUserDto.getPicture())
                                         .socialInfo(googleUserDto.getType())
                                         .rating(1000L)
@@ -85,7 +85,7 @@ public class MemberService {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
         MemberInfoDto memberInfoDto = new MemberInfoDto();
-        memberInfoDto.setNickname(member.getNickname());
+        memberInfoDto.setIntroduceInfo(member.getIntroduceInfo());
         memberInfoDto.setBojId(member.getBojId());
         return memberInfoDto;
     }
