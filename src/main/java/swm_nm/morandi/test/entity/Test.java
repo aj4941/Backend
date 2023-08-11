@@ -1,10 +1,11 @@
-package swm_nm.morandi.test.domain;
+package swm_nm.morandi.test.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.common.BaseEntity;
+import swm_nm.morandi.member.entity.Member;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.test.dto.TestStatus;
 
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Test {
+public class Test extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long testId;
     private LocalDateTime testDate; // 테스트 시작 시간

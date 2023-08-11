@@ -10,7 +10,7 @@ import swm_nm.morandi.auth.constants.SecurityConstants;
 import swm_nm.morandi.auth.response.TokenDto;
 import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.exception.MorandiException;
-import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.member.entity.Member;
 
 import java.security.Key;
 import java.util.Date;

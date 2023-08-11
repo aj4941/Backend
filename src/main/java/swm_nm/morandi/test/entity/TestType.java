@@ -1,10 +1,10 @@
-package swm_nm.morandi.test.domain;
+package swm_nm.morandi.test.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import swm_nm.morandi.problem.domain.Algorithm;
+import swm_nm.morandi.common.BaseEntity;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.dto.DifficultyRange;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestType {
+public class TestType extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,6 @@
 package swm_nm.morandi.test.mapper;
 
-import swm_nm.morandi.test.domain.Test;
+import swm_nm.morandi.test.entity.Test;
 import swm_nm.morandi.test.dto.TestDto;
 
 public class TestMapper {

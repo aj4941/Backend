@@ -3,11 +3,8 @@ package swm_nm.morandi.auth.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import swm_nm.morandi.member.domain.Role;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 

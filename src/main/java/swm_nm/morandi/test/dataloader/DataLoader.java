@@ -3,7 +3,7 @@ package swm_nm.morandi.test.dataloader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import swm_nm.morandi.test.domain.TestType;
+import swm_nm.morandi.test.entity.TestType;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.dto.DifficultyRange;
 import swm_nm.morandi.test.repository.TestTypeRepository;

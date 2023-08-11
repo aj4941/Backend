@@ -1,6 +1,5 @@
 package swm_nm.morandi.test.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,26 +7,24 @@ import org.springframework.stereotype.Service;
 import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.errorcode.MemberErrorCode;
-import swm_nm.morandi.exception.errorcode.ProblemErrorCode;
 import swm_nm.morandi.exception.errorcode.TestErrorCode;
 import swm_nm.morandi.exception.errorcode.TestTypeErrorCode;
-import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.member.entity.Member;
 import swm_nm.morandi.member.dto.CurrentRatingDto;
 import swm_nm.morandi.member.repository.MemberRepository;
 import swm_nm.morandi.member.service.MemberService;
-import swm_nm.morandi.problem.domain.Problem;
+import swm_nm.morandi.problem.entity.Problem;
 import swm_nm.morandi.problem.dto.BojProblem;
 import swm_nm.morandi.problem.repository.ProblemRepository;
-import swm_nm.morandi.test.domain.TestType;
+import swm_nm.morandi.test.entity.TestType;
 import swm_nm.morandi.test.dto.*;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
-import swm_nm.morandi.test.domain.Test;
+import swm_nm.morandi.test.entity.Test;
 import swm_nm.morandi.test.mapper.TestRecordMapper;
 import swm_nm.morandi.member.repository.AttemptProblemRepository;
 import swm_nm.morandi.test.repository.TestRepository;
 import swm_nm.morandi.testResult.request.AttemptProblemDto;
-import swm_nm.morandi.testResult.service.AttemptProblemService;
 import swm_nm.morandi.testResult.service.TestResultService;
 
 import javax.transaction.Transactional;
