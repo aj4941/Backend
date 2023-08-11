@@ -82,7 +82,7 @@ public class MemberController {
     @Operation(summary = "사용자 정보 수정", description = "사용자의 닉네임 또는 백준 아이디를 수정합니다.")
     public ResponseEntity<MemberInfoDto> editProfile(@RequestBody MemberInfoDto memberInfoDto) throws IOException {
 //      String thumbPhoto = memberService.editThumbPhoto(memberId, profileRequestDto.getThumbPhotoFile());
-        memberService.editProfile(memberInfoDto.getNickname(), memberInfoDto.getBojId());
+        memberService.editProfile(memberInfoDto.getIntroduceInfo(), memberInfoDto.getBojId());
         return new ResponseEntity(memberInfoDto, HttpStatus.OK);
     }
 

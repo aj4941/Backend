@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberInfoDto {
-    private String nickname;
+    private String introduceInfo;
     private String bojId;
 }
