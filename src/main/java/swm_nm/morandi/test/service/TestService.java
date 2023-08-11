@@ -67,19 +67,30 @@ public class TestService {
             Long currentTestId = member.getCurrentTestId();
             Test test = testRepository.findById(currentTestId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
             Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
-            test.setRemainingTime(max(2L, test.getTestTime() * 60 - duration.getSeconds()));
-            List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(currentTestId);
-            List<Long> bojProblemIds = attemptProblems.stream().map(AttemptProblem::getProblem)
-                                                                .map(Problem::getBojProblemId).collect(Collectors.toList());
-            TestStartResponseDto testStartResponseDto
-                    = TestStartResponseDto.builder()
-                    .testId(currentTestId)
-                    .bojProblemIds(bojProblemIds)
-                    .remainingTime(test.getRemainingTime())
-                    .build();
+            test.setRemainingTime(test.getTestTime() * 60 - duration.getSeconds());
+            if (test.getRemainingTime() > 0) { // 시간이 남았을경우 진행중인 테스트 반환
+                List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(currentTestId);
+                List<Long> bojProblemIds = attemptProblems.stream().map(AttemptProblem::getProblem)
+                        .map(Problem::getBojProblemId).collect(Collectors.toList());
+                TestStartResponseDto testStartResponseDto
+                        = TestStartResponseDto.builder()
+                        .testId(currentTestId)
+                        .bojProblemIds(bojProblemIds)
+                        .remainingTime(test.getRemainingTime())
+                        .build();
 
-            return testStartResponseDto;
+                return testStartResponseDto;
+            }
+            else { // 시간이 마감된 테스트 종료
+                TestCheckDto testCheckDto = TestCheckDto.builder()
+                        .testId(test.getTestId())
+                        .testTypeId(testTypeId)
+                        .bojId(member.getBojId())
+                        .build();
+                testResultService.testExit(testCheckDto);
+            }
         }
+
         Long testId = startTestByTestTypeId(testTypeId, memberId);
         Test test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         member.setCurrentTestId(testId);
