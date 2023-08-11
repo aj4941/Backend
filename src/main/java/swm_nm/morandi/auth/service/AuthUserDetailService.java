@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import swm_nm.morandi.auth.security.AuthDetails;
 import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.exception.MorandiException;
-import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.member.entity.Member;
 import swm_nm.morandi.member.repository.MemberRepository;
 
 @Service

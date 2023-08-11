@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -18,7 +17,7 @@ import swm_nm.morandi.auth.response.GoogleUserDto;
 import swm_nm.morandi.auth.response.TokenResponseDto;
 import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.errorcode.AuthErrorCode;
-import swm_nm.morandi.member.domain.SocialType;
+import swm_nm.morandi.member.entity.SocialType;
 
 @Service
 @Slf4j

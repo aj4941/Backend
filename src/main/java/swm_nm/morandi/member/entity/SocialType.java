@@ -1,4 +1,4 @@
-package swm_nm.morandi.member.domain;
+package swm_nm.morandi.member.entity;
 
 public enum SocialType {
     GOOGLE("google"),

@@ -1,9 +1,10 @@
 package swm_nm.morandi.testResult.entity;
 
 import lombok.*;
-import swm_nm.morandi.member.domain.Member;
-import swm_nm.morandi.problem.domain.Problem;
-import swm_nm.morandi.test.domain.Test;
+import swm_nm.morandi.common.BaseEntity;
+import swm_nm.morandi.member.entity.Member;
+import swm_nm.morandi.problem.entity.Problem;
+import swm_nm.morandi.test.entity.Test;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttemptProblem {
+public class AttemptProblem extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attemptProblemId;

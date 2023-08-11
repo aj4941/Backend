@@ -3,7 +3,7 @@ package swm_nm.morandi.auth.response;
 
 import lombok.Getter;
 import lombok.Setter;
-import swm_nm.morandi.member.domain.SocialType;
+import swm_nm.morandi.member.entity.SocialType;
 
 @Getter
 @Setter

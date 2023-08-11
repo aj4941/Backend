@@ -1,7 +1,7 @@
 package swm_nm.morandi.problem.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import swm_nm.morandi.problem.domain.TypeProblemList;
+import swm_nm.morandi.problem.entity.TypeProblemList;
 
 import java.util.List;
 
