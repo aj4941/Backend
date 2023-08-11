@@ -18,19 +18,21 @@ public class Member extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
     private String email;
-    private String nickname;
+    private String introduceInfo;
     private String bojId;
     private Long rating;
     private String thumbPhoto;
     private Long currentTestId;
+    private String githubUrl;
+    private String blogUrl;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialInfo;
     public void setBojId(String bojId) {
         this.bojId = bojId;
     }
-    public void editProfile(String nickname, String bojId) {
-        this.nickname = nickname;
+    public void editProfile(String introduceInfo, String bojId) {
+        this.introduceInfo = introduceInfo;
         this.bojId = bojId;
         // this.thumbPhoto = thumbPhoto;
     }
