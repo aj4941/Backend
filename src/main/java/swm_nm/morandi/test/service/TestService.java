@@ -176,7 +176,7 @@ public class TestService {
         tests.stream()
                 .filter(test -> test.getTestStatus() != TestStatus.IN_PROGRESS)
                 .forEach(test -> {
-            LocalDate testDate = LocalDate.from(test.getTestDate());
+            LocalDateTime testDate = test.getTestDate();
             String testTypename = test.getTestTypename();
             Long testRating = test.getTestRating();
             Long testId = test.getTestId();
