@@ -11,10 +11,14 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import swm_nm.morandi.auth.filter.CachedBodyHttpServletWrapper;
 import swm_nm.morandi.auth.security.SecurityUtils;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.BufferedReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -41,6 +45,7 @@ public class LoggingAspect {
     }
 
 
+//    @Around("execution(* *..*Controller.*(..)) && args(request,..)")
     @Around("bean(*Controller)")
     public Object controllerAroundLogging(ProceedingJoinPoint pjp) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -55,7 +60,7 @@ public class LoggingAspect {
         }
         user.setIpAddress(request.getRemoteAddr());
 
-        //Sentry 식별 사용자 젖ㅇ보 등록
+        //Sentry 식별 사용자 정보 등록
         Sentry.setUser(user);
 
         String callFunction = pjp.getSignature().getDeclaringTypeName() + "." + pjp.getSignature().getName();
@@ -65,10 +70,33 @@ public class LoggingAspect {
                 request.getRequestURL().toString()
         );
 
-        log.info("[REQUEST], [callFunction]: {}, [parameter]: {}, {}",callFunction
-                ,mapper.writeValueAsString(request.getParameterMap())
-                ,msg);
 
+        //GET 요청이 아닌 경우 Request Body를 로깅하기 위해 HttpServletRequestWrapper를 사용한다.
+        //이 때, HttpServletRequestWrapper는 Request Body를 한 번 읽으면 다시 읽을 수 없기 때문에
+        //읽은 내용을 저장해두고 다시 읽을 수 있도록 한다.
+        //Content-Type이 application/json인 경우에만 Request Body를 로깅한다.
+       if (!request.getMethod().equalsIgnoreCase("GET")&&request.getContentType() != null && request.getContentType().contains("application/json")) {
+
+           StringBuilder requestBody = new StringBuilder();
+           String line;
+           BufferedReader reader = request.getReader();
+
+           //BufferedReader를 이용해 Request Body를 읽는다.
+           while ((line = reader.readLine()) != null)
+               requestBody.append(line);
+
+           System.out.println("requestBody = " + requestBody);
+           log.info("[REQUEST], [{}]: {}, [RequestBody]: {},[Parameter]: {},  {}", callFunction,request.getMethod(),
+                   requestBody
+                   , mapper.writeValueAsString(request.getParameterMap())
+                   , msg);
+       }
+       //GET 요청의 경우 Parameter를 로깅한다.
+         else {
+           log.info("[REQUEST], [callFunction]: {}, [parameter]: {}, {}", callFunction
+                   , mapper.writeValueAsString(request.getParameterMap())
+                   , msg);
+       }
         Object result = "";
         try {
             result = pjp.proceed();
@@ -81,7 +109,6 @@ public class LoggingAspect {
                     msg);
 
             Sentry.configureScope(Scope::clear);
-
 
         }
 

@@ -14,11 +14,14 @@ public class FilterConfig extends SecurityConfigurerAdapter<DefaultSecurityFilte
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
+    private final RequestCachingFilter requestCachingFilter;
     //    private final AccessDeniedFilter accessDeniedFilter;
     @Override
     public void configure(HttpSecurity builder) {
         builder.addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
         builder.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+        builder.addFilterBefore(requestCachingFilter, JwtExceptionFilter.class);
+
 //        builder.addFilterBefore(accessDeniedFilter, FilterSecurityInterceptor.class);
     }
 }
