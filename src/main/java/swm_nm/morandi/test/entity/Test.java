@@ -21,7 +21,7 @@ public class Test extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long testId;
     private LocalDateTime testDate; // 테스트 시작 시간
-    private Integer testTime; // minutes
+    private Long testTime; // minutes
     private Integer problemCount;
     private Long remainingTime; // seconds
 
