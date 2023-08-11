@@ -3,9 +3,9 @@ package swm_nm.morandi.test.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
-import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.member.entity.Member;
 import swm_nm.morandi.member.repository.MemberRepository;
-import swm_nm.morandi.problem.domain.Problem;
+import swm_nm.morandi.problem.entity.Problem;
 import swm_nm.morandi.problem.dto.DifficultyLevel;
 import swm_nm.morandi.problem.repository.ProblemRepository;
 import swm_nm.morandi.test.dto.TestRecordDto;
@@ -39,7 +39,7 @@ class TestServiceTest {
                 .build();
         memberRepository.save(member);
         for (int i = 1; i <= 3; i++) {
-            swm_nm.morandi.test.domain.Test test = swm_nm.morandi.test.domain.Test.builder()
+            swm_nm.morandi.test.entity.Test test = swm_nm.morandi.test.entity.Test.builder()
                     .testDate(LocalDateTime.now().minusDays(i)) // Test dates for the last 3 days
                     .testTime(120) // Test duration of 2 hours (120 minutes)
                     .problemCount(5) // 5 problems in the test

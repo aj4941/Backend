@@ -1,6 +1,6 @@
 package swm_nm.morandi.test.mapper;
 
-import swm_nm.morandi.test.domain.TestType;
+import swm_nm.morandi.test.entity.TestType;
 import swm_nm.morandi.test.dto.TestTypeDto;
 
 public class TestTypeMapper {

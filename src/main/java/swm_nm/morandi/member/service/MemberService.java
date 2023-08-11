@@ -11,7 +11,7 @@ import swm_nm.morandi.auth.security.SecurityUtils;
 import swm_nm.morandi.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.exception.MorandiException;
 import swm_nm.morandi.exception.errorcode.MemberErrorCode;
-import swm_nm.morandi.member.domain.Member;
+import swm_nm.morandi.member.entity.Member;
 import swm_nm.morandi.member.dto.MemberInfoDto;
 import swm_nm.morandi.member.dto.RegisterInfoDto;
 import swm_nm.morandi.member.dto.ThumbURLDto;

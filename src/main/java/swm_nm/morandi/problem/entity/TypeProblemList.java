@@ -1,11 +1,11 @@
-package swm_nm.morandi.problem.domain;
+package swm_nm.morandi.problem.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import swm_nm.morandi.problem.domain.Problem;
-import swm_nm.morandi.test.domain.TestType;
+import swm_nm.morandi.common.BaseEntity;
+import swm_nm.morandi.test.entity.TestType;
 
 import javax.persistence.*;
 
@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TypeProblemList {
+public class TypeProblemList extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

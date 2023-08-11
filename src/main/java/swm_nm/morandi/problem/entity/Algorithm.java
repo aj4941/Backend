@@ -1,10 +1,9 @@
-package swm_nm.morandi.problem.domain;
-
+package swm_nm.morandi.problem.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import swm_nm.morandi.problem.dto.DifficultyLevel;
+import swm_nm.morandi.common.BaseEntity;
 
 import javax.persistence.*;
 
@@ -13,12 +12,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Problem {
+public class Algorithm extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long problemId;
-    private Long bojProblemId;
-
-    @Enumerated(EnumType.STRING)
-    private DifficultyLevel problemDifficulty;
+    private Long algorithmId;
+    private String algorithmName;
 }
