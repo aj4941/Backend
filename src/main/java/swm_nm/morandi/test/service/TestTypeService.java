@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 @Service
@@ -140,13 +141,11 @@ public class TestTypeService {
                     if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
                         JsonNode firstItemNode = itemsArray.get(0);
                         String title = firstItemNode.get("titleKo").asText();
-                        JsonNode titlesNode = firstItemNode.get("titles");
-                        if (titlesNode != null && titlesNode.isArray() && titlesNode.size() > 0) {
-                            JsonNode firstTitleNode = titlesNode.get(0);
-                            String language = firstTitleNode.get("language").asText();
-                            if ("en".equals(language))
-                                continue;
-                        }
+                        int alpha = (int) IntStream.range(0, 2).filter(i -> ('a' <= title.charAt(i) && title.charAt(i) <= 'z')
+                                || ('A' <= title.charAt(i) && title.charAt(i) <= 'Z')).count();
+
+                        if (alpha == 2)
+                            continue;
 
                         JsonNode firstProblem = itemsArray.get(0);
                         BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
