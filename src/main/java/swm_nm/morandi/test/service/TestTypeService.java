@@ -125,7 +125,7 @@ public class TestTypeService {
             String apiUrl = "https://solved.ac/api/v3/search/problem";
             while (true) {
                 String query = testTypeId == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation solved:100..", start, end, bojId) :
-                        String.format("tier:%s..%s ~solved_by:%s solved:100.. solved:..3000", start, end, bojId);
+                        String.format("tier:%s..%s ~solved_by:%s solved:200.. solved:..3000", start, end, bojId);
                 WebClient webClient = WebClient.builder().build();
                 String jsonString = webClient.get()
                         .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
