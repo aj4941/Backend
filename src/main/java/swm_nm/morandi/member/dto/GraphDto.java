@@ -11,5 +11,5 @@ import java.util.Map;
 @Builder
 public class GraphDto {
     private String algorithmName;
-    private Double solvedRate;
+    private Long solvedRate;
 }

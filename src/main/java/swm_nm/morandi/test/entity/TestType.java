@@ -34,12 +34,12 @@ public class TestType extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<DifficultyRange> difficultyRanges;
 
-    private Double averageCorrectAnswerRate;
+    private Long averageCorrectAnswerRate;
 
     private Integer numberOfTestTrial;
 
 
-    public void updateAverageCorrectAnswerRate(Double newTrialCorrectAnswerRate){
+    public void updateAverageCorrectAnswerRate(Long newTrialCorrectAnswerRate){
         this.averageCorrectAnswerRate =
                 (((this.averageCorrectAnswerRate * this.numberOfTestTrial) + newTrialCorrectAnswerRate)
                         /(++this.numberOfTestTrial));
