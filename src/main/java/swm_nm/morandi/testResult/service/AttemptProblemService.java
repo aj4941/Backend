@@ -63,13 +63,13 @@ public class AttemptProblemService {
 
     public List<GraphDto> getGraphDtos() {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Map<String, Integer> totalCount = new HashMap<>();
-        Map<String, Integer> Count = new HashMap<>();
+        Map<String, Long> totalCount = new HashMap<>();
+        Map<String, Long> Count = new HashMap<>();
         List<Algorithm> algorithms = algorithmRepository.findAll();
 
         algorithms.stream().map(Algorithm::getAlgorithmName).forEach(algorithmName -> {
-            totalCount.put(algorithmName, 0);
-            Count.put(algorithmName, 0);
+            totalCount.put(algorithmName, 0L);
+            Count.put(algorithmName, 0L);
         });
 
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByMember_MemberId(memberId);
@@ -82,17 +82,17 @@ public class AttemptProblemService {
                         algorithmProblemListRepository.findByProblem_ProblemId(problemId);
                 algorithmProblemLists.stream().map(algorithmProblemList ->
                         algorithmProblemList.getAlgorithm().getAlgorithmName()).forEach(algorithmName -> {
-                    int currentTotalCount = totalCount.getOrDefault(algorithmName, 0);
-                    int currentCount = Count.getOrDefault(algorithmName, 0);
-                    totalCount.put(algorithmName, currentTotalCount + 1);
+                    Long currentTotalCount = totalCount.getOrDefault(algorithmName, 0L);
+                    Long currentCount = Count.getOrDefault(algorithmName, 0L);
+                    totalCount.put(algorithmName, currentTotalCount + 1L);
                     if (attemptProblem.getIsSolved())
-                        Count.put(algorithmName, currentCount + 1);
+                        Count.put(algorithmName, currentCount + 1L);
                 });
             });
 
             algorithms.stream().map(Algorithm::getAlgorithmName).forEach(algorithmName -> {
-                Double solvedRate = totalCount.get(algorithmName) == 0 ? 0 :
-                        (double) Count.get(algorithmName) / (double) totalCount.get(algorithmName) * 100;
+                Long solvedRate = totalCount.get(algorithmName) == 0 ? 0L :
+                        Count.get(algorithmName) / totalCount.get(algorithmName) * 100L;
                 GraphDto graphDto = GraphDto.builder()
                         .algorithmName(algorithmName)
                         .solvedRate(solvedRate)
