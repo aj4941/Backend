@@ -92,7 +92,7 @@ public class AttemptProblemService {
 
             algorithms.stream().map(Algorithm::getAlgorithmName).forEach(algorithmName -> {
                 Long solvedRate = totalCount.get(algorithmName) == 0 ? 0L :
-                        Count.get(algorithmName) / totalCount.get(algorithmName) * 100L;
+                        Count.get(algorithmName) * 100L / totalCount.get(algorithmName);
                 GraphDto graphDto = GraphDto.builder()
                         .algorithmName(algorithmName)
                         .solvedRate(solvedRate)
