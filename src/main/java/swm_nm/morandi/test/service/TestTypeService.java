@@ -125,8 +125,8 @@ public class TestTypeService {
             String end = difficultyRange.getEnd().getShortName();
             String apiUrl = "https://solved.ac/api/v3/search/problem";
             while (true) {
-                String query = testTypeId == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation solved:200..", start, end, bojId) :
-                        String.format("tier:%s..%s ~solved_by:%s solved:200.. solved:..3000", start, end, bojId);
+                String query = testTypeId == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation ~tag:ad_hoc ~tag:constructive solved:200..", start, end, bojId) :
+                        String.format("tier:%s..%s ~solved_by:%s ~tag:ad_hoc ~tag:constructive solved:200.. solved:..3000", start, end, bojId);
                 WebClient webClient = WebClient.builder().build();
                 String jsonString = webClient.get()
                         .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
