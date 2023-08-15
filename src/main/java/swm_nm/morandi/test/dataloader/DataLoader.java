@@ -35,7 +35,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.S3)
                 .difficultyRanges(difficultyRanges1)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType1);
@@ -54,7 +54,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.G4)
                 .difficultyRanges(difficultyRanges2)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType2);
@@ -73,7 +73,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.P5)
                 .difficultyRanges(difficultyRanges3)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType3);
@@ -94,7 +94,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.S3)
                 .difficultyRanges(difficultyRanges4)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType4);
@@ -115,7 +115,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.G4)
                 .difficultyRanges(difficultyRanges5)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType5);
@@ -136,7 +136,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.P5)
                 .difficultyRanges(difficultyRanges6)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType6);
@@ -154,7 +154,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.G1)
                 .difficultyRanges(difficultyRanges7)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
         testTypeRepository.save(testType7);
 
@@ -173,7 +173,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.P5)
                 .difficultyRanges(difficultyRanges8)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType8);
@@ -196,7 +196,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.P5)
                 .difficultyRanges(difficultyRanges9)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType9);
@@ -218,7 +218,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.G1)
                 .difficultyRanges(difficultyRanges10)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType10);
@@ -237,7 +237,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.G3)
                 .difficultyRanges(difficultyRanges11)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType11);
@@ -256,7 +256,7 @@ public class DataLoader implements CommandLineRunner {
                 .endDifficulty(DifficultyLevel.G3)
                 .difficultyRanges(difficultyRanges12)
                 .numberOfTestTrial(0)
-                .averageCorrectAnswerRate(0.0)
+                .averageCorrectAnswerRate(0L)
                 .build();
 
         testTypeRepository.save(testType12);
