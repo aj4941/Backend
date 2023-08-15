@@ -102,7 +102,7 @@ public class TestResultService {
         long total = attemptProblems.size();
 
         //문제별 결과 목록 저장 및 변경된 정답률 업데이트
-        testType.updateAverageCorrectAnswerRate((double)correct / (double)total);
+        testType.updateAverageCorrectAnswerRate(correct / total);
 
         //테스트 레이팅 저장
         test.setTestRating(calculateTestRating(member, testId));
@@ -150,7 +150,7 @@ public class TestResultService {
                 .forEach(attemptProblem -> {
                     Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
                     Long minutes = duration.toMinutes();
-                    if (minutes <= test.getTestTime()) {
+                    if (!attemptProblem.getIsSolved() && minutes <= test.getTestTime()) {
                         attemptProblem.setIsSolved(true);
                         attemptProblem.setExecutionTime(minutes);
                     }
