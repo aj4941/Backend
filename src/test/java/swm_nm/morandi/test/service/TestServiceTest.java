@@ -33,7 +33,6 @@ class TestServiceTest {
     public void getTestRecord() {
         Member member = Member.builder()
                 .email("john@example.com")
-                .nickname("JohnDoe")
                 .bojId("john_boj_id")
                 .rating(1800L)
                 .build();
@@ -41,7 +40,7 @@ class TestServiceTest {
         for (int i = 1; i <= 3; i++) {
             swm_nm.morandi.test.entity.Test test = swm_nm.morandi.test.entity.Test.builder()
                     .testDate(LocalDateTime.now().minusDays(i)) // Test dates for the last 3 days
-                    .testTime(120) // Test duration of 2 hours (120 minutes)
+                    .testTime(120L) // Test duration of 2 hours (120 minutes)
                     .problemCount(5) // 5 problems in the test
                     .startDifficulty(DifficultyLevel.B5) // Starting difficulty level: Bronze 5
                     .endDifficulty(DifficultyLevel.S3) // Ending difficulty level: Silver 3
