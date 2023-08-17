@@ -150,7 +150,7 @@ public class TestResultService {
                 .forEach(attemptProblem -> {
                     Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
                     Long minutes = duration.toMinutes();
-                    if (!attemptProblem.getIsSolved() && minutes <= test.getTestTime()) {
+                    if (minutes <= test.getTestTime()) {
                         attemptProblem.setIsSolved(true);
                         attemptProblem.setExecutionTime(minutes);
                     }
