@@ -19,6 +19,7 @@ import swm_nm.morandi.problem.repository.ProblemRepository;
 import swm_nm.morandi.test.entity.TestType;
 import swm_nm.morandi.test.dto.*;
 import swm_nm.morandi.test.repository.TestTypeRepository;
+import swm_nm.morandi.test.scheduler.TestScheduler;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
 import swm_nm.morandi.test.entity.Test;
 import swm_nm.morandi.test.mapper.TestRecordMapper;
@@ -55,6 +56,9 @@ public class TestService {
     private final TestTypeService testTypeService;
 
     private final TestResultService testResultService;
+
+    private final TestScheduler testScheduler;
+
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(
@@ -89,6 +93,15 @@ public class TestService {
         }
 
         Long testId = startTestByTestTypeId(testTypeId, memberId);
+
+        TestCheckDto testCheckDto = TestCheckDto.builder()
+                .testId(testId)
+                .testTypeId(testTypeId)
+                .bojId(member.getBojId())
+                .build();
+
+        testScheduler.addTest(testCheckDto);
+
         Test test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         member.setCurrentTestId(testId);
 
