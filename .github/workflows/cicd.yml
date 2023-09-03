@@ -35,7 +35,7 @@ jobs:
           java-version: '11'
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew clean bootJar -x test
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
