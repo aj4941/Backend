@@ -1,3 +1,4 @@
+.env
 src/main/resources/application.yml
 src/main/java/swm_nm/morandi/auth/constants/SecurityConstants.java
 
