@@ -73,6 +73,8 @@ jobs:
             docker-compose down
             
             # ECR에서 이미지 가져오기
-            docker pull ${ECR_REPOSITORY}:${TAG}
+            # docker pull public.ecr.aws/s7z8j0e6/morandi-backend:latest
+            # docker pull ${ECR_REPOSITORY}:${TAG}
+            docker pull ${ECR_REPOSITORY}:latest
             
             docker-compose up -d
