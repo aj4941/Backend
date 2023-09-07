@@ -15,7 +15,7 @@ env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: morandi-backend
   ECR_REGISTRY: public.ecr.aws/s7z8j0e6/morandi-backend
-  EC2_HOST: 3.38.102.140
+  EC2_HOST: 52.78.131.218
   GITHUB_SHA: ${{ github.sha }}
 
 permissions:
@@ -35,6 +35,11 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
+
+      # GitHub Secret에서 application-prod.yml 내용을 불러와 파일로 저장
+      - name: Create application-prod.yml from GitHub Secret
+        run: echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+
 
       - name: Build with Gradle
         run: ./gradlew clean bootJar -x test
