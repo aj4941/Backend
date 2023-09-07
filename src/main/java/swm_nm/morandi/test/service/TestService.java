@@ -20,6 +20,7 @@ import swm_nm.morandi.test.entity.TestType;
 import swm_nm.morandi.test.dto.*;
 import swm_nm.morandi.test.repository.TestTypeRepository;
 import swm_nm.morandi.test.scheduler.TestScheduler;
+import swm_nm.morandi.testMemberTempCode.service.TempCodeService;
 import swm_nm.morandi.testResult.entity.AttemptProblem;
 import swm_nm.morandi.test.entity.Test;
 import swm_nm.morandi.test.mapper.TestRecordMapper;
@@ -57,18 +58,28 @@ public class TestService {
 
     private final TestResultService testResultService;
 
+    private final TempCodeService tempCodeService;
+
     private final TestScheduler testScheduler;
 
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
-        if (member.getCurrentTestId() == null) member.setCurrentTestId(-1L);
+
+        // 현재 테스트가 진행중인지 확인
+        if (member.getCurrentTestId() == null)
+                member.setCurrentTestId(-1L);
+
+        // 현재 테스트가 진행중이라면
         if (member.getCurrentTestId() != -1) {
             Long currentTestId = member.getCurrentTestId();
             Test test = testRepository.findById(currentTestId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+
+            // 테스트 시작 시간과 현재 시간을 비교하여 남은 시간 계산
             Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
             test.setRemainingTime(test.getTestTime() * 60 - duration.getSeconds());
+
             if (test.getRemainingTime() > 0) { // 시간이 남았을경우 진행중인 테스트 반환
                 List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(currentTestId);
                 List<Long> bojProblemIds = attemptProblems.stream().map(AttemptProblem::getProblem)
@@ -80,6 +91,7 @@ public class TestService {
                         .remainingTime(test.getRemainingTime())
                         .build();
 
+                // 테스트 시작에 대한 ResponseDto 반환
                 return testStartResponseDto;
             }
             else { // 시간이 마감된 테스트 종료
@@ -91,8 +103,9 @@ public class TestService {
                 testResultService.testExit(testCheckDto);
             }
         }
-
-        Long testId = startTestByTestTypeId(testTypeId, memberId);
+        // 현재 진행중인 테스트가 없을 경우 아래 로직 진행
+        Test test = startTestByTestTypeId(testTypeId, memberId);
+        Long testId = test.getTestId();
 
         TestCheckDto testCheckDto = TestCheckDto.builder()
                 .testId(testId)
@@ -101,8 +114,6 @@ public class TestService {
                 .build();
 
         testScheduler.addTest(testCheckDto);
-
-        Test test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         member.setCurrentTestId(testId);
 
         String bojId = memberService.getBojId(memberId);
@@ -110,8 +121,17 @@ public class TestService {
         testTypeService.getProblemsByTestType(testTypeId, bojProblems);
         testTypeService.getProblemsByApi(testTypeId, bojId, bojProblems);
 
+
+
         List<Long> bojProblemIds = testResultService.saveAttemptProblems(memberId, testId, bojProblems);
 
+        // 테스트 시작시 코드 캐시 초기화
+        tempCodeService.initTempCodeCacheWhenTestStart(test);
+
+        //TODO
+        // 테스트 시작에 대한 ResponseDto 반환시
+        // 백준의 ID가 아니라 attemptProblemID도 함께 반환하도록
+        // 이후 주기적으로 Redis에 코드를 저장할 때 attemptProblemId를 반환하게
         TestStartResponseDto testStartResponseDto
                 = TestStartResponseDto.builder()
                 .testId(testId)
@@ -124,7 +144,7 @@ public class TestService {
 
 
     @Transactional
-    public Long startTestByTestTypeId(Long testTypeId, Long memberId) {
+    public Test startTestByTestTypeId(Long testTypeId, Long memberId) {
         TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(()-> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
@@ -142,7 +162,8 @@ public class TestService {
                 .build();
 
         testRepository.save(test);
-        return test.getTestId();
+
+        return test;
     }
     public List<TestRecordDto> getTestRecordDtosLatest() {
         Long memberId = SecurityUtils.getCurrentMemberId();
