@@ -46,8 +46,13 @@ dependencies {
     implementation group: 'io.sentry', name: 'sentry-logback', version: '6.27.0'
     implementation 'io.sentry:sentry-spring-boot-starter:6.27.0'
 
+    //spring security
+
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
