@@ -14,8 +14,8 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: morandi-backend
-  ECR_REGISTRY: public.ecr.aws/s7z8j0e6/morandi-backend
-  EC2_HOST: 52.78.131.218
+  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  EC2_HOST: ${{ secrets.EC2_HOST }}
   GITHUB_SHA: ${{ github.sha }}
 
 permissions:
@@ -59,10 +59,10 @@ jobs:
         run: docker build -t morandi-backend .
 
       - name: Tag Docker Image
-        run: docker tag morandi-backend:latest public.ecr.aws/s7z8j0e6/morandi-backend:latest
+        run: docker tag morandi-backend:latest ${{ env.ECR_REGISTRY }}:latest
 
       - name: Push Docker Image to ECR
-        run: docker push public.ecr.aws/s7z8j0e6/morandi-backend:latest
+        run: docker push ${{ env.ECR_REGISTRY }}:latest
 
       - name: appleboy SSH and Deploy to EC2
         uses: appleboy/ssh-action@master # ssh 접속하는 오픈소스
@@ -74,12 +74,13 @@ jobs:
           port: 22
           script: |
             export TAG=${{env.GITHUB_SHA}}
+            export ECR_REGISTRY=${{env.ECR_REGISTRY}}
             cd /home/ubuntu/morandi-backend
             
             docker-compose down
             
             # ECR에서 이미지 가져오기
-            echo ${ env.ECR_REGISTRY }
-            docker pull public.ecr.aws/s7z8j0e6/morandi-backend:latest
+            
+            docker pull $ECR_REGISTRY:latest
             
             docker-compose up -d
