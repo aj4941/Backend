@@ -37,9 +37,8 @@ jobs:
 
       # GitHub Secret에서 application-dev.yml 내용을 불러와 파일로 저장
       # 로컬용 Docker image는 MAC에서 주로 사용할 예정이기 때문에 ARM Base image를 사용합니다.
-
       - name: Create application-dev.yml from GitHub Secret
-        run:
+        run: |
           echo "${{ secrets.APPLICATION_DEV_YML }}" > src/main/resources/application.yml
           # 로컬용 ARM Base Image를 사용하는 Dockerfile로 변경
           echo "${{ secrets.DOCKERFILE_FOR_DEV }}" > Dockerfile
