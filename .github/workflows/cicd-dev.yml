@@ -58,12 +58,11 @@ jobs:
       - name: Login to Public ECR
         run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/s7z8j0e6
 
-      - name: Build Docker Image
-        run: docker build -t morandi-backend-dev .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
-      - name: Tag Docker Image
-        run: docker tag morandi-backend-dev:latest ${{ env.ECR_REGISTRY }}:latest
-
-      - name: Push Docker Image to ECR
-        run: docker push ${{ env.ECR_REGISTRY }}:latest
+      - name: Build and Push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build --platform linux/arm64 -t ${{ env.ECR_REGISTRY  }}:latest --push .
 
