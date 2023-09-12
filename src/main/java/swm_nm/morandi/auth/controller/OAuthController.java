@@ -2,6 +2,7 @@ package swm_nm.morandi.auth.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,12 @@ import java.net.URI;
 public class OAuthController {
 
 
+    @Value("${app.domain}")
+    private String domain;
+
+    @Value("${app.redirectUri}")
+    private String redirectUri;
+
     private final LoginService loginService;
 
     //Authorization Code도 모두 가져오는 경우에 사용하는 callback api
@@ -31,7 +38,7 @@ public class OAuthController {
         Cookie jwtCookie = new Cookie("accessToken", accessToken);
         jwtCookie.setHttpOnly(true);
 
-        jwtCookie.setDomain("morandi.co.kr");; // 최상위 도메인 설정
+        jwtCookie.setDomain(domain);; // 최상위 도메인 설정
         jwtCookie.setPath("/");   // 이거 사용해
 
         jwtCookie.setMaxAge(24 * 60 * 60); //쿠키 24시간
@@ -39,7 +46,7 @@ public class OAuthController {
 
         response.addCookie(jwtCookie);
 
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://morandi.co.kr/dashboard")).build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUri)).build();
     }
 
     //개발자 모드에서는 redirect를 하지 않고 access Token을 가져오는 api
