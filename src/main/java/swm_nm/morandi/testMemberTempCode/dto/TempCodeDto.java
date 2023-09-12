@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TempCodeDto {
     public String testId;
-    public String attemptProblemId;
+    public String problemNumber;
     public String code;
 }
