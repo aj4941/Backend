@@ -97,8 +97,10 @@ jobs:
                 echo "Docker Compose failed."
                 exit 1
               fi
-              exit
-              ENDSSH
+              exit 0
+            ENDSSH
             
-            # SSH 터널을 종료
-            kill $(lsof -t -i:8080)
+            # 8080 포트를 사용하는 프로세스가 있는지 확인 후 종료
+            if [ -n "$(lsof -t -i:8080)" ]; then
+              kill $(lsof -t -i:8080)
+            fi
