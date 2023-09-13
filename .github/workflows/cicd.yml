@@ -83,6 +83,7 @@ jobs:
               docker-compose down
               docker pull $ECR_REGISTRY:latest || exit 1
               docker-compose up -d || exit 1
+              sleep 1
             ENDSSH
             sleep 1
             
