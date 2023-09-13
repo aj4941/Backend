@@ -75,9 +75,6 @@ jobs:
           port: 22
           envs: EC2_BACKEND_HOST,GITHUB_SHA,ECR_REGISTRY
           script: |
-#            export EC2_BACKEND_HOST=${{env.EC2_BACKEND_HOST}} # EC2 인스턴스의 Private IP
-#            export TAG=${{env.GITHUB_SHA}}
-#            export ECR_REGISTRY=${{env.ECR_REGISTRY}}
             
             # 첫 번째 SSH 접속으로 터널을 생성
             ssh -i ~/.ssh/swm-nm-morandi.pem -f -N -L 8080:$EC2_BACKEND_HOST:22 ubuntu@$EC2_BACKEND_HOST
@@ -96,37 +93,3 @@ jobs:
             
             # SSH 터널을 종료
             kill $(lsof -t -i:8080)
-
-
-#            export EC2_BACKEND_HOST=${{env.EC2_BACKEND_HOST}} # EC2 인스턴스의 Private IP
-#
-#            ssh -i ~/.ssh/swm-nm-morandi.pem ubuntu@$EC2_BACKEND_HOST & SSH_TUNNEL_PID=$!
-#            if [ -z "$SSH_TUNNEL_PID" ]; then
-#              echo "SSH Tunnel failed to start. Exiting."
-#              exit 1
-#            fi
-#
-#
-#
-#            echo "SSH Tunnel PID: $SSH_TUNNEL_PID"
-#            # SSH 터널이 완전히 열릴 시간을 주기 위해 5초 대기
-#            sleep 5
-#
-#            export TAG=${{env.GITHUB_SHA}}
-#            export ECR_REGISTRY=${{env.ECR_REGISTRY}}
-#            cd /home/ubuntu/morandi-backend
-#
-#            docker-compose down
-#
-#            # ECR에서 이미지 가져오기
-#
-#            docker pull $ECR_REGISTRY:latest
-#
-#            docker-compose up -d
-#
-#            if [ -e /proc/$SSH_TUNNEL_PID ]; then
-#              kill $SSH_TUNNEL_PID
-#            else
-#              echo "SSH Tunnel process does not exist. Something went wrong."
-#              exit 1
-#            fi
