@@ -29,9 +29,9 @@ public class TempCodeController {
     @Operation(summary = "저장된 코드를 확인합니다", description = "테스트 중일 때, 문제 번호를 바꿀 때 코드 정보를\n" +
             "testId와 attemptProblemId를 이용하여 가져온다. \n")
     public ResponseEntity<TempCode> getTempCode(@RequestParam String testId,
-                                                @RequestParam String attemptProblemId){
+                                                @RequestParam String problemNumber){
 
-        String key =String.format("tests:%s:problems:%s",testId, attemptProblemId);
+        String key =String.format("testId:%s:problemNumber:%s",testId, problemNumber);
 
         return new ResponseEntity<>(tempCodeService.getTempCode(key), HttpStatus.OK);
 

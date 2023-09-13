@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +28,13 @@ public class TempCodeService {
     // key를 생성 후, 시작 시점에 tempCode를 저장하여 TTL을 설정한다
     // 그래서 시험이 끝나는 시간을 보장할 수 있음
     public void initTempCodeCacheWhenTestStart(Test test){
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTest(test);
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTestOrderByAttemptProblemIdAsc(test);
         LocalDateTime now = LocalDateTime.now();
+        AtomicInteger i = new AtomicInteger(1);
 
         attemptProblems.forEach(attemptProblem-> {
-            String key = generateKey(test, attemptProblem);
+            String key = generateKey(test, i.getAndIncrement());
+
             //끝나는 시간
             LocalDateTime endTime = now.plusMinutes(test.getTestTime());
             Duration duration = Duration.between(now, endTime);
@@ -76,10 +79,10 @@ public class TempCodeService {
         );
     }
 
-    public String generateKey(Test test, AttemptProblem attemptProblem) {
-        return String.format("tests:%s:problems:%s",test.getTestId(), attemptProblem.getAttemptProblemId());
+    public String generateKey(Test test, int problemNumber) {
+        return String.format("testId:%s:problemNumber:%s",test.getTestId(), problemNumber);
     }
     public String generateKey(TempCodeDto tempCodeDto) {
-        return String.format("tests:%s:problems:%s", tempCodeDto.testId, tempCodeDto.attemptProblemId);
+        return String.format("testId:%s:problemNumber:%s", tempCodeDto.testId, tempCodeDto.getProblemNumber());
     }
 }
