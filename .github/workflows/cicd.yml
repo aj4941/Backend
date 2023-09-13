@@ -75,36 +75,17 @@ jobs:
           port: 22
           envs: EC2_BACKEND_HOST,GITHUB_SHA,ECR_REGISTRY
           script: |
-            
-            # 첫 번째 SSH 접속으로 터널을 생성
             ssh -i ~/.ssh/swm-nm-morandi.pem -f -N -L 9000:$EC2_BACKEND_HOST:22 -o StrictHostKeyChecking=no ubuntu@$EC2_BACKEND_HOST
-
-            
-            # SSH 터널이 완전히 열릴 시간을 주기 위해 대기
             sleep 5
-            
-            # 원격 서버에서 도커 관련 작업 수행
-            ssh -p 9000 -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no -tt ubuntu@localhost << ENDSSH
-              set -e  # 에러가 발생하면 스크립트 종료
+            ssh -p 9000 -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no ubuntu@localhost <<ENDSSH
+              set -x
               cd /home/ubuntu/morandi-backend
               docker-compose down
-              docker pull $ECR_REGISTRY:latest
-              
-              if [ $? -eq 0 ]; then
-                echo "Docker pull executed successfully."
-                docker-compose up -d
-                if [ $? -eq 0 ]; then
-                  echo "Docker Compose executed successfully."
-                else
-                  echo "Docker Compose failed."
-                  exit 1
-                fi
-              else
-                echo "Docker pull failed."
-                exit 1
-              fi
-            ENDSSH # SSH 접속 종료
-            # SSH 터널 종료
+              docker pull $ECR_REGISTRY:latest || exit 1
+              docker-compose up -d || exit 1
+            ENDSSH
+            sleep 1
+            
 
       - name: Additional Tasks after SSH session ends. # SSH 세션이 종료된 후 추가 작업
         run: |
