@@ -74,7 +74,6 @@ jobs:
           key: ${{ secrets.SSH_SECRET_ACCESS_KEY }}
           port: 22
           envs: EC2_BACKEND_HOST,GITHUB_SHA,ECR_REGISTRY
-          script_stop: true
           script: |
             
             # 첫 번째 SSH 접속으로 터널을 생성
@@ -104,12 +103,10 @@ jobs:
                 echo "Docker pull failed."
                 exit 1
               fi
-              exit 0
-            ENDSSH
-            
-            # 종료
+            ENDSSH # SSH 접속 종료
+            # SSH 터널 종료
 
-      - name: Additional Tasks after SSH session ends.
+      - name: Additional Tasks after SSH session ends. # SSH 세션이 종료된 후 추가 작업
         run: |
           if [ ! "$(sudo lsof -t -i :9000)" ]; then
             echo "No process is using port 9000"
