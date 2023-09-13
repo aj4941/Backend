@@ -75,22 +75,4 @@ jobs:
           port: 22
           envs: EC2_BACKEND_HOST,GITHUB_SHA,ECR_REGISTRY
           script: |
-            ssh -i ~/.ssh/swm-nm-morandi.pem -f -N -L 9000:$EC2_BACKEND_HOST:22 -o StrictHostKeyChecking=no ubuntu@$EC2_BACKEND_HOST
-            sleep 5
-            ssh -p 9000 -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no ubuntu@localhost <<ENDSSH
-              set -x
-              cd /home/ubuntu/morandi-backend
-              docker-compose down
-              docker pull $ECR_REGISTRY:latest || exit 1
-              docker-compose up -d || exit 1
-              sleep 1
-            ENDSSH
-            sleep 1
-            
-
-      - name: Additional Tasks after SSH session ends. # SSH 세션이 종료된 후 추가 작업
-        run: |
-          if [ ! "$(sudo lsof -t -i :9000)" ]; then
-            echo "No process is using port 9000"
-          else
-            echo "Killing process on
+            ssh -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no ubuntu@$EC2_BACKEND_HOST 'bash /home/ubuntu/morandi-backend/deploy.sh'
