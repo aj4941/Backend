@@ -85,20 +85,26 @@ jobs:
             sleep 5
             
             # 원격 서버에서 도커 관련 작업 수행
-            ssh -p 9000 -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no -tt ubuntu@localhost 'bash -s' << ENDSSH
-            set -e
-            cd /home/ubuntu/morandi-backend
-            docker-compose down
-            docker pull public.ecr.aws/s7z8j0e6/morandi-backend:latest
-            docker-compose up -d
-          
-            if [ $? -eq 0 ]; then
-              echo "Docker Compose executed successfully."
-            else
-              echo "Docker Compose failed."
-              exit 1
-            fi
-            exit 0
+            ssh -p 9000 -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no -tt ubuntu@localhost << ENDSSH
+              set -e  # 에러가 발생하면 스크립트 종료
+              cd /home/ubuntu/morandi-backend
+              docker-compose down
+              docker pull $ECR_REGISTRY:latest
+              
+              if [ $? -eq 0 ]; then
+                echo "Docker pull executed successfully."
+                docker-compose up -d
+                if [ $? -eq 0 ]; then
+                  echo "Docker Compose executed successfully."
+                else
+                  echo "Docker Compose failed."
+                  exit 1
+                fi
+              else
+                echo "Docker pull failed."
+                exit 1
+              fi
+              exit 0
             ENDSSH
             
             # 종료
