@@ -77,14 +77,15 @@ jobs:
           script: |
             
             # 첫 번째 SSH 접속으로 터널을 생성
-            ssh -i ~/.ssh/swm-nm-morandi.pem -f -N -L 8080:$EC2_BACKEND_HOST:22 ubuntu@$EC2_BACKEND_HOST
+            ssh -i ~/.ssh/swm-nm-morandi.pem -f -N -L 8080:$EC2_BACKEND_HOST:22 -o StrictHostKeyChecking=no ubuntu@$EC2_BACKEND_HOST
+
             
             # SSH 터널이 완전히 열릴 시간을 주기 위해 대기
             sleep 5
             
             # 원격 서버에서 도커 관련 작업 수행
-            ssh -p 8080 -i ~/.ssh/swm-nm-morandi.pem ubuntu@localhost << ENDSSH
-              
+            ssh -p 8080 -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no -tt ubuntu@localhost << ENDSSH
+            
               cd /home/ubuntu/morandi-backend
               docker-compose down
               docker pull $ECR_REGISTRY:latest
