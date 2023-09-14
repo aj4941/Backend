@@ -56,7 +56,7 @@ public class TestController {
     @PostMapping("/tests/output")
     @Operation(summary = "코드 실행 결과값 반환", description = "사용자가 특정 코드를 실행할 경우 결과값을 제공합니다.")
     public ResponseEntity<OutputDto> getOutputResult
-            (@RequestBody TestInputData testInputData) throws IOException, InterruptedException {
+            (@RequestBody TestInputData testInputData) throws Exception {
         return new ResponseEntity(testTypeService.runCode(testInputData), HttpStatus.OK);
     }
 }
