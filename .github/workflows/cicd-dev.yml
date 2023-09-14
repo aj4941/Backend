@@ -5,18 +5,16 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: CICD Pipeline
+name: Dev ECR image deploy Pipeline
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "dev" ]
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: morandi-backend
-  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-  EC2_BASTION_HOST: ${{ secrets.EC2_BASTION_HOST }}
-  EC2_BACKEND_HOST: ${{ secrets.EC2_BACKEND_HOST }} # EC2 인스턴스의 Private IP
+  ECR_REPOSITORY: morandi-backend-dev
+  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY_DEV }}
   GITHUB_SHA: ${{ github.sha }}
 
 permissions:
@@ -37,9 +35,13 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
-      # GitHub Secret에서 application-prod.yml 내용을 불러와 파일로 저장
-      - name: Create application-prod.yml from GitHub Secret
-        run: echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+      # GitHub Secret에서 application-dev.yml 내용을 불러와 파일로 저장
+      # 로컬용 Docker image는 MAC에서 주로 사용할 예정이기 때문에 ARM Base image를 사용합니다.
+      - name: Create application-dev.yml from GitHub Secret
+        run: |
+          echo "${{ secrets.APPLICATION_DEV_YML }}" > src/main/resources/application.yml
+          # 로컬용 ARM Base Image를 사용하는 Dockerfile로 변경
+          echo '${{ secrets.DOCKERFILE_FOR_DEV }}' > Dockerfile
 
 
       - name: Build with Gradle
@@ -56,23 +58,26 @@ jobs:
       - name: Login to Public ECR
         run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/s7z8j0e6
 
-      - name: Build Docker Image
-        run: docker build -t morandi-backend .
 
-      - name: Tag Docker Image
-        run: docker tag morandi-backend:latest ${{ env.ECR_REGISTRY }}:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Push Docker Image to ECR
-        run: docker push ${{ env.ECR_REGISTRY }}:latest
-
-      - name: appleboy SSH and Deploy to EC2
-        uses: appleboy/ssh-action@master # ssh 접속하는 오픈소스
+          # 캐시 복원
+      - name: Cache Docker layers
+        uses: actions/cache@v2
         with:
-          host: ${{ env.EC2_BASTION_HOST }}
-          debug: true
-          username: ubuntu
-          key: ${{ secrets.SSH_SECRET_ACCESS_KEY }}
-          port: 22
-          envs: EC2_BACKEND_HOST,GITHUB_SHA,ECR_REGISTRY
-          script: |
-            ssh -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no ubuntu@$EC2_BACKEND_HOST 'bash /home/ubuntu/morandi-backend/deploy.sh'
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+
+      - name: Build and Push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache \
+            --platform linux/arm64 \
+            -t ${{ env.ECR_REGISTRY  }}:latest \
+            --push .
