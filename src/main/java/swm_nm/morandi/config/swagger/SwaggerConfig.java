@@ -20,7 +20,7 @@ public class SwaggerConfig {
                 .groupName("member-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.member.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.member.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -32,7 +32,7 @@ public class SwaggerConfig {
                 .groupName("test-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.test.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -44,7 +44,7 @@ public class SwaggerConfig {
                 .groupName("test-result-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.testResult.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testResult.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -56,7 +56,7 @@ public class SwaggerConfig {
                 .groupName("temp-code-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.testMemberTempCode.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testMemberTempCode.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
