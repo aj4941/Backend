@@ -38,7 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         //인증 에러 발생 시 로그인 페이지로 이동 시키기, 인증 에러가 아닐 경우에는 에러 메시지만 반환하기
         if (e.getErrorCode().getHttpStatus() ==HttpStatus.UNAUTHORIZED) {
             HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create("https://morandi.co.kr/auth/signup"));
+            headers.setLocation(URI.create("https://morandi.co.kr/signup"));
 
             // 쿠키 생성
             Cookie cookie = new Cookie("accessToken", null);
