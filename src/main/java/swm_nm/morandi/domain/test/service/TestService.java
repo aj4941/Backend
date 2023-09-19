@@ -155,6 +155,7 @@ public class TestService {
                 .endDifficulty(testType.getEndDifficulty())
                 .testTypename(testType.getTestTypename())
                 .testRating(null)
+                .originRating(null)
                 .testStatus(TestStatus.IN_PROGRESS)
                 .member(member)
                 .build();
