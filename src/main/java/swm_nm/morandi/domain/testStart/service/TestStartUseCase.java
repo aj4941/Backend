@@ -119,7 +119,7 @@ public class TestStartUseCase {
                 .build();
     }
 
-    private static void extracted(Tests test) {
+    private void extracted(Tests test) {
         Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
         test.setRemainingTime(test.getTestTime() * 60 - duration.getSeconds());
     }
