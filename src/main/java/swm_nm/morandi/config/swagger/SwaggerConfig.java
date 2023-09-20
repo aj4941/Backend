@@ -29,34 +29,34 @@ public class SwaggerConfig {
     @Bean
     public Docket testApi() {
         return new Docket(DocumentationType.OAS_30)
-                .groupName("test-api")
+                .groupName("test-pre-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.preTest.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
     }
 
     @Bean
-    public Docket testResultApi() {
+    public Docket testOngoingApi() {
         return new Docket(DocumentationType.OAS_30)
-                .groupName("test-result-api")
+                .groupName("test-ongoing-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testResult.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.ongoingTest.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
     }
 
     @Bean
-    public Docket tempCodeApi() {
+    public Docket testPostApi() {
         return new Docket(DocumentationType.OAS_30)
-                .groupName("temp-code-api")
+                .groupName("test-post-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testMemberTempCode.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.postTest.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
