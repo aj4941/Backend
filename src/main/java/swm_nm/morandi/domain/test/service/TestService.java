@@ -50,8 +50,6 @@ public class TestService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
-    private final ProblemRepository problemRepository;
-
     private final MemberService memberService;
 
     private final TestTypeService testTypeService;
@@ -128,7 +126,7 @@ public class TestService {
         // 테스트 시작시 코드 캐시 초기화
         tempCodeService.initTempCodeCacheWhenTestStart(test);
 
-        //TODO
+        // TODO
         // 테스트 시작에 대한 ResponseDto 반환시
         // 백준의 ID가 아니라 attemptProblemID도 함께 반환하도록
         // 이후 주기적으로 Redis에 코드를 저장할 때 attemptProblemId를 반환하게
@@ -157,6 +155,7 @@ public class TestService {
                 .endDifficulty(testType.getEndDifficulty())
                 .testTypename(testType.getTestTypename())
                 .testRating(null)
+                .originRating(null)
                 .testStatus(TestStatus.IN_PROGRESS)
                 .member(member)
                 .build();
