@@ -27,20 +27,20 @@ public class GetGraphService {
     private final AttemptProblemRepository attemptProblemRepository;
 
     private final AlgorithmProblemListRepository algorithmProblemListRepository;
-    public java.util.List<GraphDto> getGraphDtos() {
+    public List<GraphDto> getGraphDtos() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Map<String, Long> totalCount = new HashMap<>();
         Map<String, Long> Count = new HashMap<>();
-        java.util.List<Algorithm> algorithms = algorithmRepository.findAll();
+        List<Algorithm> algorithms = algorithmRepository.findAll();
 
         algorithms.stream().map(Algorithm::getAlgorithmName).forEach(algorithmName -> {
             totalCount.put(algorithmName, 0L);
             Count.put(algorithmName, 0L);
         });
 
-        java.util.List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByMember_MemberId(memberId);
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByMember_MemberId(memberId);
 
-        java.util.List<GraphDto> graphDtos = new ArrayList<>();
+        List<GraphDto> graphDtos = new ArrayList<>();
         if (!attemptProblems.isEmpty()) {
             attemptProblems.forEach(attemptProblem -> {
                 Long problemId = attemptProblem.getProblem().getProblemId();

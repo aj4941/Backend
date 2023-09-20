@@ -55,7 +55,7 @@ public class TestRecordController {
     }
 
     @GetMapping("/test-info/{testId}")
-    @Operation(summary = "테스트 상세 보기", description = "특정 테스트의 상세보기를 클릭한 경우 테스트 상세 기록을 보여줍니다.")
+    @Operation(summary = "사용자 테스트 기록 상세 보기", description = "사용자가 진행한 특정 테스트의 상세보기를 클릭한 경우 테스트 상세 기록을 보여줍니다.")
     public ResponseEntity<TestRecordDto> testRecordInfo(@PathVariable Long testId) {
         return new ResponseEntity<>(testDetailsService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
     }

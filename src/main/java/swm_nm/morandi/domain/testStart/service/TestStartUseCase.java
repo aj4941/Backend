@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.problem.entity.Problem;
+import swm_nm.morandi.domain.testExit.entity.TestType;
 import swm_nm.morandi.domain.testExit.service.TestExitService;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
+import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
 import swm_nm.morandi.domain.testStart.dto.TestStartResponseDto;
 import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
 import swm_nm.morandi.domain.testExit.entity.Tests;
@@ -35,7 +37,7 @@ import static java.lang.Math.max;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TestStartService {
+public class TestStartUseCase {
 
     private final AddTestService addTestService;
 
@@ -43,7 +45,7 @@ public class TestStartService {
 
     private final SaveProblemsService saveProblemsService;
 
-    private final TempCodeService tempCodeService;
+    private final TempCodeInitializer tempCodeInitializer;
 
     private final MemberRepository memberRepository;
 
@@ -57,12 +59,15 @@ public class TestStartService {
 
     private final TestExitService testExitService;
 
+    private final TestTypeRepository testTypeRepository;
+
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        // 현재 테스트가 진행중인지 확인
+        //TODO Redis 이용하여
+        // 현재 테스트가 진행중인지 확인하도록
         if (member.getCurrentTestId() == null)
             member.setCurrentTestId(-1L);
 
@@ -82,43 +87,36 @@ public class TestStartService {
             }
         }
         // 현재 진행중인 테스트가 없을 경우 아래 로직 진행
-        Tests test = addTestService.startTestByTestTypeId(testTypeId, memberId);
-        Long testId = test.getTestId();
+        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+        Tests test = addTestService.startTestByTestTypeId(testType, member);
 
         String bojId = memberInfoService.getMemberInfo().getBojId();
         List<BojProblem> bojProblems = new ArrayList<>();
 
-        getProblemsService.getProblemsByTestType(testTypeId, bojProblems);
-        getProblemsService.getProblemsByApi(testTypeId, bojId, bojProblems);
+        getProblemsService.getProblemsByTestType(testType, bojProblems);
+        getProblemsService.getProblemsByApi(testType, bojId, bojProblems);
 
-        saveProblemsService.saveAttemptProblems(memberId, testId, bojProblems);
+        saveProblemsService.saveAttemptProblems(member, test, bojProblems);
 
         // 테스트 시작시 코드 캐시 초기화
-        tempCodeService.initTempCodeCacheWhenTestStart(test);
+        tempCodeInitializer.initTempCodeCacheWhenTestStart(test);
 
-        // TODO
-        // 테스트 시작에 대한 ResponseDto 반환시
-        // 백준의 ID가 아니라 attemptProblemID도 함께 반환하도록
-        // 이후 주기적으로 Redis에 코드를 저장할 때 attemptProblemId를 반환하게
-
-        TestStartResponseDto testStartResponseDto = getTestStartResponseDto(test, testId, bojProblems);
+        TestStartResponseDto testStartResponseDto = getTestStartResponseDto(test, bojProblems);
 
         return testStartResponseDto;
     }
 
-    private static TestStartResponseDto getTestStartResponseDto(Tests test, Long testId, List<BojProblem> bojProblems) {
+    private static TestStartResponseDto getTestStartResponseDto(Tests test, List<BojProblem> bojProblems) {
         List<Long> bojProblemIds = new ArrayList<>();
         for (BojProblem bojProblem : bojProblems) {
             bojProblemIds.add(bojProblem.getProblemId());
         }
 
-        TestStartResponseDto testStartResponseDto
-                = TestStartResponseDto.builder()
-                .testId(testId)
+        return TestStartResponseDto.builder()
+                .testId(test.getTestId())
                 .bojProblemIds(bojProblemIds)
                 .remainingTime(test.getRemainingTime())
                 .build();
-        return testStartResponseDto;
     }
 
     private static void extracted(Tests test) {

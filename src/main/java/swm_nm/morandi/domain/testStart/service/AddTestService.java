@@ -32,9 +32,7 @@ public class AddTestService {
 
     private final TestScheduler testScheduler;
     @Transactional
-    public Tests startTestByTestTypeId(Long testTypeId, Long memberId) {
-        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(()-> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
-        Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
+    public Tests startTestByTestTypeId(TestType testType, Member member) {
 
         Tests test = Tests.builder()
                 .testDate(LocalDateTime.now()) // 테스트가 시작된 시간
@@ -53,7 +51,7 @@ public class AddTestService {
         Long testId = test.getTestId();
         TestCheckDto testCheckDto = TestCheckDto.builder()
                 .testId(testId)
-                .testTypeId(testTypeId)
+                .testTypeId(testType.getTestTypeId())
                 .bojId(member.getBojId())
                 .build();
 

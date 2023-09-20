@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SaveTempCodeService {
+public class TempCodeService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -50,5 +50,11 @@ public class SaveTempCodeService {
     }
     public String generateKey(TempCodeDto tempCodeDto) {
         return String.format("testId:%s:problemNumber:%s", tempCodeDto.testId, tempCodeDto.getProblemNumber());
+    }
+
+    public TempCode getTempCode(String key) {
+        return Optional.ofNullable((TempCode) redisTemplate.opsForValue().get(key)).orElseThrow(
+                () -> new MorandiException(TestErrorCode.KEY_NOT_FOUND)
+        );
     }
 }

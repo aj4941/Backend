@@ -25,6 +25,12 @@ public class TestDetailsService {
     private final AttemptProblemRepository attemptProblemRepository;
 
     public TestRecordDto getTestRecordDtoByTestId(Long testId) {
+
+        //TODO
+        //여기를 DB두번접근하지말고
+        // attemptProblemList에서 testId가 뭐 X인
+        // AttemptProblemList를 가져오도록 쿼리 짜면 DB 한 번으로 개선될 듯?
+
         Tests test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         TestRecordDto testRecordDto = TestRecordMapper.convertToDto(test);
         List<AttemptProblem> attemptProblems

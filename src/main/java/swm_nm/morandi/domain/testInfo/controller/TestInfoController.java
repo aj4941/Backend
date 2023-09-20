@@ -42,7 +42,7 @@ public class TestInfoController {
         return new ResponseEntity<>(companyTestInfoService.getCompanyTestTypeDtos(), HttpStatus.OK);
     }
     @GetMapping("/{testTypeId}")
-    @Operation(summary = "특정 테스트 정보", description = "사용자가 원하는 테스트를 눌렀을 때 상세 테스트 정보를 제공합니다.")
+    @Operation(summary = "테스트 상세 정보", description = "사용자가 원하는 테스트를 눌렀을 때 상세 테스트 정보를 제공합니다.")
     public ResponseEntity<TestTypeDto> getTestTypeInfo(@PathVariable Long testTypeId) {
         return new ResponseEntity<>(testTypeInfoService.getTestTypeDto(testTypeId), HttpStatus.OK);
     }

@@ -35,9 +35,7 @@ public class SaveProblemsService {
 
     private final AttemptProblemRepository attemptProblemRepository;
     @Transactional
-    public List<Long> saveAttemptProblems(Long memberId, Long testId, List<BojProblem> bojProblems) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Tests test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+    public List<Long> saveAttemptProblems(Member member, Tests test, List<BojProblem> bojProblems) {
         List<Long> bojProblemIds = new ArrayList<>();
         for (BojProblem bojProblem : bojProblems) {
             Problem problem = problemRepository.findProblemByBojProblemId(bojProblem.getProblemId())

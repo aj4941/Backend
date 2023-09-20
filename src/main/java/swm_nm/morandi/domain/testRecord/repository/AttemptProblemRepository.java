@@ -1,6 +1,8 @@
 package swm_nm.morandi.domain.testRecord.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import swm_nm.morandi.domain.testExit.entity.Tests;
 import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
 

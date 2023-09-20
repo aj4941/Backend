@@ -17,10 +17,9 @@ import swm_nm.morandi.domain.problem.entity.TypeProblemList;
 import swm_nm.morandi.domain.problem.repository.AlgorithmProblemListRepository;
 import swm_nm.morandi.domain.problem.repository.TypeProblemListRepository;
 import swm_nm.morandi.domain.testExit.entity.TestType;
-import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
+
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
-import swm_nm.morandi.global.exception.errorcode.TestTypeErrorCode;
 
 import java.util.List;
 import java.util.Random;
@@ -32,15 +31,13 @@ import java.util.stream.IntStream;
 @Slf4j
 public class GetProblemsService {
 
-    private final TestTypeRepository testTypeRepository;
 
     private final TypeProblemListRepository typeProblemListRepository;
 
     private final AlgorithmProblemListRepository algorithmProblemListRepository;
 
-    public void getProblemsByTestType(Long testTypeId, List<BojProblem> bojProblems) {
-        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
-        List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testTypeId);
+    public void getProblemsByTestType(TestType testType, List<BojProblem> bojProblems) {
+        List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testType.getTestTypeId());
         List<Problem> problems = typeProblemLists.stream().map(TypeProblemList::getProblem).collect(Collectors.toList());
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         Random random = new Random();
@@ -85,8 +82,7 @@ public class GetProblemsService {
         }
     }
 
-    public void getProblemsByApi(Long testTypeId, String bojId, List<BojProblem> bojProblems) {
-        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+    public void getProblemsByApi(TestType testType, String bojId, List<BojProblem> bojProblems) {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
@@ -98,7 +94,7 @@ public class GetProblemsService {
             String end = difficultyRange.getEnd().getShortName();
             String apiUrl = "https://solved.ac/api/v3/search/problem";
             while (true) {
-                String query = testTypeId == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation ~tag:ad_hoc ~tag:constructive ~tag:geometry ~tag:number_theory ~tag:math solved:200..", start, end, bojId) :
+                String query = testType.getTestTypeId() == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation ~tag:ad_hoc ~tag:constructive ~tag:geometry ~tag:number_theory ~tag:math solved:200..", start, end, bojId) :
                         String.format("tier:%s..%s ~solved_by:%s ~tag:ad_hoc ~tag:constructive ~tag:geometry ~tag:number_theory ~tag:simulation ~tag:math solved:200.. solved:..5000", start, end, bojId);
                 WebClient webClient = WebClient.builder().build();
                 String jsonString = webClient.get()
