@@ -6,7 +6,6 @@ import swm_nm.morandi.domain.auth.response.GoogleUserDto;
 import swm_nm.morandi.domain.auth.response.TokenDto;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.AuthErrorCode;
-import swm_nm.morandi.domain.member.service.MemberService;
 
 
 @Service
@@ -14,7 +13,7 @@ import swm_nm.morandi.domain.member.service.MemberService;
 public class LoginService {
 
     private final OAuthServiceFactory oAuthServiceFactory;
-    private final MemberService memberService;
+    private final MemberLoginService memberService;
 
     public TokenDto login(String type, String authorization_code, Boolean isDev){
 

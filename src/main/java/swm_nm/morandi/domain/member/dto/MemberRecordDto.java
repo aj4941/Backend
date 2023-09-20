@@ -1,7 +1,7 @@
 package swm_nm.morandi.domain.member.dto;
 
 import lombok.*;
-import swm_nm.morandi.domain.test.dto.TestRatingDto;
+import swm_nm.morandi.domain.testRecord.dto.TestRatingDto;
 
 import java.util.List;
 
