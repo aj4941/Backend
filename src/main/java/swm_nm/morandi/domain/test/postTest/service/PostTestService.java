@@ -102,10 +102,10 @@ public class PostTestService {
                 .count();
         long total = attemptProblems.size();
 
-        //문제별 결과 목록 저장 및 변경된 정답률 업데이트
+        // 문제별 결과 목록 저장 및 변경된 정답률 업데이트
         testType.updateAverageCorrectAnswerRate(correct / total);
 
-        //테스트 레이팅 저장
+        // 테스트 레이팅 저장
         test.setTestRating(calculateTestRating(member, testId));
 
         member.setCurrentTestId(-1L);
@@ -182,9 +182,12 @@ public class PostTestService {
     public Long calculateTestRating(Member member, Long testId) {
         List<AttemptProblem> attemptProblems
                 = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
-
+        Tests test = testRepository.findById(testId)
+                .orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+        Integer problemCount = test.getProblemCount();
+        long rating = getRating(problemCount);
+        long addRating = 0L;
         Long memberRating = member.getRating();
-        long rating = 0L;
         boolean allSolved = true;
         if (!attemptProblems.isEmpty()) {
             for (AttemptProblem attemptProblem : attemptProblems) {
@@ -192,23 +195,36 @@ public class PostTestService {
                     Problem problem = attemptProblem.getProblem();
                     DifficultyLevel problemDifficulty = problem.getProblemDifficulty();
                     long value = DifficultyLevel.getRatingByValue(problemDifficulty);
-                    value -= attemptProblem.getExecutionTime();
-                    value = max(value, 50);
-                    rating += value;
+                    value -= attemptProblem.getExecutionTime() / 2;
+                    value = max(value, 20L);
+                    addRating += value;
                 }
                 else
                     allSolved = false;
             }
         }
-        long resultRating = (memberRating * 4 + rating) / 5;
+        rating = (addRating == 0) ? 500L : rating + addRating;
+        long resultRating = (memberRating * 4 + rating) / 5; // 사용자 현재 레이팅 반영
         if (allSolved) memberRating = max(memberRating, resultRating);
         else memberRating = resultRating;
         member.setRating(memberRating);
+        test.setOriginRating(rating); // 순수 테스트 레이팅 결과
         return memberRating;
+    }
+    private static long getRating(Integer problemCount) {
+        long rating = 0L;
+        if (problemCount == 2) rating = 1460L;
+        if (problemCount == 3) rating = 1390L;
+        if (problemCount == 4) rating = 1320L;
+        if (problemCount == 5) rating = 1250L;
+        if (problemCount == 6) rating = 1180L;
+        if (problemCount == 7) rating = 1110L;
+        return rating;
     }
 
     public void saveEachCodeinAttemptProblems(AttemptCodeDto attemptCodeDto) {
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(attemptCodeDto.getTestId());
+        List<AttemptProblem> attemptProblems =
+                attemptProblemRepository.findAttemptProblemsByTest_TestId(attemptCodeDto.getTestId());
         if(attemptProblems.isEmpty()) {
             log.error("attemptCodeDto TestId = {}, ", attemptCodeDto.getTestId());
             throw new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND);

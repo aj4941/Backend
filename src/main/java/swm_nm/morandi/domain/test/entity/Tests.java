@@ -32,7 +32,8 @@ public class Tests extends BaseEntity {
     private DifficultyLevel endDifficulty;
 
     private String testTypename;
-    private Long testRating;
+    private Long testRating; // 사용자 레이팅에 반영된 결과 레이팅
+    private Long originRating; // 순수 테스트 레이팅
 
     @Enumerated(EnumType.STRING)
     private TestStatus testStatus;
@@ -41,6 +42,9 @@ public class Tests extends BaseEntity {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
+    public void setOriginRating(Long originRating) {
+        this.originRating = originRating;
+    }
     public void setTestRating(Long testRating) {
         this.testRating = testRating;
     }

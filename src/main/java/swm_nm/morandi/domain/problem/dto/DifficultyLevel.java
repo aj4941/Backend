@@ -36,14 +36,14 @@ public enum DifficultyLevel {
         return -1;
     }
 
-    public static int getRatingByValue(DifficultyLevel level) {
-        int rating = 100;
-        for (int i = 0; i < DifficultyLevel.values().length; i++) {
-            if (i % 5 == 0) rating += 100;
-            if (DifficultyLevel.values()[i] == level)
-                return rating;
-            rating += 20;
-        }
+    public static long getRatingByValue(DifficultyLevel level) {
+        int levelByValue = getLevelByValue(level);
+        if (levelByValue <= 4) return 60;
+        if (levelByValue <= 7) return 90;
+        if (levelByValue <= 10) return 130;
+        if (levelByValue <= 12) return 200;
+        if (levelByValue <= 14) return 260;
+        if (levelByValue <= 16) return 320;
         return -1;
     }
 }
