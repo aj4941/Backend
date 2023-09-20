@@ -10,8 +10,6 @@ import swm_nm.morandi.domain.member.dto.*;
 import swm_nm.morandi.domain.member.service.MemberService;
 import swm_nm.morandi.domain.test.dto.TestRatingDto;
 import swm_nm.morandi.domain.test.dto.TestRecordDto;
-import swm_nm.morandi.domain.test.postTest.service.AttemptProblemService;
-import swm_nm.morandi.domain.test.preTest.service.PreTestService;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -26,9 +24,6 @@ import java.util.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final AttemptProblemService attemptProblemService;
-    private final PreTestService preTestService;
-
     @GetMapping("/check")
     @Operation(summary = "백준 id 등록되어있는지 확인", description ="백준 id가 등록되어있는지 확인합니다. 200반환 시 정상," +
             "  \"code\": \"BAEKJOON_ID_NULL\" 반환 시 백준 id가 등록되지 않은 상태, 토큰 오류 시 403")
@@ -44,23 +39,23 @@ public class MemberController {
     @GetMapping("/record-grass")
     @Operation(summary = "사용자 히트맵 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 히트맵 분석 데이터를 보여줍니다.")
     public ResponseEntity<List<GrassDto>> memberRecordGrass() {
-        return new ResponseEntity<>(attemptProblemService.getGrassDtos(), HttpStatus.OK);
+        return new ResponseEntity<>(memberService.getGrassDtos(), HttpStatus.OK);
     }
     @GetMapping("/record-graph")
     @Operation(summary = "사용자 그래프 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 그래프 분석 데이터를 보여줍니다.")
     public ResponseEntity<List<GraphDto>> memberRecordGraph() {
-        return new ResponseEntity<>(attemptProblemService.getGraphDtos(), HttpStatus.OK);
+        return new ResponseEntity<>(memberService.getGraphDtos(), HttpStatus.OK);
     }
     @GetMapping("/record-test-rating")
     @Operation(summary = "사용자 레이팅 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 레이팅 분석 데이터를 보여줍니다.")
     public ResponseEntity<List<TestRatingDto>> memberRecordTestRating() {
-        return new ResponseEntity<>(preTestService.getTestRatingDtos(), HttpStatus.OK);
+        return new ResponseEntity<>(memberService.getTestRatingDtos(), HttpStatus.OK);
     }
 
     @GetMapping("/record-current-rating")
     @Operation(summary = "사용자 현재 레이팅", description = "사용자가 가지고 있는 현재 레이팅을 보여줍니다.")
     public ResponseEntity<CurrentRatingDto> memberCurrentRating() {
-        return new ResponseEntity<>(preTestService.getCurrentRatingDto(), HttpStatus.OK);
+        return new ResponseEntity<>(memberService.getCurrentRatingDto(), HttpStatus.OK);
     }
 
     @GetMapping("/info")
@@ -89,6 +84,6 @@ public class MemberController {
     @GetMapping("/test-info/{testId}")
     @Operation(summary = "테스트 상세 보기", description = "특정 테스트의 상세보기를 클릭한 경우 테스트 상세 기록을 보여줍니다.")
     public ResponseEntity<TestRecordDto> testRecordInfo(@PathVariable Long testId) {
-        return new ResponseEntity<>(preTestService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
+        return new ResponseEntity<>(memberService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
     }
 }
