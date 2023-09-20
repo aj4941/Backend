@@ -1,4 +1,4 @@
-FROM adoptopenjdk:17-jre-hotspot-buster
+FROM openjdk:17-jre-slim-buster
 
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
