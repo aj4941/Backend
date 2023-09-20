@@ -44,7 +44,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
                 cookie.setDomain("morandi.co.kr");
                 cookie.setPath("/");
                 response.addCookie(cookie);
-                response.sendRedirect("http://morandi.co.kr/auth/signup");
+                response.sendRedirect("http://morandi.co.kr/signup");
             }
 
             setErrorResponse(response, e.getErrorCode());
