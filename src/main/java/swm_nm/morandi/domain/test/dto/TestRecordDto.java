@@ -2,7 +2,7 @@ package swm_nm.morandi.domain.test.dto;
 
 import lombok.*;
 import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
-import swm_nm.morandi.domain.testResult.request.AttemptProblemDto;
+import swm_nm.morandi.domain.test.postTest.request.AttemptProblemDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
