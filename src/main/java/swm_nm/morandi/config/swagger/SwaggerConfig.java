@@ -27,36 +27,58 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket testApi() {
+    public Docket testDuringApi() {
         return new Docket(DocumentationType.OAS_30)
-                .groupName("test-pre-api")
+                .groupName("test-during-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.preTest.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testDuring.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
     }
 
     @Bean
-    public Docket testOngoingApi() {
+    public Docket testExitApi() {
         return new Docket(DocumentationType.OAS_30)
-                .groupName("test-ongoing-api")
+                .groupName("test-exit-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.ongoingTest.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testExit.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
     }
 
     @Bean
-    public Docket testPostApi() {
+    public Docket testInfoApi() {
         return new Docket(DocumentationType.OAS_30)
-                .groupName("test-post-api")
+                .groupName("test-info-api")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.test.postTest.controller"))
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testInfo.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo());
+    }
+    @Bean
+    public Docket testRecordApi() {
+        return new Docket(DocumentationType.OAS_30)
+                .groupName("test-record-api")
+                .useDefaultResponseMessages(false)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testRecord.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo());
+    }
+    @Bean
+    public Docket testStartApi() {
+        return new Docket(DocumentationType.OAS_30)
+                .groupName("test-start-api")
+                .useDefaultResponseMessages(false)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testStart.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
