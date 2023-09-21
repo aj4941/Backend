@@ -35,6 +35,7 @@ public class SolvedCheckService {
 
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public List<AttemptProblemDto> isSolvedCheck(TestCheckDto testCheckDto) {
         Long testId = testCheckDto.getTestId();
         String bojId = testCheckDto.getBojId();
@@ -50,7 +51,6 @@ public class SolvedCheckService {
         return attemptProblemDtos;
     }
 
-    @Transactional
     public void checkAttemptedProblemResult(Long testId, String bojId) {
         Tests test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
@@ -64,6 +64,7 @@ public class SolvedCheckService {
                     if (minutes <= test.getTestTime()) {
                         attemptProblem.setIsSolved(true);
                         attemptProblem.setExecutionTime(minutes);
+                        attemptProblemRepository.save(attemptProblem);
                     }
                 });
     }
