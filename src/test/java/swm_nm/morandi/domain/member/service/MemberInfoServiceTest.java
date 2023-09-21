@@ -33,6 +33,6 @@ class MemberInfoServiceTest {
         MemberInfoDto memberInfo = memberInfoService.getMemberInfo();
 
         // then
-        assertThat(memberInfo.getBojId()).isEqualTo("aj4941");
+        assertThat(memberInfo.getBojId()).isEqualTo(member.getBojId());
     }
 }
