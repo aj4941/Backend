@@ -38,7 +38,9 @@ public class SolvedCheckService {
     public List<AttemptProblemDto> isSolvedCheck(TestCheckDto testCheckDto) {
         Long testId = testCheckDto.getTestId();
         String bojId = testCheckDto.getBojId();
-        checkAttemptedProblemResult(testId, bojId);
+        Tests test = testRepository.findById(testId)
+                .orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+        checkAttemptedProblemResult(test, bojId);
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
         List<AttemptProblemDto> attemptProblemDtos = new ArrayList<>();
         long number = 1;
@@ -51,9 +53,8 @@ public class SolvedCheckService {
     }
 
     @Transactional
-    public void checkAttemptedProblemResult(Long testId, String bojId) {
-        Tests test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
+    public void checkAttemptedProblemResult(Tests test, String bojId) {
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(test.getTestId());
 
         attemptProblems.stream()
                 .filter(attemptProblem -> !attemptProblem.getIsSolved())
@@ -67,6 +68,7 @@ public class SolvedCheckService {
                     }
                 });
     }
+
 
     public boolean isSolvedProblem(AttemptProblem attemptProblem, String bojId) {
         Problem problem = attemptProblem.getProblem();

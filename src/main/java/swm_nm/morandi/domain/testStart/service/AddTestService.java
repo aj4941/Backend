@@ -26,14 +26,9 @@ public class AddTestService {
 
     private final TestRepository testRepository;
 
-    private final TestTypeRepository testTypeRepository;
-
-    private final MemberRepository memberRepository;
-
     private final TestScheduler testScheduler;
     @Transactional
     public Tests startTestByTestTypeId(TestType testType, Member member) {
-
         Tests test = Tests.builder()
                 .testDate(LocalDateTime.now()) // 테스트가 시작된 시간
                 .testTime(testType.getTestTime())

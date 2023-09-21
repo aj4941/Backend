@@ -43,16 +43,28 @@ public class TestExitService {
     private final CalculateRatingService calculateRatingService;
 
     private final SolvedCheckService solvedCheckService;
+
+    //Controller에서 사용되는 것
+    public List<AttemptProblemDto> testExit(TestCheckDto testCheckDto)
+    {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MorandiException(AuthErrorCode.MEMBER_NOT_FOUND));
+        Tests test = testRepository.findById(testCheckDto.getTestId())
+                .orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+        TestType testType = testTypeRepository.findTestTypeByTestTypename(test.getTestTypename())
+                .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+        return testExit(testCheckDto,member,test,testType);
+    }
+
     @Transactional
-    public List<AttemptProblemDto> testExit(TestCheckDto testCheckDto) {
-        Long testId = testCheckDto.getTestId();
+    public List<AttemptProblemDto> testExit(TestCheckDto testCheckDto,Member member,Tests test,TestType testType) {
         String bojId = testCheckDto.getBojId();
-        Long testTypeId = testCheckDto.getTestTypeId();
 
-        solvedCheckService.checkAttemptedProblemResult(testId, bojId);
-        saveTestResult(testId, testTypeId);
+        solvedCheckService.checkAttemptedProblemResult(test, bojId);
+        saveTestResult(member,test, testType);
 
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(test.getTestId());
 
         List<AttemptProblemDto> attemptProblemDtos = new ArrayList<>();
         long number = 1;
@@ -65,13 +77,9 @@ public class TestExitService {
     }
 
     @Transactional
-    public void saveTestResult(Long testId, Long testTypeId) {
-        Long memberId = SecurityUtils.getCurrentMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(AuthErrorCode.MEMBER_NOT_FOUND));
-        Tests test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
-        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+    public void saveTestResult(Member member,Tests test, TestType testType) {
         test.setTestStatus(TestStatus.COMPLETED);
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTest_TestId(testId);
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTest_TestId(test.getTestId());
         long correct = attemptProblems.stream()
                 .filter(AttemptProblem::getIsSolved)
                 .count();
@@ -81,8 +89,13 @@ public class TestExitService {
         testType.updateAverageCorrectAnswerRate(correct / total);
 
         // 테스트 레이팅 저장
-        test.setTestRating(calculateRatingService.calculateTestRating(member, testId));
+        test.setTestRating(calculateRatingService.calculateTestRating(member, test));
 
         member.setCurrentTestId(-1L);
+
+        // 테스트 결과 저장
+        testTypeRepository.save(testType);
+        testRepository.save(test);
+        memberRepository.save(member);
     }
 }

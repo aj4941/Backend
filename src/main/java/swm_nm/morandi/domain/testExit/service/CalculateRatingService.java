@@ -27,11 +27,9 @@ public class CalculateRatingService {
 
     private final TestRepository testRepository;
     @Transactional
-    public Long calculateTestRating(Member member, Long testId) {
+    public Long calculateTestRating(Member member, Tests test) {
         List<AttemptProblem> attemptProblems
-                = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
-        Tests test = testRepository.findById(testId)
-                .orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+                = attemptProblemRepository.findAttemptProblemsByTest_TestId(test.getTestId());
         Integer problemCount = test.getProblemCount();
         long rating = getRating(problemCount);
         long addRating = 0L;
