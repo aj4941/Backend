@@ -66,7 +66,7 @@ public class TestStartUseCase {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        //TODO Redis 이용하여
+        // TODO Redis 이용하여
         // 현재 테스트가 진행중인지 확인하도록
         if (member.getCurrentTestId() == null)
             member.setCurrentTestId(-1L);
@@ -74,7 +74,8 @@ public class TestStartUseCase {
         // 현재 테스트가 진행중이라면
         if (member.getCurrentTestId() != -1) {
             Long currentTestId = member.getCurrentTestId();
-            Tests test = testRepository.findById(currentTestId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
+            Tests test = testRepository.findById(currentTestId).orElseThrow(()
+                    -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
 
             // 테스트 시작 시간과 현재 시간을 비교하여 남은 시간 계산
             extracted(test);
@@ -87,7 +88,9 @@ public class TestStartUseCase {
             }
         }
         // 현재 진행중인 테스트가 없을 경우 아래 로직 진행
-        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow
+                (() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+
         Tests test = addTestService.startTestByTestTypeId(testType, member);
 
         String bojId = memberInfoService.getMemberInfo().getBojId();

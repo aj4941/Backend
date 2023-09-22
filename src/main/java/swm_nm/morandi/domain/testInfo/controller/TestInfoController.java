@@ -1,5 +1,4 @@
 package swm_nm.morandi.domain.testInfo.controller;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
 import swm_nm.morandi.domain.testInfo.dto.TestTypeDto;
 import swm_nm.morandi.domain.testInfo.service.*;
-import swm_nm.morandi.domain.testRecord.service.TestDetailsService;
 
 import java.util.List;
 
