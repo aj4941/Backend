@@ -62,12 +62,9 @@ public class TestStartUseCase {
         //현재 테스트가 진행중인지 확인하도록
         //이미 테스트 중인지 확인
         Tests test = testProgressCheckService.isTestinProgress(member);
-        if(test!=null)
-        {
+        if (test != null) {
             return getTestStartResponseDto(member.getCurrentTestId(), test);
         }
-
-
         TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         // 현재 진행중인 테스트가 없을 경우 테스트 타입에 맞는 테스트 시작
         test = addTestService.startTestByTestTypeId(testType, member);

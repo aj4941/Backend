@@ -35,6 +35,7 @@ public class SolvedCheckService {
 
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public List<AttemptProblemDto> isSolvedCheck(TestCheckDto testCheckDto) {
         Long testId = testCheckDto.getTestId();
         String bojId = testCheckDto.getBojId();
@@ -65,6 +66,7 @@ public class SolvedCheckService {
                     if (minutes <= test.getTestTime()) {
                         attemptProblem.setIsSolved(true);
                         attemptProblem.setExecutionTime(minutes);
+                        attemptProblemRepository.save(attemptProblem);
                     }
                 });
     }

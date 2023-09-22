@@ -22,13 +22,11 @@ public class TempCodeService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final AttemptProblemRepository attemptProblemRepository;
-
     public void saveTempCode(TempCodeDto tempCodeDto) {
         String key = generateKey(tempCodeDto);
         Long remainingTTL = redisTemplate.getExpire(key);
 
-        if (!(remainingTTL == null || remainingTTL <= 0)) {
+        if (remainingTTL != null && remainingTTL > 0) {
             TempCode tempCode = Optional.ofNullable((TempCode) redisTemplate.opsForValue().get(key))
                     .orElseThrow(() -> new MorandiException(TestErrorCode.KEY_NOT_FOUND));
 
@@ -43,8 +41,7 @@ public class TempCodeService {
             // 테스트 남은 시간만큼 TTL을 설정한다
             redisTemplate.expire(key, expireTime, TimeUnit.MINUTES);
         }
-        else
-        {
+        else {
             throw new MorandiException(TestErrorCode.TTL_EXPIRED);
         }
     }
