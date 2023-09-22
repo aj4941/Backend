@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testRecord.dto.TestRatingDto;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
-import swm_nm.morandi.domain.testExit.entity.Tests;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testInfo.repository.TestRepository;
 import swm_nm.morandi.global.utils.SecurityUtils;
 

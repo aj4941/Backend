@@ -8,7 +8,7 @@ import swm_nm.morandi.domain.problem.entity.Algorithm;
 import swm_nm.morandi.domain.problem.entity.AlgorithmProblemList;
 import swm_nm.morandi.domain.problem.repository.AlgorithmProblemListRepository;
 import swm_nm.morandi.domain.problem.repository.AlgorithmRepository;
-import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.utils.SecurityUtils;
 

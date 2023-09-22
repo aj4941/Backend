@@ -1,6 +1,6 @@
 package swm_nm.morandi.domain.testRecord.mapper;
 
-import swm_nm.morandi.domain.testExit.entity.Tests;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
 
 import java.util.ArrayList;

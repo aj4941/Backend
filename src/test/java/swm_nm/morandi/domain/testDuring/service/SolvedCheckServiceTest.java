@@ -1,8 +1,6 @@
 package swm_nm.morandi.domain.testDuring.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -12,12 +10,11 @@ import swm_nm.morandi.domain.problem.entity.Problem;
 import swm_nm.morandi.domain.problem.repository.ProblemRepository;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
-import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
-import swm_nm.morandi.domain.testExit.entity.Tests;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testInfo.repository.TestRepository;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @WithMockUser(username = "1", roles = "USER")
