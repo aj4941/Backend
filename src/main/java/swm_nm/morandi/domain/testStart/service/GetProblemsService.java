@@ -10,19 +10,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 import swm_nm.morandi.domain.problem.dto.DifficultyRange;
-import swm_nm.morandi.domain.problem.entity.Algorithm;
-import swm_nm.morandi.domain.problem.entity.AlgorithmProblemList;
 import swm_nm.morandi.domain.problem.entity.Problem;
 import swm_nm.morandi.domain.problem.entity.TypeProblemList;
 import swm_nm.morandi.domain.problem.repository.AlgorithmProblemListRepository;
 import swm_nm.morandi.domain.problem.repository.TypeProblemListRepository;
-import swm_nm.morandi.domain.testExit.entity.TestType;
+import swm_nm.morandi.domain.testInfo.entity.TestType;
 
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -40,8 +37,6 @@ public class GetProblemsService {
         List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testType.getTestTypeId());
         List<Problem> problems = typeProblemLists.stream().map(TypeProblemList::getProblem).collect(Collectors.toList());
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
-        Random random = new Random();
-        long randomNumber = random.nextInt(10);
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
             int start = DifficultyLevel.getLevelByValue(difficultyRange.getStart());
@@ -49,16 +44,7 @@ public class GetProblemsService {
             boolean flag = false;
             for (Problem problem : problems) {
                 int problemLevel = DifficultyLevel.getLevelByValue(problem.getProblemDifficulty());
-                List<AlgorithmProblemList> algorithmProblemLists
-                        = algorithmProblemListRepository.findByProblem_ProblemId(problem.getProblemId());
-                List<Algorithm> algorithms = algorithmProblemLists.stream().map(AlgorithmProblemList::getAlgorithm).collect(Collectors.toList());
                 if (start <= problemLevel && problemLevel <= end) {
-//                    long testTypeAlgorithmId = randomNumber + 1;
-//                    for (Algorithm algorithm : algorithms) {
-//                        if (algorithm.getAlgorithmId() == testTypeAlgorithmId)
-//                            flag = true;
-//                    }
-//                    if (flag) {
                     BojProblem bojProblem = BojProblem.builder()
                             .testProblemId(index++)
                             .problemId(problem.getBojProblemId())
@@ -66,9 +52,7 @@ public class GetProblemsService {
                             .levelToString(problem.getProblemDifficulty().getFullName()).build();
                     bojProblems.add(bojProblem);
                     flag = true;
-//                        randomNumber = (randomNumber + 1) % 10;
                     break;
-//                    }
                 }
             }
 
@@ -94,6 +78,7 @@ public class GetProblemsService {
             String end = difficultyRange.getEnd().getShortName();
             String apiUrl = "https://solved.ac/api/v3/search/problem";
             while (true) {
+                // PK 7번 : 삼성 테스트의 경우 시뮬레이션 우선
                 String query = testType.getTestTypeId() == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation ~tag:ad_hoc ~tag:constructive ~tag:geometry ~tag:number_theory ~tag:math solved:200..", start, end, bojId) :
                         String.format("tier:%s..%s ~solved_by:%s ~tag:ad_hoc ~tag:constructive ~tag:geometry ~tag:number_theory ~tag:simulation ~tag:math solved:200.. solved:..5000", start, end, bojId);
                 WebClient webClient = WebClient.builder().build();

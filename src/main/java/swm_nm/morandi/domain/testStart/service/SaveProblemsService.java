@@ -6,16 +6,12 @@ import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.problem.entity.Problem;
 import swm_nm.morandi.domain.problem.repository.ProblemRepository;
-import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
-import swm_nm.morandi.domain.testExit.entity.Tests;
-import swm_nm.morandi.domain.testInfo.repository.TestRepository;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.member.entity.Member;
-import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.exception.MorandiException;
-import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.global.exception.errorcode.ProblemErrorCode;
-import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
