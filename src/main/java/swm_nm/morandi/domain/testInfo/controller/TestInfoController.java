@@ -23,6 +23,8 @@ public class TestInfoController {
 
     private final CompanyTestInfoService companyTestInfoService;
 
+    private final RandomDefenseInfoService randomDefenseInfoService;
+
     private final TestTypeInfoService testTypeInfoService;
     @GetMapping("/latest")
     @Operation(summary = "최근에 본 테스트 목록", description = "메인 페이지에서 최근에 본 테스트 5개를 제공합니다.")
@@ -38,6 +40,11 @@ public class TestInfoController {
     @Operation(summary = "기업 테스트 목록", description = "메인 페이지에서 현재 있는 기업 테스트 정보를 제공합니다.")
     public ResponseEntity<List<TestTypeDto>> getCompanyTestTypeDtos() {
         return new ResponseEntity<>(companyTestInfoService.getCompanyTestTypeDtos(), HttpStatus.OK);
+    }
+    @GetMapping("/random-defense")
+    @Operation(summary = "랜덤 디펜스 목록", description = "메인 페이지에서 현재 있는 랜덤 디펜스 정보를 제공합니다.")
+    public ResponseEntity<List<TestTypeDto>> getRandomDefenseTestTypeDtos() {
+        return new ResponseEntity<>(randomDefenseInfoService.getRandomDefenseTestTypeDtos(), HttpStatus.OK);
     }
     @GetMapping("/{testTypeId}")
     @Operation(summary = "테스트 상세 정보", description = "사용자가 원하는 테스트를 눌렀을 때 상세 테스트 정보를 제공합니다.")
