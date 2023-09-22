@@ -5,16 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
-import swm_nm.morandi.domain.testExit.entity.TestType;
-import swm_nm.morandi.domain.testExit.entity.Tests;
+import swm_nm.morandi.domain.testInfo.entity.TestType;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testDuring.scheduler.TestScheduler;
 import swm_nm.morandi.domain.testInfo.repository.TestRepository;
-import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
 import swm_nm.morandi.domain.member.entity.Member;
-import swm_nm.morandi.domain.member.repository.MemberRepository;
-import swm_nm.morandi.global.exception.MorandiException;
-import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
-import swm_nm.morandi.global.exception.errorcode.TestTypeErrorCode;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -38,6 +33,7 @@ public class AddTestService {
                 .endDifficulty(testType.getEndDifficulty())
                 .testTypename(testType.getTestTypename())
                 .testRating(null)
+                .originRating(null)
                 .testStatus(TestStatus.IN_PROGRESS)
                 .member(member)
                 .build();

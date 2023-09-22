@@ -3,7 +3,7 @@ package swm_nm.morandi.domain.testInfo.dataloader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import swm_nm.morandi.domain.testExit.entity.TestType;
+import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 import swm_nm.morandi.domain.problem.dto.DifficultyRange;
 import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
@@ -142,7 +142,7 @@ public class DataLoader implements CommandLineRunner {
 
         testTypeRepository.save(testType6);
 
-        // 삼성
+        // PK 7번 : 삼성
         List<DifficultyRange> difficultyRanges7 = new ArrayList<>();
         difficultyRanges7.add(new DifficultyRange(DifficultyLevel.S1, DifficultyLevel.G5));
         difficultyRanges7.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G1));
@@ -159,7 +159,7 @@ public class DataLoader implements CommandLineRunner {
                 .build();
         testTypeRepository.save(testType7);
 
-        // 네이버
+        // PK 8번 : 네이버
         List<DifficultyRange> difficultyRanges8 = new ArrayList<>();
         difficultyRanges8.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G5));
         difficultyRanges8.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G4));
@@ -179,7 +179,7 @@ public class DataLoader implements CommandLineRunner {
 
         testTypeRepository.save(testType8);
 
-        // 카카오
+        // PK 9번 : 카카오
         List<DifficultyRange> difficultyRanges9 = new ArrayList<>();
         difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
         difficultyRanges9.add(new DifficultyRange(DifficultyLevel.S3, DifficultyLevel.S2));
@@ -202,7 +202,7 @@ public class DataLoader implements CommandLineRunner {
 
         testTypeRepository.save(testType9);
 
-        // 라인
+        // PK 10번 : 라인
         List<DifficultyRange> difficultyRanges10 = new ArrayList<>();
         difficultyRanges10.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
         difficultyRanges10.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
@@ -224,7 +224,7 @@ public class DataLoader implements CommandLineRunner {
 
         testTypeRepository.save(testType10);
 
-        // 쿠팡
+        // PK 11번 : 쿠팡
         List<DifficultyRange> difficultyRanges11 = new ArrayList<>();
         difficultyRanges11.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S3));
         difficultyRanges11.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
@@ -243,7 +243,7 @@ public class DataLoader implements CommandLineRunner {
 
         testTypeRepository.save(testType11);
 
-        // 우아한형제들
+        // PK 12번 : 우아한형제들
         List<DifficultyRange> difficultyRanges12 = new ArrayList<>();
         difficultyRanges12.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
         difficultyRanges12.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.G5));
@@ -261,5 +261,65 @@ public class DataLoader implements CommandLineRunner {
                 .build();
 
         testTypeRepository.save(testType12);
+
+        // PK 13번 : 브론즈 랜덤 디펜스
+        List<DifficultyRange> difficultyRanges13 = new ArrayList<>();
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B3));
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
+        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
+
+        TestType testType13 = TestType.builder()
+                .testTypename("브론즈 랜덤 디펜스")
+                .testTime(120L)
+                .problemCount(4)
+                .startDifficulty(DifficultyLevel.B4)
+                .endDifficulty(DifficultyLevel.B1)
+                .difficultyRanges(difficultyRanges13)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0L)
+                .build();
+
+        testTypeRepository.save(testType13);
+
+        // PK 14번 : 실버 랜덤 디펜스
+        List<DifficultyRange> difficultyRanges14 = new ArrayList<>();
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S3, DifficultyLevel.S2));
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
+
+        TestType testType14 = TestType.builder()
+                .testTypename("실버 랜덤 디펜스")
+                .testTime(120L)
+                .problemCount(4)
+                .startDifficulty(DifficultyLevel.S5)
+                .endDifficulty(DifficultyLevel.S1)
+                .difficultyRanges(difficultyRanges14)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0L)
+                .build();
+
+        testTypeRepository.save(testType14);
+
+        // PK 15번 : 골드 랜덤 디펜스
+        List<DifficultyRange> difficultyRanges15 = new ArrayList<>();
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G3));
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
+
+        TestType testType15 = TestType.builder()
+                .testTypename("골드 랜덤 디펜스")
+                .testTime(120L)
+                .problemCount(4)
+                .startDifficulty(DifficultyLevel.G5)
+                .endDifficulty(DifficultyLevel.G1)
+                .difficultyRanges(difficultyRanges13)
+                .numberOfTestTrial(0)
+                .averageCorrectAnswerRate(0L)
+                .build();
+
+        testTypeRepository.save(testType15);
     }
 }

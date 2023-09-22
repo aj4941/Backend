@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.TempCode;
-import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
-import swm_nm.morandi.domain.testExit.entity.Tests;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 
 import java.time.Duration;

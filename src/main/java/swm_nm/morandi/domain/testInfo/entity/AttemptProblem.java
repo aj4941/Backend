@@ -1,4 +1,4 @@
-package swm_nm.morandi.domain.testExit.entity;
+package swm_nm.morandi.domain.testInfo.entity;
 
 import lombok.*;
 import swm_nm.morandi.domain.common.BaseEntity;

@@ -1,7 +1,7 @@
 package swm_nm.morandi.domain.testExit.dto;
 
 import lombok.*;
-import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 
 @Getter @Setter
 @NoArgsConstructor
