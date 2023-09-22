@@ -27,10 +27,6 @@ import java.util.List;
 @Slf4j
 public class SaveProblemsService {
 
-    private final MemberRepository memberRepository;
-
-    private final TestRepository testRepository;
-
     private final ProblemRepository problemRepository;
 
     private final AttemptProblemRepository attemptProblemRepository;
