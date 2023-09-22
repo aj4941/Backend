@@ -20,7 +20,7 @@ public class RunCodeService {
     public OutputDto runCode(TestInputData testInputData) throws Exception {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        String url = "http://localhost:8001";
+        String url = "http://10.0.102.184:8080";
 
         ObjectMapper objectMapper = new ObjectMapper();
         String inputDataJson = objectMapper.writeValueAsString(testInputData);
