@@ -24,22 +24,23 @@ public class TempCodeInitializer {
     private final AttemptProblemRepository attemptProblemRepository;
 
     public String generateKey(Tests test, int problemNumber) {
-        return String.format("testId:%s:problemNumber:%s",test.getTestId(), problemNumber);
+        return String.format("testId:%s:problemNumber:%s", test.getTestId(), problemNumber);
     }
-    public void initTempCodeCacheWhenTestStart(Tests test){
+    public void initTempCodeCacheWhenTestStart(Tests test) {
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTestOrderByAttemptProblemIdAsc(test);
         LocalDateTime now = LocalDateTime.now();
         AtomicInteger i = new AtomicInteger(1);
 
-        attemptProblems.forEach(attemptProblem-> {
+        attemptProblems.forEach(attemptProblem -> {
             String key = generateKey(test, i.getAndIncrement());
-            //끝나는 시간
+            // 끝나는 시간
             LocalDateTime endTime = now.plusMinutes(test.getTestTime());
             Duration duration = Duration.between(now, endTime);
             long expireTime = duration.toMinutes();
 
             // tempCode를 저장
             redisTemplate.opsForValue().set(key, new TempCode("initialized", endTime));
+
             // 테스트 남은 시간만큼 TTL을 설정한다
             redisTemplate.expire(key, expireTime, TimeUnit.MINUTES);
         });
