@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swm_nm.morandi.domain.common.BaseEntity;
-import swm_nm.morandi.domain.test.entity.TestType;
+import swm_nm.morandi.domain.testExit.entity.TestType;
 
 import javax.persistence.*;
 

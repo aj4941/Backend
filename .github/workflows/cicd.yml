@@ -31,11 +31,11 @@ jobs:
         uses: actions/checkout@v3
 
       # Gradle 빌드를 추가합니다.
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '11'
+          java-version: '17'
 
       # GitHub Secret에서 application-prod.yml 내용을 불러와 파일로 저장
       - name: Create application-prod.yml from GitHub Secret
