@@ -24,13 +24,15 @@ public class TestRecordController {
 
     private final GetGraphService getGraphService;
 
+    private final GrassHeatMapService grassHeatMapService;
+
     private final TestDetailsService testDetailsService;
 
     private final RatingService ratingService;
     @GetMapping("/heatmaps")
     @Operation(summary = "사용자 히트맵 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 히트맵 분석 데이터를 보여줍니다.")
-    public ResponseEntity<List<GrassDto>> memberRecordGrass() {
-        return new ResponseEntity<>(getGrassService.getGrassDtos(), HttpStatus.OK);
+    public ResponseEntity<List<GrassHeatMapResponse>> memberRecordGrass() {
+        return new ResponseEntity<>(grassHeatMapService.getGrassHeatMap(), HttpStatus.OK);
     }
     @GetMapping("/graphs")
     @Operation(summary = "사용자 그래프 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 그래프 분석 데이터를 보여줍니다.")
