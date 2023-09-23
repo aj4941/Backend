@@ -9,11 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import swm_nm.morandi.domain.member.dto.CurrentRatingDto;
-import swm_nm.morandi.domain.member.dto.GraphDto;
-import swm_nm.morandi.domain.member.dto.GrassDto;
-import swm_nm.morandi.domain.testRecord.dto.TestRatingDto;
-import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
+import swm_nm.morandi.domain.testRecord.dto.*;
 import swm_nm.morandi.domain.testRecord.service.*;
 
 import java.util.List;
@@ -28,11 +24,9 @@ public class TestRecordController {
 
     private final GetGraphService getGraphService;
 
-    private final GetTestRatingService getTestRatingService;
-
-    private final GetCurrentRatingService getCurrentRatingService;
-
     private final TestDetailsService testDetailsService;
+
+    private final RatingService ratingService;
     @GetMapping("/grass")
     @Operation(summary = "사용자 히트맵 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 히트맵 분석 데이터를 보여줍니다.")
     public ResponseEntity<List<GrassDto>> memberRecordGrass() {
@@ -43,15 +37,16 @@ public class TestRecordController {
     public ResponseEntity<List<GraphDto>> memberRecordGraph() {
         return new ResponseEntity<>(getGraphService.getGraphDtos(), HttpStatus.OK);
     }
-    @GetMapping("/test-rating")
-    @Operation(summary = "사용자 레이팅 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 레이팅 분석 데이터를 보여줍니다.")
-    public ResponseEntity<List<TestRatingDto>> memberRecordTestRating() {
-        return new ResponseEntity<>(getTestRatingService.getTestRatingDtos(), HttpStatus.OK);
-    }
     @GetMapping("/current-rating")
     @Operation(summary = "사용자 현재 레이팅", description = "사용자가 가지고 있는 현재 레이팅을 보여줍니다.")
     public ResponseEntity<CurrentRatingDto> memberCurrentRating() {
-        return new ResponseEntity<>(getCurrentRatingService.getCurrentRatingDto(), HttpStatus.OK);
+        return new ResponseEntity<>(ratingService.getCurrentRatingDto(), HttpStatus.OK);
+    }
+
+    @GetMapping("/rating-graph")
+    @Operation(summary = "사용자 그래프 분석 데이터", description = "1년 동안의 사용자 테스트 레이팅 결과 데이터를 최근 날짜부터 내림차순으로 보여줍니다.")
+    public ResponseEntity<List<RatingGraphDto>> memberRatingGraph(){
+        return new ResponseEntity<>(ratingService.getRatingGraphSinceOneYear(), HttpStatus.OK);
     }
 
     @GetMapping("/test-info/{testId}")
