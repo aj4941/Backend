@@ -38,7 +38,7 @@ public class Tests extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TestStatus testStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
