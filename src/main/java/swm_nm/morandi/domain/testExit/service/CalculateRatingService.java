@@ -5,13 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 import swm_nm.morandi.domain.problem.entity.Problem;
-import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
-import swm_nm.morandi.domain.testExit.entity.Tests;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testInfo.repository.TestRepository;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
-import swm_nm.morandi.global.exception.MorandiException;
-import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 
 import javax.transaction.Transactional;
 import java.util.List;

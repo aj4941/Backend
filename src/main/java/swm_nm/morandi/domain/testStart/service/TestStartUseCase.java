@@ -1,22 +1,15 @@
 package swm_nm.morandi.domain.testStart.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.problem.entity.Problem;
-import swm_nm.morandi.domain.testExit.entity.TestType;
-import swm_nm.morandi.domain.testExit.service.TestExitService;
-import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
+import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
 import swm_nm.morandi.domain.testStart.dto.TestStartResponseDto;
-import swm_nm.morandi.domain.testExit.entity.AttemptProblem;
-import swm_nm.morandi.domain.testExit.entity.Tests;
-import swm_nm.morandi.domain.testInfo.repository.TestRepository;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.domain.member.service.MemberInfoService;
@@ -25,9 +18,6 @@ import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.*;
 import swm_nm.morandi.global.utils.SecurityUtils;
 
-import java.net.URI;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,9 +48,9 @@ public class TestStartUseCase {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        //TODO Redis 이용하여
-        //현재 테스트가 진행중인지 확인하도록
-        //이미 테스트 중인지 확인
+        // TODO Redis 이용하여
+        // 현재 테스트가 진행중인지 확인하도록
+        // 이미 테스트 중인지 확인
         Tests test = testProgressCheckService.isTestinProgress(member);
         if (test != null) {
             return getTestStartResponseDto(member.getCurrentTestId(), test);

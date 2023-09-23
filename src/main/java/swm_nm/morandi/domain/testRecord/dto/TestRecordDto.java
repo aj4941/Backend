@@ -1,5 +1,9 @@
 package swm_nm.morandi.domain.testRecord.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
@@ -13,6 +17,9 @@ import java.util.List;
 @Builder
 @ToString
 public class TestRecordDto {
+    private Long testId;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime testDate;
     private Long testTime;
     private Integer problemCount;
@@ -20,5 +27,6 @@ public class TestRecordDto {
     private DifficultyLevel endDifficulty;
     private String testTypename;
     private Long testRating;
+    private Long originRating;
     private List<AttemptProblemDto> attemptProblemDto;
 }
