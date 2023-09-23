@@ -3,7 +3,7 @@ package swm_nm.morandi.domain.testRecord.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.domain.member.dto.GraphDto;
+import swm_nm.morandi.domain.testRecord.dto.GraphDto;
 import swm_nm.morandi.domain.problem.entity.Algorithm;
 import swm_nm.morandi.domain.problem.entity.AlgorithmProblemList;
 import swm_nm.morandi.domain.problem.repository.AlgorithmProblemListRepository;

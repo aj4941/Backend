@@ -3,7 +3,7 @@ package swm_nm.morandi.domain.testRecord.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.domain.member.dto.GrassDto;
+import swm_nm.morandi.domain.testRecord.dto.GrassDto;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.utils.SecurityUtils;

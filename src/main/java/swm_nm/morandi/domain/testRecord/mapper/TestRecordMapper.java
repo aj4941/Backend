@@ -30,15 +30,15 @@ public class TestRecordMapper {
 
     public static TestRecordDto dummyDto() {
         TestRecordDto testRecordDto = TestRecordDto.builder()
-                .testId(null)
-                .testDate(null)
-                .testTime(null)
-                .problemCount(null)
-                .startDifficulty(null)
-                .endDifficulty(null)
-                .testTypename(null)
-                .testRating(null)
-                .originRating(null)
+                .testId(0L)
+                .testDate(LocalDateTime.now())
+                .testTime(0L)
+                .problemCount(0)
+                .startDifficulty(DifficultyLevel.B5)
+                .endDifficulty(DifficultyLevel.B5)
+                .testTypename("테스트가 없습니다.")
+                .testRating(0L)
+                .originRating(0L)
                 .attemptProblemDto(new ArrayList<>())
                 .build();
 

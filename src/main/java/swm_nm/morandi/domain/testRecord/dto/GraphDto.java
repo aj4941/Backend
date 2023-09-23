@@ -1,4 +1,4 @@
-package swm_nm.morandi.domain.member.dto;
+package swm_nm.morandi.domain.testRecord.dto;
 
 import lombok.*;
 
