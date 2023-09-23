@@ -28,10 +28,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class GetProblemsService {
 
-
     private final TypeProblemListRepository typeProblemListRepository;
-
-    private final AlgorithmProblemListRepository algorithmProblemListRepository;
 
     public void getProblemsByTestType(TestType testType, List<BojProblem> bojProblems) {
         List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testType.getTestTypeId());

@@ -1,9 +1,10 @@
 package swm_nm.morandi.domain.testInfo.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.*;
 import swm_nm.morandi.domain.common.BaseEntity;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
@@ -20,6 +21,9 @@ import java.time.LocalDateTime;
 public class Tests extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long testId;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime testDate; // 테스트 시작 시간
     private Long testTime; // minutes
     private Integer problemCount;
