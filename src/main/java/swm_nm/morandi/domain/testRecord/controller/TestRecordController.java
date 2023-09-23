@@ -15,7 +15,7 @@ import swm_nm.morandi.domain.testRecord.service.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/record")
+@RequestMapping("/tests")
 @Tag(name = "MemberController", description = "테스트 기록과 관련된 컨트롤러")
 @RequiredArgsConstructor
 public class TestRecordController {
@@ -24,15 +24,17 @@ public class TestRecordController {
 
     private final GetGraphService getGraphService;
 
+    private final GrassHeatMapService grassHeatMapService;
+
     private final TestDetailsService testDetailsService;
 
     private final RatingService ratingService;
-    @GetMapping("/grass")
+    @GetMapping("/heatmaps")
     @Operation(summary = "사용자 히트맵 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 히트맵 분석 데이터를 보여줍니다.")
-    public ResponseEntity<List<GrassDto>> memberRecordGrass() {
-        return new ResponseEntity<>(getGrassService.getGrassDtos(), HttpStatus.OK);
+    public ResponseEntity<List<GrassHeatMapResponse>> memberRecordGrass() {
+        return new ResponseEntity<>(grassHeatMapService.getGrassHeatMap(), HttpStatus.OK);
     }
-    @GetMapping("/graph")
+    @GetMapping("/graphs")
     @Operation(summary = "사용자 그래프 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 그래프 분석 데이터를 보여줍니다.")
     public ResponseEntity<List<GraphDto>> memberRecordGraph() {
         return new ResponseEntity<>(getGraphService.getGraphDtos(), HttpStatus.OK);
@@ -49,7 +51,7 @@ public class TestRecordController {
         return new ResponseEntity<>(ratingService.getRatingGraphSinceOneYear(), HttpStatus.OK);
     }
 
-    @GetMapping("/test-info/{testId}")
+    @GetMapping("/{testId}")
     @Operation(summary = "사용자 테스트 기록 상세 보기", description = "사용자가 진행한 특정 테스트의 상세보기를 클릭한 경우 테스트 상세 기록을 보여줍니다.")
     public ResponseEntity<TestRecordDto> testRecordInfo(@PathVariable Long testId) {
         return new ResponseEntity<>(testDetailsService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
