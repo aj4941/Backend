@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 @ToString
 public class TestRecordDto {
+    private Long testId;
     private LocalDateTime testDate;
     private Long testTime;
     private Integer problemCount;
@@ -20,5 +21,6 @@ public class TestRecordDto {
     private DifficultyLevel endDifficulty;
     private String testTypename;
     private Long testRating;
+    private Long originRating;
     private List<AttemptProblemDto> attemptProblemDto;
 }
