@@ -25,8 +25,8 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
             "LEFT JOIN a.test t " +
             "WHERE t.testId IN " +
                 "(SELECT DISTINCT t.testId " +
-                    "FROM Tests t LEFT JOIN t.member m " +
-                    "WHERE m.memberId = :memberId " +
+                    "FROM Tests t " +
+                    "WHERE t.member.memberId = :memberId " +
                     "AND (t.testDate BETWEEN :oneYearAgo AND CURRENT_TIMESTAMP) " +
                     "AND t.testStatus = 'COMPLETED') " +
             "AND a.isSolved = true " +
