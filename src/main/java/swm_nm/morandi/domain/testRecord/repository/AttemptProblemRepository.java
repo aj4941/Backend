@@ -22,8 +22,7 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
     // group by test_date;
     @Query("SELECT a.testDate, count(a.testDate) " +
             "FROM AttemptProblem a " +
-            "LEFT JOIN a.test t " +
-            "WHERE t.testId IN " +
+            "WHERE a.test.testId IN " +
                 "(SELECT DISTINCT t.testId " +
                     "FROM Tests t " +
                     "WHERE t.member.memberId = :memberId " +
