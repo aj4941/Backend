@@ -264,10 +264,10 @@ public class DataLoader implements CommandLineRunner {
 
         // PK 13번 : 브론즈 랜덤 디펜스
         List<DifficultyRange> difficultyRanges13 = new ArrayList<>();
-        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B3));
-        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
-        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
-        difficultyRanges12.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B3));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
 
         TestType testType13 = TestType.builder()
                 .testTypename("브론즈 랜덤 디펜스")
@@ -315,7 +315,7 @@ public class DataLoader implements CommandLineRunner {
                 .problemCount(4)
                 .startDifficulty(DifficultyLevel.G5)
                 .endDifficulty(DifficultyLevel.G1)
-                .difficultyRanges(difficultyRanges13)
+                .difficultyRanges(difficultyRanges15)
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0L)
                 .build();
