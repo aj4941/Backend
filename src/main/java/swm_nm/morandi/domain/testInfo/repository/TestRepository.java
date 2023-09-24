@@ -18,8 +18,8 @@ public interface TestRepository extends JpaRepository<Tests, Long> {
     //1년동안의 테스트 기록을 가져온다.
     //이 때 테스트 날짜와 테스트 점수만 최근 날짜부터 가져온다.
     @Query("SELECT t.testDate, t.testRating, t.testTypename " +
-            "FROM Tests t LEFT JOIN t.member m " +
-            "WHERE m.memberId = :memberId " +
+            "FROM Tests t " +
+            "WHERE t.member.memberId = :memberId " +
             "AND (t.testDate BETWEEN :oneYearAgo AND CURRENT_TIMESTAMP )" +
             "AND t.testStatus = 'COMPLETED' " +
             "ORDER BY t.testDate DESC")
