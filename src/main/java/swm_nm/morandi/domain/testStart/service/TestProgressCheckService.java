@@ -53,7 +53,7 @@ public class TestProgressCheckService {
             extracted(test);
 
             if (test.getRemainingTime() > 0) { // 시간이 남았을경우 진행중인 테스트 반환
-                return test;//getTestStartResponseDto(currentTestId, test);
+                return test; //getTestStartResponseDto(currentTestId, test);
             }
             else { // 시간이 마감된 테스트 종료
                 TestType testType = testTypeRepository.findTestTypeByTestTypename(test.getTestTypename())
