@@ -10,6 +10,7 @@ import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 public class TestTypeDto {
     private Long testTypeId;
     private String testTypename;
+    private String frequentTypes;
     private Long testTime;
     private Integer problemCount;
     private DifficultyLevel startDifficulty;

@@ -8,6 +8,7 @@ public class TestTypeMapper {
         TestTypeDto testTypeDto = TestTypeDto.builder()
                 .testTypeId(testType.getTestTypeId())
                 .testTypename(testType.getTestTypename())
+                .frequentTypes(testType.getFrequentTypes())
                 .testTime(testType.getTestTime())
                 .problemCount(testType.getProblemCount())
                 .startDifficulty(testType.getStartDifficulty())
