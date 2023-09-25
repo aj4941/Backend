@@ -264,10 +264,10 @@ public class DataLoader implements CommandLineRunner {
 
         // PK 13번 : 브론즈 랜덤 디펜스
         List<DifficultyRange> difficultyRanges13 = new ArrayList<>();
-        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B3));
-        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B3, DifficultyLevel.B2));
-        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
-        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B2, DifficultyLevel.B1));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B1));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B2));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B1));
+        difficultyRanges13.add(new DifficultyRange(DifficultyLevel.B4, DifficultyLevel.B1));
 
         TestType testType13 = TestType.builder()
                 .testTypename("브론즈 랜덤 디펜스")
@@ -284,10 +284,10 @@ public class DataLoader implements CommandLineRunner {
 
         // PK 14번 : 실버 랜덤 디펜스
         List<DifficultyRange> difficultyRanges14 = new ArrayList<>();
-        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S4));
-        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S4, DifficultyLevel.S3));
-        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S3, DifficultyLevel.S2));
-        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S2, DifficultyLevel.S1));
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S1));
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S1));
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S1));
+        difficultyRanges14.add(new DifficultyRange(DifficultyLevel.S5, DifficultyLevel.S1));
 
         TestType testType14 = TestType.builder()
                 .testTypename("실버 랜덤 디펜스")
@@ -304,10 +304,10 @@ public class DataLoader implements CommandLineRunner {
 
         // PK 15번 : 골드 랜덤 디펜스
         List<DifficultyRange> difficultyRanges15 = new ArrayList<>();
-        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G4));
-        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G4, DifficultyLevel.G3));
-        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G3, DifficultyLevel.G2));
-        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G2, DifficultyLevel.G1));
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G1));
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G1));
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G1));
+        difficultyRanges15.add(new DifficultyRange(DifficultyLevel.G5, DifficultyLevel.G1));
 
         TestType testType15 = TestType.builder()
                 .testTypename("골드 랜덤 디펜스")
