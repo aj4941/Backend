@@ -45,7 +45,7 @@ public class TestProgressCheckService {
             member.setCurrentTestId(-1L);
 
         // 현재 테스트가 진행중이라면
-        if (member.getCurrentTestId() != -1) {
+        if (member.getCurrentTestId() != -1L) {
             Long currentTestId = member.getCurrentTestId();
             Tests test = testRepository.findById(currentTestId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
 
