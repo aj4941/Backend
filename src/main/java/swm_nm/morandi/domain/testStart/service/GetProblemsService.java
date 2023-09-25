@@ -36,7 +36,6 @@ public class GetProblemsService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
-            if (bojProblems.size() >= testType.getProblemCount()) break;
             int start = DifficultyLevel.getLevelByValue(difficultyRange.getStart());
             int end = DifficultyLevel.getLevelByValue(difficultyRange.getEnd());
             boolean flag = false;
@@ -68,7 +67,6 @@ public class GetProblemsService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
-            if (bojProblems.size() >= testType.getProblemCount()) break;
             if (bojProblems.get((int) (index - 1)).getProblemId() != 0) {
                 index++;
                 continue;
@@ -77,9 +75,7 @@ public class GetProblemsService {
             String end = difficultyRange.getEnd().getShortName();
             String apiUrl = "https://solved.ac/api/v3/search/problem";
             while (true) {
-                // PK 7번 : 삼성 테스트의 경우 시뮬레이션 우선
-                String query = testType.getTestTypeId() == 7 ? String.format("tier:%s..%s ~solved_by:%s tag:simulation ~tag:ad_hoc ~tag:constructive ~tag:geometry ~tag:number_theory ~tag:math solved:200..", start, end, bojId) :
-                        String.format("tier:%s..%s ~solved_by:%s ~tag:ad_hoc ~tag:constructive ~tag:geometry ~tag:number_theory ~tag:simulation ~tag:math solved:200.. solved:..5000", start, end, bojId);
+                String query = getString(testType, bojId, start, end);
                 WebClient webClient = WebClient.builder().build();
                 String jsonString = webClient.get()
                         .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
@@ -92,21 +88,8 @@ public class GetProblemsService {
                     JsonNode rootNode = mapper.readTree(jsonString);
                     JsonNode itemsArray = rootNode.get("items");
                     if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
-                        JsonNode firstItemNode = itemsArray.get(0);
-                        String title = firstItemNode.get("titleKo").asText();
-                        int alpha = (int) IntStream.range(0, 2).filter(i -> ('a' <= title.charAt(i) && title.charAt(i) <= 'z')
-                                || ('A' <= title.charAt(i) && title.charAt(i) <= 'Z')).count();
-
-                        if (alpha == 2)
-                            continue;
-
-                        JsonNode firstProblem = itemsArray.get(0);
-                        BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
-                        BojProblem bojProblem = bojProblems.get((int) (index - 1));
-                        bojProblem.setProblemId(apiProblem.getProblemId());
-                        bojProblem.setLevel(apiProblem.getLevel());
-                        bojProblem.setTestProblemId(index++);
-                        bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
+                        if (isAlpha(itemsArray)) continue;
+                        index = getProblem(bojProblems, index, mapper, itemsArray);
                         break;
                     }
                 } catch (JsonProcessingException e) {
@@ -115,5 +98,37 @@ public class GetProblemsService {
                 }
             }
         }
+    }
+
+    private static String getString(TestType testType, String bojId, String start, String end) {
+        String query = testType.getTestTypeId() == 7 ?
+                String.format("tier:%s..%s ~solved_by:%s tag:simulation ~tag:ad_hoc ~tag:constructive ~tag:geometry" +
+                        " ~tag:number_theory ~tag:math solved:200..", start, end, bojId) :
+                String.format("tier:%s..%s ~solved_by:%s ~tag:ad_hoc ~tag:constructive ~tag:geometry" +
+                        " ~tag:number_theory ~tag:simulation ~tag:math solved:200.. solved:..5000", start, end, bojId);
+        return query;
+    }
+
+    private static long getProblem(List<BojProblem> bojProblems, long index, ObjectMapper mapper, JsonNode itemsArray)
+            throws JsonProcessingException {
+        JsonNode firstProblem = itemsArray.get(0);
+        BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
+        BojProblem bojProblem = bojProblems.get((int) (index - 1));
+        bojProblem.setProblemId(apiProblem.getProblemId());
+        bojProblem.setLevel(apiProblem.getLevel());
+        bojProblem.setTestProblemId(index++);
+        bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
+        return index;
+    }
+
+    private static boolean isAlpha(JsonNode itemsArray) {
+        JsonNode firstItemNode = itemsArray.get(0);
+        String title = firstItemNode.get("titleKo").asText();
+        int alpha = (int) IntStream.range(0, 2).filter(i -> ('a' <= title.charAt(i) && title.charAt(i) <= 'z')
+                || ('A' <= title.charAt(i) && title.charAt(i) <= 'Z')).count();
+
+        if (alpha == 2)
+            return true;
+        return false;
     }
 }
