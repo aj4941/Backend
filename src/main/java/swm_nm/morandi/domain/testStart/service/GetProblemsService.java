@@ -36,6 +36,7 @@ public class GetProblemsService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
+            if (bojProblems.size() >= testType.getProblemCount()) break;
             int start = DifficultyLevel.getLevelByValue(difficultyRange.getStart());
             int end = DifficultyLevel.getLevelByValue(difficultyRange.getEnd());
             boolean flag = false;
@@ -67,6 +68,7 @@ public class GetProblemsService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {
+            if (bojProblems.size() >= testType.getProblemCount()) break;
             if (bojProblems.get((int) (index - 1)).getProblemId() != 0) {
                 index++;
                 continue;
