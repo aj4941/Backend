@@ -18,6 +18,7 @@ import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.*;
 import swm_nm.morandi.global.utils.SecurityUtils;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,8 +42,7 @@ public class TestStartUseCase {
     private final AttemptProblemRepository attemptProblemRepository;
 
     //이미 테스트 중인지 확인
-
-
+    @Transactional
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(
@@ -55,7 +55,8 @@ public class TestStartUseCase {
         if (test != null) {
             return getTestStartResponseDto(member.getCurrentTestId(), test);
         }
-        TestType testType = testTypeRepository.findById(testTypeId).orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
+        TestType testType = testTypeRepository.findById(testTypeId)
+                .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
         // 현재 진행중인 테스트가 없을 경우 테스트 타입에 맞는 테스트 시작
         test = addTestService.startTestByTestTypeId(testType, member);
 
@@ -73,8 +74,6 @@ public class TestStartUseCase {
 
         // 테스트 시작시 코드 캐시 초기화
         tempCodeInitializer.initTempCodeCacheWhenTestStart(test);
-
-
 
         return getTestStartResponseDto(test, bojProblems);
     }
