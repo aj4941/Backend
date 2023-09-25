@@ -37,6 +37,9 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - name: Cleanup application.yml
+        run: rm -f src/main/resources/application.yml
+
       # GitHub Secret에서 application-prod.yml 내용을 불러와 파일로 저장
       - name: Create application-prod.yml from GitHub Secret
         run: echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
