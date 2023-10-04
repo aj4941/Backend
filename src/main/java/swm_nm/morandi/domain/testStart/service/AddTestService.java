@@ -42,7 +42,6 @@ public class AddTestService {
         Long testId = test.getTestId();
         TestCheckDto testCheckDto = TestCheckDto.builder()
                 .testId(testId)
-                .testTypeId(testType.getTestTypeId())
                 .bojId(member.getBojId())
                 .build();
 

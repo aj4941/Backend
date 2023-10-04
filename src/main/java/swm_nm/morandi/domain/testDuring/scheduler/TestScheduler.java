@@ -14,6 +14,7 @@ import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
@@ -23,17 +24,18 @@ public class TestScheduler {
     private final TestRepository testRepository;
 
     private final CheckAttemptProblemService checkAttemptProblemService;
-    private final Set<TestCheckDto> testSet = new HashSet<>();
+
+    private final TestMapManager testMapManager;
     public void addTest(TestCheckDto testCheckDto) {
         log.info("Scheduler add testID : " + testCheckDto.getTestId());
-        testSet.add(testCheckDto);
+        testMapManager.addTest(testCheckDto);
     }
     @Scheduled(fixedRate = 60000)
     public void callApiPeriodically() {
         List<TestCheckDto> deleteList = new ArrayList<>();
-        testSet.forEach(testCheckDto -> {
-            log.info("Scheduler call testID : " + testCheckDto.getTestId());
-            Long testId = testCheckDto.getTestId();
+        ConcurrentHashMap<Long, TestCheckDto> testMap = testMapManager.getTestMap();
+        testMap.forEach((testId, testCheckDto) -> {
+            log.info("Scheduler call testID : " + testId);
             Optional<Tests> result = testRepository.findById(testId);
             if (result.isEmpty()) {
                 log.info("Scheduler Not Found testID : " + testCheckDto.getTestId());
@@ -42,14 +44,14 @@ public class TestScheduler {
             else {
                 Tests test = result.get();
                 if (test.getTestStatus() == TestStatus.COMPLETED) {
-                    log.info("Scheduler Completed testID : " + testCheckDto.getTestId());
+                    log.info("Scheduler Completed testID : " + testId);
                     deleteList.add(testCheckDto);
                     return;
                 }
                 Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
                 Long minutes = duration.toMinutes();
                 if (minutes > test.getTestTime()) {
-                    log.info("Scheduler exceed minutes testID : " + testCheckDto.getTestId());
+                    log.info("Scheduler exceed minutes testID : " + testId);
                     deleteList.add(testCheckDto);
                     return;
                 }
@@ -57,6 +59,7 @@ public class TestScheduler {
             }
         });
 
-        deleteList.forEach(testSet::remove);
+        deleteList.forEach(testCheckDto ->
+                testMap.remove(testCheckDto.getTestId(), testCheckDto));
     }
 }
