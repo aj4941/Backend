@@ -46,7 +46,6 @@ public class SaveProblemsService {
                     .test(test)
                     .problem(problem)
                     .build();
-            System.out.println("attemptProblem = " + attemptProblem);
             attemptProblemRepository.save(attemptProblem);
         }
         return bojProblemIds;
