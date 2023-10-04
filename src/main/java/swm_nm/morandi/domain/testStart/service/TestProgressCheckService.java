@@ -32,7 +32,6 @@ public class TestProgressCheckService {
     private void extracted(TestType testType, Member member, Tests test) {
         TestCheckDto testCheckDto = TestCheckDto.builder()
                 .testId(test.getTestId())
-                .testTypeId(testType.getTestTypeId())
                 .bojId(member.getBojId())
                 .build();
         testExitService.testExit(testCheckDto,member,test,testType);

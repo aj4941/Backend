@@ -12,7 +12,7 @@ import java.util.*;
 
 @Component
 @RequiredArgsConstructor
-public class DataLoader implements CommandLineRunner {
+public class TestTypeLoader implements CommandLineRunner {
 
     private final TestTypeRepository testTypeRepository;
     int size = -1;

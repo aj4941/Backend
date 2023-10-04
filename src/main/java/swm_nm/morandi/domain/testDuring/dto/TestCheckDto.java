@@ -9,5 +9,4 @@ import lombok.*;
 public class TestCheckDto {
     private Long testId;
     private String bojId;
-    private Long testTypeId;
 }
