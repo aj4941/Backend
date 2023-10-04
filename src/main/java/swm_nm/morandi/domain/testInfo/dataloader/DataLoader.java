@@ -15,11 +15,12 @@ import java.util.*;
 public class DataLoader implements CommandLineRunner {
 
     private final TestTypeRepository testTypeRepository;
+    int size = -1;
     @Override
     public void run(String... args) {
         List<TestType> testTypes = testTypeRepository.findAll();
-        if (testTypes.size() == 0)
-            insertTestTypeData();
+        size = testTypes.size();
+        insertTestTypeData();
     }
     private void insertTestTypeData() {
         // PK 1번 : 코딩테스트 대비 초급 (Small)
@@ -39,7 +40,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType1);
+        if (size < 1)
+        {
+            testTypeRepository.save(testType1);
+            size++;
+        }
 
         // PK 2번 : 코딩테스트 대비 중급 (Small)
         List<DifficultyRange> difficultyRanges2 = new ArrayList<>();
@@ -58,7 +63,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType2);
+        if (size < 2)
+        {
+            testTypeRepository.save(testType2);
+            size++;
+        }
 
         // PK 3번 : 코딩테스트 대비 고급 (Small)
         List<DifficultyRange> difficultyRanges3 = new ArrayList<>();
@@ -77,7 +86,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType3);
+        if (size < 3)
+        {
+            testTypeRepository.save(testType3);
+            size++;
+        }
 
         // PK 4번 : 코딩테스트 대비 초급 (Large)
         List<DifficultyRange> difficultyRanges4 = new ArrayList<>();
@@ -98,7 +111,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType4);
+        if (size < 4)
+        {
+            testTypeRepository.save(testType4);
+            size++;
+        }
 
         // PK 5번 : 코딩테스트 대비 중급 (Large)
         List<DifficultyRange> difficultyRanges5 = new ArrayList<>();
@@ -119,7 +136,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType5);
+        if (size < 5)
+        {
+            testTypeRepository.save(testType5);
+            size++;
+        }
 
         // PK 6번 : 코딩테스트 대비 고급 (Large)
         List<DifficultyRange> difficultyRanges6 = new ArrayList<>();
@@ -140,7 +161,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType6);
+        if (size < 6)
+        {
+            testTypeRepository.save(testType6);
+            size++;
+        }
 
         // PK 7번 : 삼성
         List<DifficultyRange> difficultyRanges7 = new ArrayList<>();
@@ -157,7 +182,12 @@ public class DataLoader implements CommandLineRunner {
                 .numberOfTestTrial(0)
                 .averageCorrectAnswerRate(0L)
                 .build();
-        testTypeRepository.save(testType7);
+
+        if (size < 7)
+        {
+            testTypeRepository.save(testType7);
+            size++;
+        }
 
         // PK 8번 : 네이버
         List<DifficultyRange> difficultyRanges8 = new ArrayList<>();
@@ -177,7 +207,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType8);
+        if (size < 8)
+        {
+            testTypeRepository.save(testType8);
+            size++;
+        }
 
         // PK 9번 : 카카오
         List<DifficultyRange> difficultyRanges9 = new ArrayList<>();
@@ -200,7 +234,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType9);
+        if (size < 9)
+        {
+            testTypeRepository.save(testType9);
+            size++;
+        }
 
         // PK 10번 : 라인
         List<DifficultyRange> difficultyRanges10 = new ArrayList<>();
@@ -222,7 +260,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType10);
+        if (size < 10)
+        {
+            testTypeRepository.save(testType10);
+            size++;
+        }
 
         // PK 11번 : 쿠팡
         List<DifficultyRange> difficultyRanges11 = new ArrayList<>();
@@ -241,7 +283,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType11);
+        if (size < 11)
+        {
+            testTypeRepository.save(testType11);
+            size++;
+        }
 
         // PK 12번 : 우아한형제들
         List<DifficultyRange> difficultyRanges12 = new ArrayList<>();
@@ -260,7 +306,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType12);
+        if (size < 12)
+        {
+            testTypeRepository.save(testType12);
+            size++;
+        }
 
         // PK 13번 : 브론즈 랜덤 디펜스
         List<DifficultyRange> difficultyRanges13 = new ArrayList<>();
@@ -280,7 +330,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType13);
+        if (size < 13)
+        {
+            testTypeRepository.save(testType13);
+            size++;
+        }
 
         // PK 14번 : 실버 랜덤 디펜스
         List<DifficultyRange> difficultyRanges14 = new ArrayList<>();
@@ -300,7 +354,11 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType14);
+        if (size < 14)
+        {
+            testTypeRepository.save(testType14);
+            size++;
+        }
 
         // PK 15번 : 골드 랜덤 디펜스
         List<DifficultyRange> difficultyRanges15 = new ArrayList<>();
@@ -320,6 +378,10 @@ public class DataLoader implements CommandLineRunner {
                 .averageCorrectAnswerRate(0L)
                 .build();
 
-        testTypeRepository.save(testType15);
+        if (size < 15)
+        {
+            testTypeRepository.save(testType15);
+            size++;
+        }
     }
 }

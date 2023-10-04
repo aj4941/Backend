@@ -27,9 +27,8 @@ public class CheckAttemptProblemService {
 
     private final SolvedCheckService solvedCheckService;
     @Transactional
-    public void checkAttemptedProblemResult(Long testId, String bojId) {
-        Tests test = testRepository.findById(testId).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
+    public void checkAttemptedProblemResult(Tests test, String bojId) {
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(test.getTestId());
 
         attemptProblems.stream()
                 .filter(attemptProblem -> !attemptProblem.getIsSolved())

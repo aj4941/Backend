@@ -32,7 +32,7 @@ public class TestType extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DifficultyLevel endDifficulty;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     private List<DifficultyRange> difficultyRanges;
 
     private Long averageCorrectAnswerRate;
