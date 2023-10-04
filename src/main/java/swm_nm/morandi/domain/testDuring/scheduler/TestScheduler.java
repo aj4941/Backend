@@ -34,21 +34,27 @@ public class TestScheduler {
         testSet.forEach(testCheckDto -> {
             log.info("Scheduler call testID : " + testCheckDto.getTestId());
             Long testId = testCheckDto.getTestId();
-            Tests test = testRepository.findById(testId)
-                    .orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
-            if (test.getTestStatus() == TestStatus.COMPLETED) {
-                log.info("Scheduler Completed testID : " + testCheckDto.getTestId());
+            Optional<Tests> result = testRepository.findById(testId);
+            if (result.isEmpty()) {
+                log.info("Scheduler Not Found testID : " + testCheckDto.getTestId());
                 deleteList.add(testCheckDto);
-                return;
             }
-            Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
-            Long minutes = duration.toMinutes();
-            if (minutes > test.getTestTime()) {
-                log.info("Scheduler exceed minutes testID : " + testCheckDto.getTestId());
-                deleteList.add(testCheckDto);
-                return;
+            else {
+                Tests test = result.get();
+                if (test.getTestStatus() == TestStatus.COMPLETED) {
+                    log.info("Scheduler Completed testID : " + testCheckDto.getTestId());
+                    deleteList.add(testCheckDto);
+                    return;
+                }
+                Duration duration = Duration.between(test.getTestDate(), LocalDateTime.now());
+                Long minutes = duration.toMinutes();
+                if (minutes > test.getTestTime()) {
+                    log.info("Scheduler exceed minutes testID : " + testCheckDto.getTestId());
+                    deleteList.add(testCheckDto);
+                    return;
+                }
+                checkAttemptProblemService.checkAttemptedProblemResult(test, testCheckDto.getBojId());
             }
-            checkAttemptProblemService.checkAttemptedProblemResult(testCheckDto.getTestId(), testCheckDto.getBojId());
         });
 
         deleteList.forEach(testSet::remove);
