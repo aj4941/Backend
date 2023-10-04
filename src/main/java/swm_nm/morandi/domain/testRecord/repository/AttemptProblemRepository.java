@@ -34,6 +34,17 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
     List<Object[]> getHeatMapDataSinceOneYear(@Param("memberId") Long memberId, @Param("oneYearAgo") LocalDateTime oneYearAgo);
 
 
+    @Query("SELECT a.algorithmName, " +
+                "COUNT(ap.problem) as totalAttempts, " +
+                "SUM(CASE WHEN ap.isSolved = true THEN 1 ELSE 0 END) as solvedAttempts " +
+            "FROM AlgorithmProblemList apl " +
+            "JOIN apl.algorithm a " +
+            "JOIN AttemptProblem AS ap ON apl.problem.problemId = ap.problem.problemId " +
+            "WHERE ap.member.memberId = :memberId " +
+            "GROUP BY a.algorithmName")
+    List<Object[]> getAttemptStatisticsCollectByAlgorithm(@Param("memberId") Long memberId);
+
+
     //List<AttemptProblem> findAttemptProblemsByTest_TestIdOrderByAttemptProblemIdAsc(Long testId);
 }
 

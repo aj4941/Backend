@@ -36,8 +36,9 @@ public class TestRecordController {
     }
     @GetMapping("/graphs")
     @Operation(summary = "사용자 그래프 분석 데이터", description = "사용자가 테스트를 본 결과를 바탕으로 그래프 분석 데이터를 보여줍니다.")
-    public ResponseEntity<List<GraphDto>> memberRecordGraph() {
-        return new ResponseEntity<>(getGraphService.getGraphDtos(), HttpStatus.OK);
+    public ResponseEntity<GraphResponseDto> memberRecordGraph() {
+     //   return new ResponseEntity<>(getGraphService.getGraphDtos(), HttpStatus.OK);
+       return new ResponseEntity<>(getGraphService.getGraph(), HttpStatus.OK);
     }
     @GetMapping("/current-rating")
     @Operation(summary = "사용자 현재 레이팅", description = "사용자가 가지고 있는 현재 레이팅을 보여줍니다.")
