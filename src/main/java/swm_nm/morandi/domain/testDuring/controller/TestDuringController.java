@@ -29,7 +29,7 @@ public class TestDuringController {
 
     @PostMapping("/output")
     @Operation(summary = "코드 실행 결과값 반환", description = "사용자가 특정 코드를 실행할 경우 결과값을 제공합니다.")
-    public ResponseEntity<OutputDto> getOutputResult
+    public ResponseEntity<List<OutputDto>> getOutputResult
             (@RequestBody TestInputData testInputData) throws Exception {
         return new ResponseEntity<>(runCodeService.runCode(testInputData), HttpStatus.OK);
     }
