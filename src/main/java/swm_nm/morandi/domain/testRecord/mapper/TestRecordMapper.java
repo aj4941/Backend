@@ -11,12 +11,17 @@ import java.util.List;
 
 public class TestRecordMapper {
     public static TestRecordDto convertToDto(Tests test, List<AttemptProblemDto> attemptProblemDtos) {
-
+        Integer acceptCount = 0;
+        for (AttemptProblemDto attemptProblemDto : attemptProblemDtos) {
+            if (attemptProblemDto.getIsSolved())
+                acceptCount++;
+        }
         TestRecordDto testRecordDto = TestRecordDto.builder()
                 .testId(test.getTestId())
                 .testDate(test.getTestDate())
                 .testTime(test.getTestTime())
                 .problemCount(test.getProblemCount())
+                .acceptCount(acceptCount)
                 .startDifficulty(test.getStartDifficulty())
                 .endDifficulty(test.getEndDifficulty())
                 .testTypename(test.getTestTypename())
