@@ -45,7 +45,6 @@ public class TestStartUseCase {
     @Transactional
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        System.out.println("MemberID : " + memberId);
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
