@@ -89,7 +89,9 @@ public class GetProblemsService {
                     JsonNode itemsArray = rootNode.get("items");
                     if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
                         if (isAlpha(itemsArray)) continue;
+                        long prev = index;
                         index = getProblem(bojProblems, index, mapper, itemsArray);
+                        if (prev == index) continue;
                         break;
                     }
                 } catch (JsonProcessingException e) {
@@ -113,6 +115,8 @@ public class GetProblemsService {
             throws JsonProcessingException {
         JsonNode firstProblem = itemsArray.get(0);
         BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
+        if (apiProblem.getProblemId() > 28000)
+            return index;
         BojProblem bojProblem = bojProblems.get((int) (index - 1));
         bojProblem.setProblemId(apiProblem.getProblemId());
         bojProblem.setLevel(apiProblem.getLevel());

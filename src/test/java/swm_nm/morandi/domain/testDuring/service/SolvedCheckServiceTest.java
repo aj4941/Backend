@@ -65,7 +65,6 @@ class SolvedCheckServiceTest {
         TestCheckDto testCheckDto = new TestCheckDto();
         testCheckDto.setTestId(savedTest.getTestId());
         testCheckDto.setBojId("aj4941");
-        testCheckDto.setTestTypeId(1L);
 
         // when
         List<AttemptProblemDto> attemptProblemDtos = solvedCheckService.isSolvedCheck(testCheckDto);

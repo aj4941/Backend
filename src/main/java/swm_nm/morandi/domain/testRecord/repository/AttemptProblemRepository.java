@@ -20,15 +20,23 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
     // from attempt_problem where test_id = (select test_id from tests t left join t.member m where t.member_id = m.member_id and between 1 year ago and now() and t.test_status = 'COMPLETED' order by t.test_date desc )
     // is_solved = true
     // group by test_date;
+//    @Query("SELECT a.testDate, count(a.testDate) " +
+//            "FROM AttemptProblem a " +
+//            "WHERE a.test.testId IN " +
+//                "(SELECT DISTINCT t.testId " +
+//                    "FROM Tests t " +
+//                    "WHERE t.member.memberId = :memberId " +
+//                    "AND (t.testDate BETWEEN :oneYearAgo AND CURRENT_TIMESTAMP) " +
+//                    "AND t.testStatus = 'COMPLETED') " +
+//            "AND a.isSolved = true " +
+//            "GROUP BY a.testDate " +
+//            "ORDER BY a.testDate DESC")
     @Query("SELECT a.testDate, count(a.testDate) " +
             "FROM AttemptProblem a " +
-            "WHERE a.test.testId IN " +
-                "(SELECT DISTINCT t.testId " +
-                    "FROM Tests t " +
-                    "WHERE t.member.memberId = :memberId " +
-                    "AND (t.testDate BETWEEN :oneYearAgo AND CURRENT_TIMESTAMP) " +
-                    "AND t.testStatus = 'COMPLETED') " +
+            "JOIN a.test t " +
+            "WHERE a.member.memberId = :memberId " +
             "AND a.isSolved = true " +
+            "AND (t.testDate BETWEEN :oneYearAgo AND CURRENT_TIMESTAMP) " +
             "GROUP BY a.testDate " +
             "ORDER BY a.testDate DESC")
     List<Object[]> getHeatMapDataSinceOneYear(@Param("memberId") Long memberId, @Param("oneYearAgo") LocalDateTime oneYearAgo);
