@@ -25,6 +25,7 @@ public class TestRecordDto {
     private LocalDateTime testDate;
     private Long testTime;
     private Integer problemCount;
+    private Integer acceptCount;
     private DifficultyLevel startDifficulty;
     private DifficultyLevel endDifficulty;
     private String testTypename;
