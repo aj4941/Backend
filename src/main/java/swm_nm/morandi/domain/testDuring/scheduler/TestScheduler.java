@@ -1,6 +1,8 @@
 package swm_nm.morandi.domain.testDuring.scheduler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
@@ -8,17 +10,17 @@ import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testInfo.repository.TestRepository;
 import swm_nm.morandi.domain.testStart.service.CheckAttemptProblemService;
-import swm_nm.morandi.global.exception.MorandiException;
-import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@EnableAsync
 public class TestScheduler {
 
     private final TestRepository testRepository;
@@ -31,7 +33,8 @@ public class TestScheduler {
         testMapManager.addTest(testCheckDto);
     }
     @Scheduled(fixedRate = 60000)
-    public void callApiPeriodically() {
+    @Async
+    public Future<Void> callApiPeriodically() {
         List<TestCheckDto> deleteList = new ArrayList<>();
         ConcurrentHashMap<Long, TestCheckDto> testMap = testMapManager.getTestMap();
         testMap.forEach((testId, testCheckDto) -> {
@@ -61,5 +64,6 @@ public class TestScheduler {
 
         deleteList.forEach(testCheckDto ->
                 testMap.remove(testCheckDto.getTestId(), testCheckDto));
+        return null;
     }
 }
