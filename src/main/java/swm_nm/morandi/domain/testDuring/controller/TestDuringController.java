@@ -29,9 +29,15 @@ public class TestDuringController {
 
     @PostMapping("/output")
     @Operation(summary = "코드 실행 결과값 반환", description = "사용자가 특정 코드를 실행할 경우 결과값을 제공합니다.")
-    public ResponseEntity<List<OutputDto>> getOutputResult
+    public ResponseEntity<OutputDto> getOutputResult
+            (@RequestBody InputData inputData) throws Exception {
+        return new ResponseEntity<>(runCodeService.runCode(inputData), HttpStatus.OK);
+    }
+    @PostMapping("/tc-output")
+    @Operation(summary = "테스트케이스 실행 결과값 반환", description = "사용자가 특정 코드를 실행할 경우 결과값을 제공합니다.")
+    public ResponseEntity<List<OutputDto>> getTestCaseOutputResult
             (@RequestBody TestInputData testInputData) throws Exception {
-        return new ResponseEntity<>(runCodeService.runCode(testInputData), HttpStatus.OK);
+        return new ResponseEntity<>(runCodeService.runTestCaseCode(testInputData), HttpStatus.OK);
     }
     @PostMapping("/is-solved")
     @Operation(summary = "테스트 문제 정답 여부 확인", description = "테스트 문제의 정답 여부를 확인 및 반환합니다.")
