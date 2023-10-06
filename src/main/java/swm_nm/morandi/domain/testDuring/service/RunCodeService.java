@@ -10,6 +10,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
+import swm_nm.morandi.domain.testDuring.dto.InputData;
 import swm_nm.morandi.domain.testDuring.dto.OutputDto;
 import swm_nm.morandi.domain.testDuring.dto.TestInputData;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,10 +21,36 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class RunCodeService {
-    public List<OutputDto> runCode(TestInputData testInputData) throws Exception {
+    public OutputDto runCode(InputData inputData) throws Exception {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         String url = "http://10.0.102.184:8080";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String inputDataJson = objectMapper.writeValueAsString(inputData);
+
+        // Create POST request
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Content-Type", "application/json");
+        httpPost.setEntity(new StringEntity(inputDataJson));
+
+        // Send POST request
+        HttpResponse response = httpClient.execute(httpPost);
+
+        // Check response status code
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode == 200) {
+            String responseJson = EntityUtils.toString(response.getEntity());
+            OutputDto outputDto = objectMapper.readValue(responseJson, OutputDto.class);
+            return outputDto;
+        } else {
+            throw new Exception("HTTP request failed with status code: " + statusCode);
+        }
+    }
+    public List<OutputDto> runTestCaseCode(TestInputData testInputData) throws Exception {
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        String url = "http://10.0.102.184:8080/tc";
 
         ObjectMapper objectMapper = new ObjectMapper();
         String inputDataJson = objectMapper.writeValueAsString(testInputData);
