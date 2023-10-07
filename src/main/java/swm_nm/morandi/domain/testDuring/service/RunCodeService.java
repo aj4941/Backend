@@ -9,22 +9,28 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.InputData;
 import swm_nm.morandi.domain.testDuring.dto.OutputDto;
 import swm_nm.morandi.domain.testDuring.dto.TestInputData;
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class RunCodeService {
+
+    @Value("${compile.url}")
+    public String url;
+
+    @Value("${compile.tc-url}")
+    public String tcUrl;
+
     public OutputDto runCode(InputData inputData) throws Exception {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        String url = "http://10.0.102.184:8080";
 
         ObjectMapper objectMapper = new ObjectMapper();
         String inputDataJson = objectMapper.writeValueAsString(inputData);
@@ -50,13 +56,12 @@ public class RunCodeService {
     public List<OutputDto> runTestCaseCode(TestInputData testInputData) throws Exception {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        String url = "http://10.0.102.184:8080/tc";
 
         ObjectMapper objectMapper = new ObjectMapper();
         String inputDataJson = objectMapper.writeValueAsString(testInputData);
 
         // Create POST request
-        HttpPost httpPost = new HttpPost(url);
+        HttpPost httpPost = new HttpPost(tcUrl);
         httpPost.setHeader("Content-Type", "application/json");
         httpPost.setEntity(new StringEntity(inputDataJson));
 
