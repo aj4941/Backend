@@ -13,6 +13,8 @@ import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,6 +49,10 @@ public class Tests extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL)
+    private List<AttemptProblem> attemptProblems = new ArrayList<AttemptProblem>();
 
     public void setOriginRating(Long originRating) {
         this.originRating = originRating;

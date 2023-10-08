@@ -52,4 +52,9 @@ public class AttemptProblem extends BaseEntity {
         sb.append('}');
         return sb.toString();
     }
+
+    public void setTest(Tests test) {
+        this.test = test;
+        test.getAttemptProblems().add(this);
+    }
 }

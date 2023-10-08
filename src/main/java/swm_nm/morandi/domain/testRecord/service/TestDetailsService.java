@@ -3,46 +3,44 @@ package swm_nm.morandi.domain.testRecord.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
-import swm_nm.morandi.domain.testInfo.repository.TestRepository;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.domain.testRecord.mapper.TestRecordMapper;
 import swm_nm.morandi.global.exception.MorandiException;
-import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
+import swm_nm.morandi.global.exception.errorcode.AttemptProblemErrorCode;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TestDetailsService {
 
-    private final TestRepository testRepository;
-
     private final AttemptProblemRepository attemptProblemRepository;
 
+    @Transactional
     public TestRecordDto getTestRecordDtoByTestId(Long testId) {
-        //TODO
-        //여기를 DB두번접근하지말고
-        // attemptProblemList에서 testId가 뭐 X인
-        // AttemptProblemList를 가져오도록 쿼리 짜면 DB 한 번으로 개선될 듯?
-
-        Tests test = testRepository.findById(testId).orElseThrow(()-> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
-        List<AttemptProblem> attemptProblems
-                = attemptProblemRepository.findAllByTest_TestId(testId);
-        List<AttemptProblemDto> attemptProblemDtos = new ArrayList<>();
-        if (!attemptProblems.isEmpty()) {
-            long index = 1;
-            for (AttemptProblem attemptProblem : attemptProblems) {
-                AttemptProblemDto attemptProblemDto = AttemptProblemDto.getAttemptProblemDto(attemptProblem);
-                attemptProblemDto.setTestProblemId(index++);
-                attemptProblemDtos.add(attemptProblemDto);
-            }
+        //N+1문제 발생하여 fetch join으로 해결
+        List<AttemptProblem> attemptProblems= attemptProblemRepository.getTestRecordDetail(testId);
+        if (attemptProblems.isEmpty()) {
+            throw new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND);
         }
+        Tests test = attemptProblems.get(0).getTest();
+        long[] index = {1};
+        List<AttemptProblemDto> attemptProblemDtos =
+                attemptProblems
+                        .stream().map(attemptProblem -> {
+                    AttemptProblemDto attemptProblemDto = AttemptProblemDto.getAttemptProblemDto(attemptProblem);
+                    attemptProblemDto.setTestProblemId(index[0]++);
+                    return attemptProblemDto;
+
+                }).collect(Collectors.toList());
+
         TestRecordDto testRecordDto = TestRecordMapper.convertToDto(test, attemptProblemDtos);
         return testRecordDto;
     }

@@ -43,10 +43,12 @@ public class SaveProblemsService {
                     .testDate(LocalDate.now())
                     .executionTime(null)
                     .member(member)
-                    .test(test)
                     .problem(problem)
                     .build();
+            //양방향 연관관계 설정
+            attemptProblem.setTest(test);
             attemptProblemRepository.save(attemptProblem);
+
         }
         return bojProblemIds;
     }

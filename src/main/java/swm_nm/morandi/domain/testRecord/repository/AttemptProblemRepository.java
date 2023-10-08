@@ -36,9 +36,8 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
             "JOIN a.test t " +
             "WHERE a.member.memberId = :memberId " +
             "AND a.isSolved = true " +
-            "AND (t.testDate BETWEEN :oneYearAgo AND CURRENT_TIMESTAMP) " +
-            "GROUP BY a.testDate " +
-            "ORDER BY a.testDate DESC")
+            "AND t.testDate >= :oneYearAgo " +
+            "GROUP BY a.testDate ")  //이건 빠져도 될듯
     List<Object[]> getHeatMapDataSinceOneYear(@Param("memberId") Long memberId, @Param("oneYearAgo") LocalDateTime oneYearAgo);
 
 
@@ -52,8 +51,15 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
             "GROUP BY a.algorithmName")
     List<Object[]> getAttemptStatisticsCollectByAlgorithm(@Param("memberId") Long memberId);
 
-
-    //List<AttemptProblem> findAttemptProblemsByTest_TestIdOrderByAttemptProblemIdAsc(Long testId);
+    //N+1문제 발생하여 fetch join으로
+    @Query("SELECT ap " +
+            "FROM AttemptProblem ap " +
+            "JOIN FETCH ap.test " +
+            "JOIN FETCH ap.problem " +
+            "JOIN FETCH ap.member " +
+            "WHERE ap.test.testId = :testId ")
+    List<AttemptProblem> getTestRecordDetail(@Param("testId") Long testId);
 }
+
 
 
