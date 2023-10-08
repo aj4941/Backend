@@ -7,12 +7,15 @@ import io.sentry.protocol.User;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import swm_nm.morandi.global.utils.SecurityUtils;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.net.InetAddress;
@@ -26,11 +29,31 @@ public class LoggingAspect {
     private ObjectMapper mapper = new ObjectMapper();
     private String host;
     private String ip;
+
+    @Autowired
+    private EntityManager em;
+
     @PostConstruct
     public void init() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         this.host = addr.getHostName();
         this.ip = addr.getHostAddress();
+    }
+
+    //SQL 성능 측정 시 해당 메서드에 @Logging 어노테이션 붙여서 사용
+    @Pointcut("@annotation(swm_nm.morandi.aop.annotation.Logging)")
+    public void loggingPointcut() {
+    }
+
+    @Around("loggingPointcut()")
+    public Object logMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
+        // 영속 컨텍스트 초기화
+        em.clear();
+        long start = System.currentTimeMillis();
+        Object result = joinPoint.proceed();
+        long elapsedTime = System.currentTimeMillis() - start;
+        System.out.println(joinPoint.getSignature() + " 실행 시간 " + elapsedTime + "ms");
+        return result;
     }
 
     @Around("bean(*Controller)")
@@ -90,7 +113,6 @@ public class LoggingAspect {
             return result;
         }
         finally {
-
             log.info("[RESPONSE] [callFunction]: {}, [parameter]: {}, {}", callFunction,
                     mapper.writeValueAsString(result),
                     msg);
