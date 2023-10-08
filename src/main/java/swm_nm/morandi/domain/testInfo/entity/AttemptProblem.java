@@ -26,15 +26,15 @@ public class AttemptProblem extends BaseEntity {
 
     private String submitCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEST_ID")
     private Tests test;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROBLEM_ID")
     private Problem problem;
 
