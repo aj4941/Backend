@@ -3,6 +3,7 @@ package swm_nm.morandi.domain.testInfo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.aop.annotation.Logging;
@@ -32,7 +33,7 @@ public class LatestTestInfoService {
     public List<TestRecordDto> getTestRecordDtosLatest() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         //페이징하여 최근 4개의 테스트 기록을 가져옴
-        Pageable pageable = PageRequest.of(0, 4);
+        Pageable pageable = PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "testDate"));
         List<Tests> recentTests = testRepository.findAllTestsByMember_MemberIdAndTestStatus(memberId, TestStatus.COMPLETED, pageable);
 
         //테스트 기록을 받아와서 dto로 변환하면서 getAttemptProblemDtos를 통해 테스트 문제들을 dto로 변환
