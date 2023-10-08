@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.aop.annotation.Logging;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testRecord.mapper.TestRecordMapper;
@@ -25,12 +26,14 @@ public class LatestTestInfoService {
 
     private final TestRepository testRepository;
 
+    private final AttemptProblemRepository attemptProblemRepository;
+
     @Transactional
     public List<TestRecordDto> getTestRecordDtosLatest() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         //페이징하여 최근 4개의 테스트 기록을 가져옴
         Pageable pageable = PageRequest.of(0, 4);
-        List<Tests> recentTests = testRepository.findAllTestsByMember_MemberIdAndTestStatus(memberId, TestStatus.COMPLETED,pageable);
+        List<Tests> recentTests = testRepository.findAllTestsByMember_MemberIdAndTestStatus(memberId, TestStatus.COMPLETED, pageable);
 
         //테스트 기록을 받아와서 dto로 변환하면서 getAttemptProblemDtos를 통해 테스트 문제들을 dto로 변환
         List<TestRecordDto> testRecordDtos =
@@ -48,7 +51,8 @@ public class LatestTestInfoService {
     //Test의 AttemptProblems를 LAZY 로딩하여두고, default_batch_fetch_size 를 통해 한번에 가져옴
     @Transactional
     public List<AttemptProblemDto> getAttemptProblemDtos(Tests test) {
-        final long[] index = {1};
+        final long[] index = { 1 };
+        // after
         return test.getAttemptProblems().stream().map(attemptProblem -> {
                 AttemptProblemDto attemptProblemDto = AttemptProblemDto.getAttemptProblemDto(attemptProblem);
                 attemptProblemDto.setTestProblemId(index[0]++);
