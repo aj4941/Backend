@@ -20,11 +20,11 @@ public class TypeProblemList extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long typeProblemListId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEST_TYPE_ID")
     private TestType testType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROBLEM_ID")
     private Problem problem;
 }

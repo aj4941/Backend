@@ -18,11 +18,11 @@ public class AlgorithmProblemList extends BaseEntity {
     @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long algorithmProblemListId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROBLEM_ID")
     private Problem problem;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ALGORITHM_ID")
     private Algorithm algorithm;
 }
