@@ -1,11 +1,13 @@
 package swm_nm.morandi.domain.testRecord.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,15 +33,8 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
 //            "AND a.isSolved = true " +
 //            "GROUP BY a.testDate " +
 //            "ORDER BY a.testDate DESC")
-    @Query("SELECT a.testDate, count(a.testDate) " +
-            "FROM AttemptProblem a " +
-            "JOIN a.test t " +
-            "WHERE a.member.memberId = :memberId " +
-            "AND a.isSolved = true " +
-            "AND t.testDate >= :oneYearAgo " +
-            "GROUP BY a.testDate ")  //이건 빠져도 될듯
-    List<Object[]> getHeatMapDataSinceOneYear(@Param("memberId") Long memberId, @Param("oneYearAgo") LocalDateTime oneYearAgo);
 
+    List<AttemptProblem> findAllAttemptProblemsByMember_MemberIdAndAndTestDateAfterAndIsSolved(Long memberId, LocalDate oneYearAgo, boolean isSolved);
 
     @Query("SELECT a.algorithmName, " +
                 "COUNT(ap.problem) as totalAttempts, " +
@@ -51,14 +46,9 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
             "GROUP BY a.algorithmName")
     List<Object[]> getAttemptStatisticsCollectByAlgorithm(@Param("memberId") Long memberId);
 
-    //N+1문제 발생하여 fetch join으로
-    @Query("SELECT ap " +
-            "FROM AttemptProblem ap " +
-            "JOIN FETCH ap.test " +
-            "JOIN FETCH ap.problem " +
-            "JOIN FETCH ap.member " +
-            "WHERE ap.test.testId = :testId ")
-    List<AttemptProblem> getTestRecordDetail(@Param("testId") Long testId);
+    //N+1문제 발생하여 entity graph로
+    @EntityGraph(attributePaths = {"test", "problem", "member"})
+    List<AttemptProblem> findTestDetailsByTest_TestId(Long testId);
 }
 
 

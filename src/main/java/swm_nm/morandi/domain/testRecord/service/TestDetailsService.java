@@ -26,7 +26,7 @@ public class TestDetailsService {
     @Transactional
     public TestRecordDto getTestRecordDtoByTestId(Long testId) {
         //N+1문제 발생하여 fetch join으로 해결
-        List<AttemptProblem> attemptProblems= attemptProblemRepository.getTestRecordDetail(testId);
+        List<AttemptProblem> attemptProblems= attemptProblemRepository.findTestDetailsByTest_TestId(testId);
         if (attemptProblems.isEmpty()) {
             throw new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND);
         }
