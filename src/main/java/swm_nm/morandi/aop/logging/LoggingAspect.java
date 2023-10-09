@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import swm_nm.morandi.config.filter.CachedBodyHttpServletWrapper;
 import swm_nm.morandi.global.utils.SecurityUtils;
 
 import javax.annotation.PostConstruct;
@@ -58,8 +59,9 @@ public class LoggingAspect {
 
     @Around("bean(*Controller)")
     public Object controllerAroundLogging(ProceedingJoinPoint pjp) throws Throwable {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
+       // HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpServletRequest originalRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        CachedBodyHttpServletWrapper request = new CachedBodyHttpServletWrapper(originalRequest);
         //Sentry 사용자 식별을 위한 User 인스턴스 생성
         User user = new User();
         //로그인 이전의 Controller에서도 이 함수에 들어오기 때문에 Security Context에 있는 MemberId를 가져올 수 없다.
