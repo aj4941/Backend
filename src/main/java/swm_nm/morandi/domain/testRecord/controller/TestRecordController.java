@@ -20,8 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestRecordController {
 
-    private final GetGrassService getGrassService;
-
     private final GetGraphService getGraphService;
 
     private final GrassHeatMapService grassHeatMapService;

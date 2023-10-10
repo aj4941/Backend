@@ -37,7 +37,7 @@ public class RatingService {
     public List<RatingGraphDto> getRatingGraphSinceOneYear(){
         Long memberId = SecurityUtils.getCurrentMemberId();
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
-        List<Tests> tests = testRepository.findAllTestsByMember_MemberIdAndTestStatusAndTestDateAfterOrderByTestDateDesc(memberId, TestStatus.COMPLETED, oneYearAgo);
+        List<Tests> tests = testRepository.findAllTestsByMember_MemberIdAndTestStatusAndTestDateAfterOrderByTestDateAsc(memberId, TestStatus.COMPLETED, oneYearAgo);
 
         return tests.stream().map(test ->
                 RatingGraphDto.builder()
