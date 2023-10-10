@@ -55,6 +55,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 
+    //Jsoup
+    implementation 'org.jsoup:jsoup:1.16.1'
+
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 
