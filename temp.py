@@ -1,1 +1,1 @@
-print(123 + 45)
+print("hello world")

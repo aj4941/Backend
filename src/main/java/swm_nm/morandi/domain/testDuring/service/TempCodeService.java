@@ -30,7 +30,7 @@ public class TempCodeService {
             TempCode tempCode = Optional.ofNullable((TempCode) redisTemplate.opsForValue().get(key))
                     .orElseThrow(() -> new MorandiException(TestErrorCode.KEY_NOT_FOUND));
 
-            tempCode.setCode(tempCodeDto.code);
+            tempCode.setCode(tempCodeDto.getCode());
 
             // 테스트 시작 시간으로부터 남은 시간을 계산한다
             Duration duration = Duration.between(LocalDateTime.now(), tempCode.endTime);
@@ -46,7 +46,8 @@ public class TempCodeService {
         }
     }
     public String generateKey(TempCodeDto tempCodeDto) {
-        return String.format("testId:%s:problemNumber:%s", tempCodeDto.testId, tempCodeDto.getProblemNumber());
+        return String.format("testId:%s:problemNumber:%s:language:%s",
+                tempCodeDto.getTestId(), tempCodeDto.getProblemNumber(), tempCodeDto.getLanguage());
     }
 
     public TempCode getTempCode(String key) {
