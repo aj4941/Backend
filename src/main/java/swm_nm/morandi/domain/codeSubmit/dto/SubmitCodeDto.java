@@ -10,7 +10,6 @@ import swm_nm.morandi.global.exception.errorcode.SubmitErrorCode;
 @Getter
 @Setter
 public class SubmitCodeDto {
-    public String cookie;
     public String problemId;
     public String language;
     public String sourceCode;
