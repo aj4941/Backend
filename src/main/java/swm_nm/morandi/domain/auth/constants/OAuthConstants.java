@@ -15,6 +15,9 @@ public class OAuthConstants {
     @Value("${oauth.google.redirect-uri}")
     private String googleRedirectUri;
 
+    @Value("${oauth.github.client-id}")
+    private String githubClientId;
+
     @PostConstruct
     public void init()
     {
@@ -35,10 +38,23 @@ public class OAuthConstants {
                 + "state=state_parameter_passthrough_value&"
                 +"redirect_uri="+googleRedirectUri+"/dev&"
                 +"client_id="+googleClientId;
+
+        GITHUB_REDIRECT_URL = "https://github.com/login/oauth/authorize?client_id="+githubClientId+"&scope=user:email";
+
+        GITHUB_REDIRECT_URL_DEV = "https://github.com/login/oauth/authorize?client_id="+githubClientId+"&scope=user:email";
+        ;
     }
 
+    public String GITHUB_REDIRECT_URL;
+    public String GITHUB_REDIRECT_URL_DEV;
+
+    public String NAVER_REDIRECT_URL;
+    public String NAVER_REDIRECT_URL_DEV;
     public String GOOGLE_REDIRECT_URL;
     public String GOOGLE_REDIRECT_URL_DEV;
     public static final String GOOGLE_USERINFO_REQUEST_URL="https://www.googleapis.com/userinfo/v2/me";
 
+    public static final String GITHUB_USERINFO_REQUEST_URL="https://api.github.com/user";
+    public static final String GITHUB_EMAIL_REQUEST_URL="https://api.github.com/user/emails";
+    public static final String NAVER_USERINFO_REQUEST_URL="https://openapi.naver.com/v1/nid/me";
 }

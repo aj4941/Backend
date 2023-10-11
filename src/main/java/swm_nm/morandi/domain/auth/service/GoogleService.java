@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import swm_nm.morandi.domain.auth.constants.OAuthConstants;
 import swm_nm.morandi.domain.auth.response.GoogleUserDto;
 import swm_nm.morandi.domain.auth.response.TokenResponseDto;
+import swm_nm.morandi.domain.auth.response.UserDto;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.domain.member.entity.SocialType;
@@ -80,7 +81,8 @@ public class GoogleService implements OAuthService{
 
     }
 
-    public GoogleUserDto getMemberInfo(String accessToken){
+    @Override
+    public UserDto getMemberInfo(String accessToken){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization","Bearer "+accessToken);
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity(headers);
