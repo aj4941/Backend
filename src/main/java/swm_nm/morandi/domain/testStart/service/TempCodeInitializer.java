@@ -9,11 +9,17 @@ import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -22,27 +28,43 @@ public class TempCodeInitializer {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final AttemptProblemRepository attemptProblemRepository;
-
-    public String generateKey(Tests test, int problemNumber) {
-        return String.format("testId:%s:problemNumber:%s", test.getTestId(), problemNumber);
+    public String generateKey(Tests test, int problemNumber, String language) {
+        return String.format("testId:%s:problemNumber:%s:language:%s", test.getTestId(), problemNumber, language);
     }
+    private List<String> languages;
+    private List<String> codeLists;
+    @PostConstruct
+    public void initTempCodeInitializer() {
+        languages = List.of("Python", "Cpp", "Java");
+        String pythonCode = readCodeFromFile("temp.py");
+        String cppCode = readCodeFromFile("temp.cpp");
+        String javaCode = readCodeFromFile("Main.java");
+        codeLists = List.of(pythonCode, cppCode, javaCode);
+    }
+
     public void initTempCodeCacheWhenTestStart(Tests test) {
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTestOrderByAttemptProblemIdAsc(test);
         LocalDateTime now = LocalDateTime.now();
-        AtomicInteger i = new AtomicInteger(1);
-
-        attemptProblems.forEach(attemptProblem -> {
-            String key = generateKey(test, i.getAndIncrement());
-            // 끝나는 시간
-            LocalDateTime endTime = now.plusMinutes(test.getTestTime());
-            Duration duration = Duration.between(now, endTime);
-            long expireTime = duration.toMinutes();
-
-            // tempCode를 저장
-            redisTemplate.opsForValue().set(key, new TempCode("initialized", endTime));
-
-            // 테스트 남은 시간만큼 TTL을 설정한다
-            redisTemplate.expire(key, expireTime, TimeUnit.MINUTES);
-        });
+        // 끝나는 시간
+        // tempCode를 저장
+        // 테스트 남은 시간만큼 TTL을 설정한다
+        int size = test.getAttemptProblems().size();
+        IntStream.rangeClosed(1, size).forEach(i ->
+                languages.forEach(language -> {
+                    String key = generateKey(test, i, language);
+                    LocalDateTime endTime = now.plusMinutes(test.getTestTime());
+                    Duration duration = Duration.between(now, endTime);
+                    long expireTime = duration.toMinutes();
+                    redisTemplate.opsForValue().set(key, new TempCode(codeLists.get(languages.indexOf(language)), endTime));
+                    redisTemplate.expire(key, expireTime, TimeUnit.MINUTES);
+            })
+        );
+    }
+    private String readCodeFromFile(String filePath) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(filePath)));
+        } catch (IOException e) {
+            log.error("Error reading code from file: " + filePath, e);
+            return "";
+        }
     }
 }

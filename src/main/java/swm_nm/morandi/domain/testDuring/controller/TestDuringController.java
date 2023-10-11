@@ -57,9 +57,10 @@ public class TestDuringController {
     @Operation(summary = "저장된 코드를 확인합니다", description = "테스트 중일 때, 문제 번호를 바꿀 때 코드 정보를\n" +
             "testId와 attemptProblemId를 이용하여 가져온다. \n")
     public ResponseEntity<TempCode> getTempCode(@RequestParam String testId,
-                                                @RequestParam String problemNumber) {
+                                                @RequestParam String problemNumber,
+                                                @RequestParam String language) {
 
-        String key = String.format("testId:%s:problemNumber:%s", testId, problemNumber);
+        String key = String.format("testId:%s:problemNumber:%s:language:%s", testId, problemNumber, language);
 
         return new ResponseEntity<>(tempCodeService.getTempCode(key), HttpStatus.OK);
 
