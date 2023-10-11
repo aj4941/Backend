@@ -21,7 +21,8 @@ public class CorsConfig {
                 "https://morandi.co.kr",
                 "http://api.morandi.co.kr",
                 "https://api.morandi.co.kr",
-                "chrome-extension://cmblaiddbfchipealeopkbbnboifeedc"));
+                "chrome-extension://cmblaiddbfchipealeopkbbnboifeedc",
+                "chrome-extension://ckepgfjakcdkjpabldbamcfcjhcdojih"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
