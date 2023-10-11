@@ -1,11 +1,11 @@
 package swm_nm.morandi.domain.auth.service;
 
-import swm_nm.morandi.domain.auth.response.GoogleUserDto;
+import swm_nm.morandi.domain.auth.response.UserDto;
 
 public interface OAuthService {
     String getType();
     String getAccessToken(String authorization_code, Boolean isDev);
-    GoogleUserDto getMemberInfo(String accessToken);
+    UserDto getMemberInfo(String accessToken);
 
 //    String getAccessTokenDev(String authorization_code);
 //

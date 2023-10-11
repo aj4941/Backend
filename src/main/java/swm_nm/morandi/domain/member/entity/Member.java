@@ -1,9 +1,6 @@
 package swm_nm.morandi.domain.member.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import swm_nm.morandi.domain.common.BaseEntity;
 
 import javax.persistence.*;

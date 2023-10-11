@@ -2,8 +2,8 @@ package swm_nm.morandi.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.domain.auth.response.GoogleUserDto;
 import swm_nm.morandi.domain.auth.response.TokenDto;
+import swm_nm.morandi.domain.auth.response.UserDto;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.AuthErrorCode;
 
@@ -22,23 +22,22 @@ public class LoginService {
             throw new MorandiException(AuthErrorCode.INVALID_SOCIAL_TYPE);
         }
         String accessToken = oAuthService.getAccessToken(authorization_code, isDev);
+        UserDto userDto = oAuthService.getMemberInfo(accessToken);
 
-        GoogleUserDto googleUserDto = oAuthService.getMemberInfo(accessToken);
-
-        return memberService.loginOrRegisterMember(googleUserDto);
+        return memberService.loginOrRegisterMember(userDto);
 
 
     }
 
-
+    //이건 안 쓰는 코드
     public TokenDto OAuthJoinOrLogin(String type, String accessToken){
         OAuthService oAuthService = oAuthServiceFactory.getServiceByType(type);
         if (oAuthService == null) {
             throw new MorandiException(AuthErrorCode.INVALID_SOCIAL_TYPE);
         }
-        GoogleUserDto googleUserDto = oAuthService.getMemberInfo(accessToken);
+        UserDto userDto = oAuthService.getMemberInfo(accessToken);
         
-        return memberService.loginOrRegisterMember(googleUserDto);
+        return memberService.loginOrRegisterMember(userDto);
 
 
     }

@@ -23,7 +23,6 @@ public class CalculateRatingService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
-    private final TestRepository testRepository;
     @Transactional
     public Long calculateTestRating(Member member, Tests test) {
         List<AttemptProblem> attemptProblems

@@ -7,7 +7,7 @@ import swm_nm.morandi.domain.member.entity.SocialType;
 
 @Getter
 @Setter
-public class GoogleUserDto {
+public class GoogleUserDto implements UserDto {
 
     private String id;
     private String email;
@@ -18,4 +18,30 @@ public class GoogleUserDto {
     private String picture;
     private String locale;
     private SocialType type;
+
+
+    @Override
+    public String getEmail() {
+        return email;
     }
+
+    @Override
+    public String getPicture() {
+        return picture;
+    }
+
+    @Override
+    public String getIntroduceInfo() {
+        return "";
+    }
+
+    @Override
+    public String getGithubUrl() {
+        return "";
+    }
+
+    @Override
+    public SocialType getType() {
+        return type;
+    }
+}

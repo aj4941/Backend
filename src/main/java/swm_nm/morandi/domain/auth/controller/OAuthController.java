@@ -30,7 +30,7 @@ public class OAuthController {
 
     //Authorization Code도 모두 가져오는 경우에 사용하는 callback api
     @GetMapping("/{type}/callback")
-    public ResponseEntity<String> googleLogin(@PathVariable String type, @RequestParam String code, HttpServletResponse response) {
+    public ResponseEntity<String> oauthLogin(@PathVariable String type, @RequestParam String code, HttpServletResponse response) {
         String accessToken = loginService.login(type, code, SecurityConstants.FOR_SERVICE).getAccessToken();
 
         Cookie jwtCookie = new Cookie("accessToken", accessToken);
@@ -49,7 +49,7 @@ public class OAuthController {
 
     //개발자 모드에서는 redirect를 하지 않고 access Token을 가져오는 api
     @GetMapping("/{type}/callback/dev")
-    public TokenDto googleLoginforDevelop(@PathVariable String type, @RequestParam String code) {
+    public TokenDto oauthLoginforDevelop(@PathVariable String type, @RequestParam String code) {
         return loginService.login(type, code,SecurityConstants.FOR_DEVELOPER);
     }
 

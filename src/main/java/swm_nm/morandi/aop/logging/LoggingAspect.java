@@ -97,7 +97,6 @@ public class LoggingAspect {
            while ((line = reader.readLine()) != null)
                requestBody.append(line);
 
-           System.out.println("requestBody = " + requestBody);
            log.info("[REQUEST], [{}]: {}, [RequestBody]: {},[Parameter]: {},  {}", callFunction,request.getMethod(),
                    requestBody
                    , mapper.writeValueAsString(request.getParameterMap())
