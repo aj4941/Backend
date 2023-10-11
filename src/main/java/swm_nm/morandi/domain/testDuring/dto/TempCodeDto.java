@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TempCodeDto {
-    public String testId;
-    public String problemNumber;
-    public String code;
+    private String testId;
+    private String problemNumber;
+    private String language;
+    private String code;
 }
