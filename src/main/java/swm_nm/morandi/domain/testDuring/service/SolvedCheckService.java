@@ -57,6 +57,9 @@ public class SolvedCheckService {
     public void checkAttemptedProblemResult(Tests test, String bojId) {
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(test.getTestId());
 
+
+        //TODO
+        //정답 여부 체크를 한 번의 API호출로 할 수 있을 듯
         attemptProblems.stream()
                 .filter(attemptProblem -> !attemptProblem.getIsSolved())
                 .filter(attemptProblem -> isSolvedProblem(attemptProblem, bojId))

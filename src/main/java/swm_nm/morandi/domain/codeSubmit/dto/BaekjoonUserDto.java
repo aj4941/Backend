@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BaekjoonCookieDto {
+public class BaekjoonUserDto {
+    public String bojId;
     public String cookie;
 }

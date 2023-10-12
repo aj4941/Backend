@@ -6,13 +6,17 @@ import org.jsoup.nodes.Document;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
-import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonCookieDto;
+import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
+import swm_nm.morandi.domain.member.entity.Member;
+import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.global.exception.MorandiException;
+import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.global.exception.errorcode.SubmitErrorCode;
 import swm_nm.morandi.domain.codeSubmit.dto.SubmitCodeDto;
 import swm_nm.morandi.global.utils.SecurityUtils;
@@ -30,6 +34,7 @@ public class BaekjoonSubmitService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final MemberRepository memberRepository;
     //백준 로그인용 쿠키 저장
 
     private String generateKey(Long memberId) {
@@ -37,14 +42,22 @@ public class BaekjoonSubmitService {
     }
 
     //Redis에 현재 로그인한 사용자의 백준 제출용 쿠키를 저장
-    public String saveBaekjoonCookie(BaekjoonCookieDto baekjoonCookieDto) {
+    @Transactional
+    public String saveBaekjoonInfo(BaekjoonUserDto baekjoonUserDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        String key = generateKey(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        redisTemplate.opsForValue().set(key, baekjoonCookieDto.getCookie());
+        String key = generateKey(memberId);
+        //Redis에 쿠키 저장
+        redisTemplate.opsForValue().set(key, baekjoonUserDto.getCookie());
         redisTemplate.expire(key, 12, TimeUnit.HOURS);
 
-        return baekjoonCookieDto.getCookie();
+        //Member에 백준 아이디 초기화, 수정
+        member.setBojId(baekjoonUserDto.getBojId());
+        memberRepository.save(member);
+
+        return baekjoonUserDto.getCookie();
     }
 
 
