@@ -31,6 +31,17 @@ public class OAuthURIController {
 
     }
 
+    @ResponseBody
+    @GetMapping("/github")
+    public String githubRedirect()
+    {
+        return oAuthConstants.GITHUB_REDIRECT_URL;
+    }
+    @GetMapping("/github/dev")
+    public String githubRedirectforDevelop()
+    {
+        return oAuthConstants.GITHUB_REDIRECT_URL;
+    }
 
 
 }

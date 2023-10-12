@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 public class TempCodeInitializer {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final AttemptProblemRepository attemptProblemRepository;
+
     public String generateKey(Tests test, int problemNumber, String language) {
         return String.format("testId:%s:problemNumber:%s:language:%s", test.getTestId(), problemNumber, language);
     }
