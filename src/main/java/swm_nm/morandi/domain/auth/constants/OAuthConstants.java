@@ -18,6 +18,12 @@ public class OAuthConstants {
     @Value("${oauth.github.client-id}")
     private String githubClientId;
 
+    @Value("${oauth.naver.client-id}")
+    private String naverClientId;
+
+    @Value("${oauth.naver.redirect-uri}")
+    private String naverRedirectUri;
+
     @PostConstruct
     public void init()
     {
@@ -42,7 +48,18 @@ public class OAuthConstants {
         GITHUB_REDIRECT_URL = "https://github.com/login/oauth/authorize?client_id="+githubClientId+"&scope=user:email";
 
         GITHUB_REDIRECT_URL_DEV = "https://github.com/login/oauth/authorize?client_id="+githubClientId+"&scope=user:email";
-        ;
+
+        NAVER_REDIRECT_URL="https://nid.naver.com/oauth2.0/authorize?"
+                + "response_type=code&"
+                + "client_id="+ naverClientId + "&"
+                + "redirect_uri=" + naverRedirectUri + "&"
+                + "state=state_parameter_passthrough_value";
+
+        NAVER_REDIRECT_URL_DEV="https://nid.naver.com/oauth2.0/authorize?"
+                + "response_type=code&"
+                + "client_id="+ naverClientId + "&"
+                + "redirect_uri=" + naverRedirectUri + "&"
+                + "state=state_parameter_passthrough_value";
     }
 
     public String GITHUB_REDIRECT_URL;
