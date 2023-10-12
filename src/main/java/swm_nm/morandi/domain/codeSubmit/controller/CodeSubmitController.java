@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonCookieDto;
+import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
 import swm_nm.morandi.domain.codeSubmit.dto.SubmitCodeDto;
 import swm_nm.morandi.domain.codeSubmit.service.BaekjoonSubmitService;
 
@@ -24,7 +24,7 @@ public class CodeSubmitController {
     }
 
     @PostMapping("/cookie")
-    public String loginForSubmit(@RequestBody BaekjoonCookieDto cookieDto) {
-        return submitService.saveBaekjoonCookie(cookieDto);
+    public String loginForSubmit(@RequestBody BaekjoonUserDto userDto) {
+        return submitService.saveBaekjoonInfo(userDto);
     }
 }
