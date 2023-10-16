@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testExit.dto.AttemptCodeDto;
 import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
+import swm_nm.morandi.domain.testExit.dto.TestResultDto;
 import swm_nm.morandi.domain.testExit.service.SaveCodeService;
 import swm_nm.morandi.domain.testExit.service.TestExitService;
 
@@ -28,7 +29,7 @@ public class TestExitController {
     private final SaveCodeService saveCodeService;
     @PostMapping("/exit")
     @Operation(summary = "테스트 종료하기", description = "테스트를 종료할 경우 문제별 정답 여부와 소요 시간을 제공합니다.")
-    public ResponseEntity<List<AttemptProblemDto>> saveAttemptedProblemResult(@RequestBody TestCheckDto testCheckDto) {
+    public ResponseEntity<TestResultDto> saveAttemptedProblemResult(@RequestBody TestCheckDto testCheckDto) {
         return new ResponseEntity<>(testExitService.testExit(testCheckDto), HttpStatus.OK);
     }
     @PostMapping("/submit")

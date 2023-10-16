@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
+import swm_nm.morandi.domain.testExit.dto.TestResultDto;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
@@ -45,7 +46,7 @@ public class TestExitService {
     private final SolvedCheckService solvedCheckService;
 
     //Controller에서 사용되는 것
-    public List<AttemptProblemDto> testExit(TestCheckDto testCheckDto)
+    public TestResultDto testExit(TestCheckDto testCheckDto)
     {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId)
@@ -54,15 +55,16 @@ public class TestExitService {
                 .orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
         TestType testType = testTypeRepository.findTestTypeByTestTypename(test.getTestTypename())
                 .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
-        return testExit(testCheckDto,member,test,testType);
+        return testExit(testCheckDto, member, test, testType);
     }
 
     @Transactional
-    public List<AttemptProblemDto> testExit(TestCheckDto testCheckDto,Member member,Tests test,TestType testType) {
+    public TestResultDto testExit(TestCheckDto testCheckDto, Member member, Tests test, TestType testType) {
         String bojId = testCheckDto.getBojId();
 
         solvedCheckService.checkAttemptedProblemResult(test, bojId);
-        saveTestResult(member,test, testType);
+        TestResultDto testResultDto = TestResultDto.builder().build();
+        saveTestResult(member, test, testType, testResultDto);
 
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(test.getTestId());
 
@@ -73,11 +75,14 @@ public class TestExitService {
             attemptProblemDto.setTestProblemId(number++);
             attemptProblemDtos.add(attemptProblemDto);
         }
-        return attemptProblemDtos;
+
+        testResultDto.setAttemptProblemDtos(attemptProblemDtos);
+
+        return testResultDto;
     }
 
     @Transactional
-    public void saveTestResult(Member member,Tests test, TestType testType) {
+    public void saveTestResult(Member member, Tests test, TestType testType, TestResultDto testResultDto) {
         test.setTestStatus(TestStatus.COMPLETED);
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTest_TestId(test.getTestId());
         long correct = attemptProblems.stream()
@@ -92,6 +97,9 @@ public class TestExitService {
         test.setTestRating(calculateRatingService.calculateTestRating(member, test));
 
         member.setCurrentTestId(-1L);
+        testResultDto.setBeforeRating(member.getRating());
+        testResultDto.setAfterRating(test.getTestRating());
+        testResultDto.setTestDate(test.getTestDate());
 
         // 테스트 결과 저장
         testTypeRepository.save(testType);
