@@ -45,9 +45,22 @@ public class BaekjoonSubmitService {
     @Transactional
     public String saveBaekjoonInfo(BaekjoonUserDto baekjoonUserDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MorandiException(MemberErrorCode.EXTENSION_MEMBER_NOT_FOUND));
+
+        //이미 백준 아이디가 존재하는 경우 -> TODO 크롬익스텐션에서 예외 잡아서 loginCookieValue null로 처리하고 팝업 하나 띄우기
+        if(member.getBojId()==null)
+        {
+            if (memberRepository.existsByBojId(baekjoonUserDto.getBojId())) {
+                throw new MorandiException(MemberErrorCode.DUPLICATED_BOJ_ID);
+             }
+        }
+        //백준 아이디가 기존에 저장된 id랑 다른 경우 -> TODO 크롬익스텐션에서 예외 잡아서 팝업 띄우고 기존 저장된 백준 id가 다르다고 알려주기
+        else if(!member.getBojId().equals(baekjoonUserDto.bojId))
+        {
+            throw new MorandiException(SubmitErrorCode.BAEKJOON_LOGIN_ERROR);
+        }
         String key = generateKey(memberId);
         //Redis에 쿠키 저장
         redisTemplate.opsForValue().set(key, baekjoonUserDto.getCookie());
