@@ -48,11 +48,9 @@ public class CalculateRatingService {
         }
         rating = (addRating == 0) ? 500L : rating + addRating;
         long resultRating = (memberRating * 4 + rating) / 5; // 사용자 현재 레이팅 반영
-        if (allSolved) memberRating = max(memberRating, resultRating);
-        else memberRating = resultRating;
-        member.setRating(memberRating);
+        if (allSolved) resultRating = max(memberRating, resultRating);
         test.setOriginRating(rating); // 순수 테스트 레이팅 결과
-        return memberRating;
+        return resultRating;
     }
     private static long getRating(Integer problemCount) {
         long rating = 0L;
