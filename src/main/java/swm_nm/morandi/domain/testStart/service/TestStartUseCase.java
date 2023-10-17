@@ -5,8 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.problem.entity.Problem;
+import swm_nm.morandi.domain.testDuring.dto.TempCode;
+import swm_nm.morandi.domain.testDuring.service.TempCodeService;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
+import swm_nm.morandi.domain.testStart.dto.TestCodeDto;
 import swm_nm.morandi.domain.testStart.dto.TestStartResponseDto;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
@@ -22,6 +25,8 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import static java.lang.Math.max;
 
@@ -35,6 +40,7 @@ public class TestStartUseCase {
     private final SaveProblemsService saveProblemsService;
     private final TempCodeInitializer tempCodeInitializer;
     private final MemberInfoService memberInfoService;
+    private final TempCodeService tempCodeService;
     private final TestTypeRepository testTypeRepository;
     private final TestProgressCheckService testProgressCheckService;
 
@@ -53,7 +59,7 @@ public class TestStartUseCase {
         // 이미 테스트 중인지 확인
         Tests test = testProgressCheckService.isTestinProgress(member);
         if (test != null) {
-            return getTestStartResponseDto(member.getCurrentTestId(), test);
+            return getTestStartResponseDto(test);
         }
         TestType testType = testTypeRepository.findById(testTypeId)
                 .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
@@ -78,28 +84,53 @@ public class TestStartUseCase {
         return getTestStartResponseDto(test, bojProblems);
     }
 
-    private static TestStartResponseDto getTestStartResponseDto(Tests test, List<BojProblem> bojProblems) {
-        List<Long> bojProblemIds = new ArrayList<>();
-        for (BojProblem bojProblem : bojProblems) {
-            bojProblemIds.add(bojProblem.getProblemId());
-        }
-
+    private TestStartResponseDto getTestStartResponseDto(Tests test, List<BojProblem> bojProblems) {
+        List<Long> bojProblemIds = bojProblems.stream().map(BojProblem::getProblemId).collect(Collectors.toList());
+        List<TestCodeDto> testCodeDtos = getTestCodeDtos(test);
         return TestStartResponseDto.builder()
                 .testId(test.getTestId())
                 .bojProblemIds(bojProblemIds)
                 .remainingTime(test.getRemainingTime())
+                .testCodeDtos(testCodeDtos)
                 .build();
     }
 
-    private TestStartResponseDto getTestStartResponseDto(Long currentTestId, Tests test) {
-        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(currentTestId);
+    private List<TestCodeDto> getTestCodeDtos(Tests test) {
+        Long testId = test.getTestId();
+        List<String> languages = List.of("Python", "Cpp", "Java");
+        List<TestCodeDto> testCodeDtos = new ArrayList<>();
+        LongStream.rangeClosed(1, test.getProblemCount()).forEach(problemNumber -> {
+            String pythonCode = "", cppCode = "", javaCode = "";
+            for (String language : languages) {
+                String key = String.format("testId:%s:problemNumber:%s:language:%s", testId, problemNumber, language);
+                String code = tempCodeService.getTempCode(key).getCode();
+                if (language.equals("Python")) pythonCode = code;
+                else if (language.equals("Cpp")) cppCode = code;
+                else if (language.equals("Java")) javaCode = code;
+            }
+            TestCodeDto testCodeDto = TestCodeDto.builder()
+                    .problemNumber(problemNumber)
+                    .pythonCode(pythonCode)
+                    .cppCode(cppCode)
+                    .javaCode(javaCode)
+                    .build();
+            testCodeDtos.add(testCodeDto);
+        });
+        return testCodeDtos;
+    }
+
+    private TestStartResponseDto getTestStartResponseDto(Tests test) {
+        Long testId = test.getTestId();
+        List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
         List<Long> bojProblemIds = attemptProblems.stream().map(AttemptProblem::getProblem)
                 .map(Problem::getBojProblemId).collect(Collectors.toList());
+        List<TestCodeDto> testCodeDtos = getTestCodeDtos(test);
         TestStartResponseDto testStartResponseDto
                 = TestStartResponseDto.builder()
-                .testId(currentTestId)
+                .testId(testId)
                 .bojProblemIds(bojProblemIds)
                 .remainingTime(test.getRemainingTime())
+                .testCodeDtos(testCodeDtos)
                 .build();
 
         // 테스트 시작에 대한 ResponseDto 반환
