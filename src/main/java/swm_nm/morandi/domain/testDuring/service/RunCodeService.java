@@ -22,6 +22,8 @@ import java.util.List;
 @Slf4j
 public class RunCodeService {
 
+    private final TempCodeService tempCodeService;
+
     @Value("${compile.url}")
     public String url;
 
@@ -29,6 +31,9 @@ public class RunCodeService {
     public String tcUrl;
 
     public OutputDto runCode(InputData inputData) throws Exception {
+
+        tempCodeService.saveTempCode(inputData.getTestId(), inputData.getProblemNumber(),
+                inputData.getLanguage(), inputData.getCode());
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -54,6 +59,9 @@ public class RunCodeService {
         }
     }
     public List<OutputDto> runTestCaseCode(TestInputData testInputData) throws Exception {
+
+        tempCodeService.saveTempCode(testInputData.getTestId(),
+                testInputData.getProblemNumber(), testInputData.getLanguage(), testInputData.getCode());
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
