@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testExit.dto.AttemptCodeDto;
-import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
 import swm_nm.morandi.domain.testExit.dto.TestResultDto;
 import swm_nm.morandi.domain.testExit.service.SaveCodeService;
 import swm_nm.morandi.domain.testExit.service.TestExitService;
