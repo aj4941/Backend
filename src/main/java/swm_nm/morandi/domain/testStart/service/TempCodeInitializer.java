@@ -36,9 +36,9 @@ public class TempCodeInitializer {
     @PostConstruct
     public void initTempCodeInitializer() {
         languages = List.of("Python", "Cpp", "Java");
-        String pythonCode = readCodeFromFile("src/main/resources/codes/temp.py");
-        String cppCode = readCodeFromFile("src/main/resources/codes/temp.cpp");
-        String javaCode = readCodeFromFile("src/main/resources/codes/temp.java");
+        String pythonCode = readCodeFromFile("codes/temp.py");
+        String cppCode = readCodeFromFile("codes/temp.cpp");
+        String javaCode = readCodeFromFile("codes/Main.java");
         codeLists = List.of(pythonCode, cppCode, javaCode);
     }
 
