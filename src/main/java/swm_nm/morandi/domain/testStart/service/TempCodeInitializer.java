@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.TempCode;
-import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
-import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -15,10 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 @Service
@@ -38,7 +34,7 @@ public class TempCodeInitializer {
         languages = List.of("Python", "Cpp", "Java");
         String pythonCode = readCodeFromFile("codes/temp.py");
         String cppCode = readCodeFromFile("codes/temp.cpp");
-        String javaCode = readCodeFromFile("codes/Main.java");
+        String javaCode = readCodeFromFile("codes/temp.java");
         codeLists = List.of(pythonCode, cppCode, javaCode);
     }
 
