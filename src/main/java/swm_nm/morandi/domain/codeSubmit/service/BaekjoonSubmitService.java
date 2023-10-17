@@ -1,6 +1,7 @@
 package swm_nm.morandi.domain.codeSubmit.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class BaekjoonSubmitService {
 
@@ -45,7 +47,6 @@ public class BaekjoonSubmitService {
     @Transactional
     public String saveBaekjoonInfo(BaekjoonUserDto baekjoonUserDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MorandiException(MemberErrorCode.EXTENSION_MEMBER_NOT_FOUND));
 
@@ -59,7 +60,7 @@ public class BaekjoonSubmitService {
         //백준 아이디가 기존에 저장된 id랑 다른 경우 -> TODO 크롬익스텐션에서 예외 잡아서 팝업 띄우고 기존 저장된 백준 id가 다르다고 알려주기
         else if(!member.getBojId().equals(baekjoonUserDto.bojId))
         {
-            throw new MorandiException(SubmitErrorCode.BAEKJOON_LOGIN_ERROR);
+            throw new MorandiException(SubmitErrorCode.BAEKJOON_INVALID_ID);
         }
         String key = generateKey(memberId);
         //Redis에 쿠키 저장
