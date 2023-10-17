@@ -17,21 +17,14 @@ import swm_nm.morandi.config.filter.FilterConfig;
 public class SecurityConfig {
 
     private final FilterConfig filterConfig;
-    //private final JwtAuthException jwtAuthException;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
-     http
+        http
                 .httpBasic().disable()
                 .csrf().disable()
                 .cors()
-                .and()
-
-                .authorizeRequests()
-                .antMatchers("/oauths/**").permitAll()
-                .antMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated()
                 .and()
 
                 .sessionManagement()

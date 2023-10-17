@@ -34,7 +34,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         //log.error(message, e);
         Sentry.configureScope(Scope::clear);
 
-
         //인증 에러 발생 시 로그인 페이지로 이동 시키기, 인증 에러가 아닐 경우에는 에러 메시지만 반환하기
         if (e.getErrorCode().getHttpStatus() ==HttpStatus.UNAUTHORIZED) {
             HttpHeaders headers = new HttpHeaders();

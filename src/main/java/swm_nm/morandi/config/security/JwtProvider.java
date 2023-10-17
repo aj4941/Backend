@@ -21,6 +21,8 @@ import java.util.Optional;
 public class JwtProvider {
     private final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
     private Optional<Jws<Claims>> parseTokenToJws(String token){
+        if(token==null)
+            throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
         try {
             Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(getSecretKey())
                     .build()
