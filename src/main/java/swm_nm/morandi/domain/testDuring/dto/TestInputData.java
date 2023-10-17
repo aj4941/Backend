@@ -9,6 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TestInputData {
+    private Long testId;
+    private Long problemNumber;
     private String language;
     private String code;
     private List<String> input;

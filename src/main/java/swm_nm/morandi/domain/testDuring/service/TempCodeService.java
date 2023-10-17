@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import swm_nm.morandi.domain.testDuring.dto.InputData;
 import swm_nm.morandi.domain.testDuring.dto.TempCode;
 import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
@@ -22,15 +23,15 @@ public class TempCodeService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void saveTempCode(TempCodeDto tempCodeDto) {
-        String key = generateKey(tempCodeDto);
+    public void saveTempCode(Long testId, Long problemNumber, String language, String code) {
+        String key = generateKey(testId, problemNumber, language);
         Long remainingTTL = redisTemplate.getExpire(key);
 
         if (remainingTTL != null && remainingTTL > 0) {
             TempCode tempCode = Optional.ofNullable((TempCode) redisTemplate.opsForValue().get(key))
                     .orElseThrow(() -> new MorandiException(TestErrorCode.KEY_NOT_FOUND));
 
-            tempCode.setCode(tempCodeDto.getCode());
+            tempCode.setCode(code);
 
             // 테스트 시작 시간으로부터 남은 시간을 계산한다
             Duration duration = Duration.between(LocalDateTime.now(), tempCode.endTime);
@@ -45,9 +46,9 @@ public class TempCodeService {
             throw new MorandiException(TestErrorCode.TTL_EXPIRED);
         }
     }
-    public String generateKey(TempCodeDto tempCodeDto) {
+    public String generateKey(Long testId, Long problemNumber, String language) {
         return String.format("testId:%s:problemNumber:%s:language:%s",
-                tempCodeDto.getTestId(), tempCodeDto.getProblemNumber(), tempCodeDto.getLanguage());
+                testId, problemNumber, language);
     }
 
     public TempCode getTempCode(String key) {
