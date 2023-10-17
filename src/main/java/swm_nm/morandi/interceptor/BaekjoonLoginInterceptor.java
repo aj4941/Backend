@@ -2,6 +2,7 @@ package swm_nm.morandi.interceptor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -18,19 +19,21 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class BaekjoonLoginInterceptor implements HandlerInterceptor {
 
+    @Value("${extension.activated}")
+    private Boolean extensionActivated;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private String generateKey(Long memberId) {
         return String.format("OnlineJudgeCookie:memberId:%s", memberId);
     }
 
-    @Override
+    @Override   
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Long memberId = SecurityUtils.getCurrentMemberId();
         String key = generateKey(memberId);
         Boolean hasKey = redisTemplate.hasKey(key);
 
-        if (hasKey == null || !hasKey) {
+        if (extensionActivated && (hasKey == null || !hasKey)) {
             throw new MorandiException(SubmitErrorCode.COOKIE_NOT_EXIST);
         }
 
