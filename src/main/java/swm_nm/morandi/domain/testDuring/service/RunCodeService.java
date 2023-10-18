@@ -43,7 +43,7 @@ public class RunCodeService {
         // Create POST request
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Content-Type", "application/json");
-        httpPost.setEntity(new StringEntity(inputDataJson));
+        httpPost.setEntity(new StringEntity(inputDataJson, "UTF-8"));
 
         // Send POST request
         HttpResponse response = httpClient.execute(httpPost);
@@ -71,7 +71,7 @@ public class RunCodeService {
         // Create POST request
         HttpPost httpPost = new HttpPost(tcUrl);
         httpPost.setHeader("Content-Type", "application/json");
-        httpPost.setEntity(new StringEntity(inputDataJson));
+        httpPost.setEntity(new StringEntity(inputDataJson, "UTF-8"));
 
         // Send POST request
         HttpResponse response = httpClient.execute(httpPost);
