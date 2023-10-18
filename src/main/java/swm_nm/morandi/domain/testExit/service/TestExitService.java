@@ -100,6 +100,7 @@ public class TestExitService {
         testResultDto.setBeforeRating(member.getRating());
         testResultDto.setAfterRating(test.getTestRating());
         testResultDto.setTestDate(test.getTestDate());
+        member.setRating(test.getTestRating());
 
         // 테스트 결과 저장
         testTypeRepository.save(testType);
