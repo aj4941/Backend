@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum SubmitConstants {
-    JAVA("93"),
-    C_PLUSPLUS("84"),
-    PYTHON("28"),
-    PYPY3("73"),
+    Java("93"),
+    Cpp("84"),
+    Python("28"),
+    Pypy3("73"),
     C99("0"),
-    RUBY("68"),
+    Ruby("68"),
     KOTLIN("69"),
     SWIFT("74"),
     TEXT("58"),

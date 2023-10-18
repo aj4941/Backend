@@ -102,9 +102,9 @@ public class BaekjoonSubmitService {
 
     }
     //POST로 보낼 때 필요한 파라미터들을 생성
-    private MultiValueMap<String, String> createParameters(SubmitCodeDto submitCodeDto, String CSRFKey, String problemId) {
+    private MultiValueMap<String, String> createParameters(SubmitCodeDto submitCodeDto, String CSRFKey, String bojProblemId) {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("problem_id", problemId);
+        parameters.add("problem_id", bojProblemId);
         parameters.add("language", submitCodeDto.getLanguageId());
         parameters.add("code_open", CodeVisuabilityConstants.CLOSE.getCodeVisuability());
         parameters.add("source", submitCodeDto.getSourceCode());
@@ -118,16 +118,16 @@ public class BaekjoonSubmitService {
         String cookie = Optional.ofNullable((String) redisTemplate.opsForValue().get(key))
                 .orElseThrow(() -> new MorandiException(SubmitErrorCode.COOKIE_NOT_EXIST));
 
-        String problemId = submitCodeDto.getProblemId();
+        String bojProblemId = submitCodeDto.getBojProblemId();
 
-        String CSRFKey = getCSRFKey(cookie, problemId);
+        String CSRFKey = getCSRFKey(cookie, bojProblemId);
 
-        String acmicpcUrl = "https://www.acmicpc.net/submit/" + problemId;
+        String acmicpcUrl = "https://www.acmicpc.net/submit/" + bojProblemId;
 
         HttpHeaders headers = createHeaders(cookie);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> parameters = createParameters(submitCodeDto, CSRFKey, problemId);
+        MultiValueMap<String, String> parameters = createParameters(submitCodeDto, CSRFKey, bojProblemId);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(parameters, headers);
 

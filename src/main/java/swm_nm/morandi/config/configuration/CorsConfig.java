@@ -23,7 +23,9 @@ public class CorsConfig {
                 "https://api.morandi.co.kr",
                 "chrome-extension://ljkmahbkojffhjdjkghaljooajocajnf",//배포된 크롬 익스텐션
                 "chrome-extension://cmblaiddbfchipealeopkbbnboifeedc",
-                "chrome-extension://ckepgfjakcdkjpabldbamcfcjhcdojih"));
+                "chrome-extension://ckepgfjakcdkjpabldbamcfcjhcdojih",
+                "chrome-extension://lfhcfibdigjcendabogbkpcofcgkhfep"
+                                        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
