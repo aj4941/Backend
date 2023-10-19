@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 @Getter
 public enum TestTypeErrorCode implements ErrorCode {
-    TEST_TYPE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "테스트 타입을 찾을 수 없습니다.");
+    TEST_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "테스트 타입을 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

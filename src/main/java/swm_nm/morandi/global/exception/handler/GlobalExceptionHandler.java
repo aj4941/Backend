@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,6 +19,8 @@ import swm_nm.morandi.global.exception.response.ErrorResponse;
 
 import javax.servlet.http.Cookie;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
@@ -59,10 +62,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     //@ExceptionHandler(MethodArgumentNotValidException.class) // - Override할 때는 이것도 없어야함
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log.error("IllegalArgument",ex);
+
+
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         Sentry.configureScope(Scope::clear);
-        return handleExceptionInternal(errorCode, ex.getMessage());
+
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+
+        String errorMessage = fieldErrors.stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+
+        return handleExceptionInternal(errorCode, errorMessage);
     }
 
     @ExceptionHandler({Exception.class})

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 @Getter
 public enum AttemptProblemErrorCode implements ErrorCode {
-    ATTEMPT_PROBLEM_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "해당 시도 문제를 찾을 수 없습니다.")
+    ATTEMPT_PROBLEM_NOT_FOUND(HttpStatus.NO_CONTENT, "해당 시도 문제를 찾을 수 없습니다.")
     ;
 
 
