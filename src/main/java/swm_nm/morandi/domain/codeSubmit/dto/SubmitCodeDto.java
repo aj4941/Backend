@@ -7,11 +7,19 @@ import swm_nm.morandi.domain.codeSubmit.constants.SubmitConstants;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.SubmitErrorCode;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 public class SubmitCodeDto {
+
+    @NotNull(message = "문제 번호를 입력해주세요")
     public String bojProblemId;
+
+    @NotNull(message = "언어를 입력해주세요")
     public String language;
+
+    @NotNull(message = "소스코드를 입력해주세요")
     public String sourceCode;
 
     public String getLanguageId() {

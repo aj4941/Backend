@@ -84,8 +84,9 @@ public class BaekjoonSubmitService {
     }
 
     //POST 보낼 때 필요한 CSRF 키를 가져옴
-    public String getCSRFKey(String cookie, String problemId) {
-        String acmicpcUrl = "https://www.acmicpc.net/submit/" + problemId;
+    public String getCSRFKey(String cookie, String bojProblemId) {
+
+        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", bojProblemId);
 
         HttpHeaders headers = createHeaders(cookie);
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -120,9 +121,19 @@ public class BaekjoonSubmitService {
 
         String bojProblemId = submitCodeDto.getBojProblemId();
 
+        try {
+            int problemId = Integer.parseInt(bojProblemId);
+            if (problemId >= 30000 || problemId < 1000)
+                throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
+        }
+        catch (NumberFormatException e) {
+            throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
+        }
+
         String CSRFKey = getCSRFKey(cookie, bojProblemId);
 
-        String acmicpcUrl = "https://www.acmicpc.net/submit/" + bojProblemId;
+        //String.format으로 바꾸면
+        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", bojProblemId);
 
         HttpHeaders headers = createHeaders(cookie);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -135,18 +146,16 @@ public class BaekjoonSubmitService {
             ResponseEntity<String> response = restTemplate.postForEntity(acmicpcUrl, request, String.class);
             String location = response.getHeaders().getLocation().toString();
 
-            if(location.contains("status")) {
-                if (!location.startsWith("http"))
-                    location = URI.create(acmicpcUrl).resolve(location).toString();
-                ResponseEntity<String> redirectedResponse = restTemplate.exchange(location, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-                return ResponseEntity.status(redirectedResponse.getStatusCode()).body(redirectedResponse.getBody());
-                //return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-            }
-            else
+            if(location.contains("status")) //정상적으로 제출되어 제출현황 페이지로 redirect시키려는 경우
+                return new ResponseEntity<>(HttpStatus.OK);
+            else //로그인창으로 넘어간 경우
                 throw new MorandiException(SubmitErrorCode.BAEKJOON_LOGIN_ERROR);
         }
         catch(HttpClientErrorException e) {
             throw new MorandiException(SubmitErrorCode.BAEKJOON_SERVER_ERROR);
+        }
+        catch(Exception e) {       //알 수 없는 오류
+            throw new MorandiException(SubmitErrorCode.BAEKJOON_UNKNOWN_ERROR);
         }
     }
 
