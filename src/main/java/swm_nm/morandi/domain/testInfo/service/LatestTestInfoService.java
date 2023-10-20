@@ -13,6 +13,7 @@ import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
+import swm_nm.morandi.domain.testRecord.dto.TestRecordRequestDto;
 import swm_nm.morandi.domain.testRecord.mapper.TestRecordMapper;
 import swm_nm.morandi.domain.testInfo.repository.TestRepository;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
@@ -33,10 +34,12 @@ public class LatestTestInfoService {
     private final AttemptProblemRepository attemptProblemRepository;
 
     @Transactional
-    public List<TestRecordDto> getTestRecordDtosLatest() {
+    public List<TestRecordDto> getTestRecordDtosLatest(TestRecordRequestDto testRecordRequestDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
+        Integer page = testRecordRequestDto.getPage();
+        Integer size = testRecordRequestDto.getSize();
         //페이징하여 최근 4개의 테스트 기록을 가져옴
-        Pageable pageable = PageRequest.of(0, 4, Sort.by(DESC, "testDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(DESC, "testDate"));
         List<Tests> recentTests = testRepository.findAllTestsByMember_MemberIdAndTestStatus(memberId, TestStatus.COMPLETED, pageable);
 
         //테스트 기록을 받아와서 dto로 변환하면서 getAttemptProblemDtos를 통해 테스트 문제들을 dto로 변환
