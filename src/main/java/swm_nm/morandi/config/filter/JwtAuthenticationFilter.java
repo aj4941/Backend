@@ -58,6 +58,12 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
             return;
         }
 
+        //스웨거
+        if(request.getRequestURI().startsWith("/swagger-ui/") || request.getRequestURI().startsWith("/v3/api-docs") || request.getRequestURI().startsWith("/swagger-resources") ){
+            filterChain.doFilter(request,response);
+            return;
+        }
+
         String token = getJwtFromRequest(request);
 
         if(StringUtils.hasText(token)&&jwtProvider.validateToken(token))
@@ -76,11 +82,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                 filterChain.doFilter(request,response);
                 return;
             }
-            //스웨거
-            if(request.getRequestURI().startsWith("/swagger-ui/") || request.getRequestURI().startsWith("/v3/api-docs") || request.getRequestURI().startsWith("/swagger-resources") ){
-                filterChain.doFilter(request,response);
-                return;
-            }
+
             //초기 정보인 백준 ID가 아직 등록되지 않았으면 예외처리 (초기값 설정 유도)
             if (!(request.getRequestURI().equals("/members/register-info")) && userDetails.getBojId() == null) {
                 String msg = String.format("[clientIP]: %s, [clientURL]: %s,",
