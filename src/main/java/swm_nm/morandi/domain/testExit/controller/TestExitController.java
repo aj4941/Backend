@@ -15,8 +15,6 @@ import swm_nm.morandi.domain.testExit.dto.TestResultDto;
 import swm_nm.morandi.domain.testExit.service.SaveCodeService;
 import swm_nm.morandi.domain.testExit.service.TestExitService;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/tests")
 @RequiredArgsConstructor
