@@ -9,6 +9,8 @@ import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
 import swm_nm.morandi.domain.codeSubmit.dto.SubmitCodeDto;
 import swm_nm.morandi.domain.codeSubmit.service.BaekjoonSubmitService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/submit")
@@ -19,12 +21,12 @@ public class CodeSubmitController {
 
     @PostMapping("/baekjoon")
     @Operation(summary = "문제 번호, 언어이름, 소스코드를 백준에 제출하는 컨트롤러 ", description = "사용자가 테스트 중 코드를 제출하는 경우 백준에 제출하는 컨트롤러입니다.")
-    public ResponseEntity<String> submit(@RequestBody SubmitCodeDto submitCodeDto) {
+    public ResponseEntity<String> submit(@RequestBody @Valid SubmitCodeDto submitCodeDto) {
         return submitService.submit(submitCodeDto);
     }
 
     @PostMapping("/cookie")
-    public String loginForSubmit(@RequestBody BaekjoonUserDto userDto) {
+    public String loginForSubmit(@RequestBody @Valid BaekjoonUserDto userDto) {
         return submitService.saveBaekjoonInfo(userDto);
     }
 }
