@@ -11,7 +11,7 @@ public enum SubmitErrorCode implements ErrorCode {
     LANGUAGE_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST,"지원하는 언어 ID를 찾을 수 없습니다."),
     BAEKJOON_LOGIN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"백준 로그인에 실패했습니다. 쿠키를 다시 보내주세요"),
     COOKIE_NOT_EXIST(HttpStatus.BAD_REQUEST,"쿠키가 존재하지 않습니다. 익스텐션을 실행해 주세요"),
-    BAEKJOON_INVALID_ID(HttpStatus.UNAUTHORIZED,"초기에 등록한 백준 ID로 로그인 해주세요"),
+    BAEKJOON_INVALID_ID(HttpStatus.BAD_REQUEST,"초기에 등록한 백준 ID로 로그인 해주세요"),
     BAEKJOON_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"알 수 없는 오류가 발생했습니다"),
     INVALID_BOJPROBLEM_NUMBER(HttpStatus.BAD_REQUEST,"유효하지 않은 문제 번호입니다");
 
