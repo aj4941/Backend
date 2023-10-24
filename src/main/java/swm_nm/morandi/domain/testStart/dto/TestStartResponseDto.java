@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class TestStartResponseDto {
     private Long testId;
-    private List<Long> bojProblemIds = new ArrayList<>();
+    private List<BojProblemDto> bojProblems = new ArrayList<>();
     private List<TestCodeDto> testCodeDtos = new ArrayList<>();
     private Long remainingTime;
 }

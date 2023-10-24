@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
-import swm_nm.morandi.domain.problem.entity.Problem;
-import swm_nm.morandi.domain.testDuring.dto.TempCode;
 import swm_nm.morandi.domain.testDuring.service.TempCodeService;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
+import swm_nm.morandi.domain.testStart.dto.BojProblemDto;
 import swm_nm.morandi.domain.testStart.dto.TestCodeDto;
 import swm_nm.morandi.domain.testStart.dto.TestStartResponseDto;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
@@ -84,12 +83,20 @@ public class TestStartUseCase {
         return getTestStartResponseDto(test, bojProblems);
     }
 
+
+    //테스트 만들어졌을 때에는 모두 안 푼 문제니깐 false로 초기화
     private TestStartResponseDto getTestStartResponseDto(Tests test, List<BojProblem> bojProblems) {
-        List<Long> bojProblemIds = bojProblems.stream().map(BojProblem::getProblemId).collect(Collectors.toList());
+        List<BojProblemDto> bojProblemDtos = bojProblems.stream().map(bojProblem ->
+                BojProblemDto.builder()
+                        .isSolved(false)
+                        .bojProblemId(bojProblem.getProblemId())
+                        .build())
+                .collect(Collectors.toList());
+
         List<TestCodeDto> testCodeDtos = getTestCodeDtos(test);
         return TestStartResponseDto.builder()
                 .testId(test.getTestId())
-                .bojProblemIds(bojProblemIds)
+                .bojProblems(bojProblemDtos)
                 .remainingTime(test.getRemainingTime())
                 .testCodeDtos(testCodeDtos)
                 .build();
@@ -122,13 +129,19 @@ public class TestStartUseCase {
     private TestStartResponseDto getTestStartResponseDto(Tests test) {
         Long testId = test.getTestId();
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
-        List<Long> bojProblemIds = attemptProblems.stream().map(AttemptProblem::getProblem)
-                .map(Problem::getBojProblemId).collect(Collectors.toList());
+
+        List<BojProblemDto> bojProblemDtos =
+                attemptProblems.stream().map(attemptProblem -> BojProblemDto.builder()
+                       .isSolved(attemptProblem.getIsSolved())
+                       .bojProblemId(attemptProblem.getProblem().getBojProblemId())
+                       .build()).collect(Collectors.toList());
+
         List<TestCodeDto> testCodeDtos = getTestCodeDtos(test);
+
         TestStartResponseDto testStartResponseDto
                 = TestStartResponseDto.builder()
                 .testId(testId)
-                .bojProblemIds(bojProblemIds)
+                .bojProblems(bojProblemDtos)
                 .remainingTime(test.getRemainingTime())
                 .testCodeDtos(testCodeDtos)
                 .build();
