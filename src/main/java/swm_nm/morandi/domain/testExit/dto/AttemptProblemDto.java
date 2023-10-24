@@ -11,13 +11,16 @@ public class AttemptProblemDto {
     private Long testProblemId;
     private Long bojProblemId;
     private Boolean isSolved;
-    private Long executionTime;
+    private String executionTime;
 
     public static AttemptProblemDto getAttemptProblemDto(AttemptProblem attemptProblem) {
+        Long attemptProblemExecutionTime = attemptProblem.getExecutionTime();
+        String executionTime = (attemptProblemExecutionTime == null)
+                ? null : String.format("%d:%02d", attemptProblemExecutionTime / 60, attemptProblemExecutionTime % 60);
         return AttemptProblemDto.builder()
                 .bojProblemId(attemptProblem.getProblem().getBojProblemId())
                 .isSolved(attemptProblem.getIsSolved())
-                .executionTime(attemptProblem.getExecutionTime())
+                .executionTime(executionTime)
                 .build();
     }
 }
