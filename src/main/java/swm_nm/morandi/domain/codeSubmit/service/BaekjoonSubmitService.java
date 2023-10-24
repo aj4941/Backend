@@ -13,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
+import swm_nm.morandi.domain.codeSubmit.constants.SubmitConstants;
 import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
@@ -38,11 +39,6 @@ public class BaekjoonSubmitService {
 
     private final MemberRepository memberRepository;
     //백준 로그인용 쿠키 저장
-
-    private String generateKey(Long memberId) {
-        return String.format("OnlineJudgeCookie:memberId:%s", memberId);
-    }
-
     //Redis에 현재 로그인한 사용자의 백준 제출용 쿠키를 저장
     @Transactional
     public String saveBaekjoonInfo(BaekjoonUserDto baekjoonUserDto) {
@@ -50,41 +46,73 @@ public class BaekjoonSubmitService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MorandiException(MemberErrorCode.EXTENSION_MEMBER_NOT_FOUND));
 
-        //이미 백준 아이디가 존재하는 경우 -> TODO 크롬익스텐션에서 예외 잡아서 loginCookieValue null로 처리하고 팝업 하나 띄우기
-        if(member.getBojId()==null)
-        {
-            if (memberRepository.existsByBojId(baekjoonUserDto.getBojId())) {
-                throw new MorandiException(MemberErrorCode.DUPLICATED_BOJ_ID);
-             }
-        }
-        //백준 아이디가 기존에 저장된 id랑 다른 경우 -> TODO 크롬익스텐션에서 예외 잡아서 팝업 띄우고 기존 저장된 백준 id가 다르다고 알려주기
-        else if(!member.getBojId().equals(baekjoonUserDto.bojId))
-        {
-            throw new MorandiException(SubmitErrorCode.BAEKJOON_INVALID_ID);
-        }
-        String key = generateKey(memberId);
-        //Redis에 쿠키 저장
-        redisTemplate.opsForValue().set(key, baekjoonUserDto.getCookie());
-        redisTemplate.expire(key, 12, TimeUnit.HOURS);
+        validateBojId(member, baekjoonUserDto.getBojId());
 
-        //Member에 백준 아이디 초기화, 수정
-        member.setBojId(baekjoonUserDto.getBojId());
-        memberRepository.save(member);
+        saveCookieToRedis(memberId, baekjoonUserDto.getCookie());
 
+        //Member에 백준 아이디 초기화
+        if(member.getBojId()==null) {
+            updateMemberInfo(member, baekjoonUserDto.getBojId());
+        }
         return baekjoonUserDto.getCookie();
     }
 
+    private void validateBojId(Member member, String bojId) {
+        String existingBojId = member.getBojId();
+        //이미 백준 아이디가 존재하는 경우 -> TODO 크롬익스텐션에서 예외 잡아서 loginCookieValue null로 처리하고 팝업 하나 띄우기
+        if (existingBojId == null && memberRepository.existsByBojId(bojId)) {
+            throw new MorandiException(MemberErrorCode.DUPLICATED_BOJ_ID);
+        }
+        //백준 아이디가 기존에 저장된 id랑 다른 경우 -> TODO 크롬익스텐션에서 예외 잡아서 팝업 띄우고 기존 저장된 백준 id가 다르다고 알려주기
+        if (existingBojId != null && !existingBojId.equals(bojId)) {
+            throw new MorandiException(SubmitErrorCode.BAEKJOON_INVALID_ID);
+        }
 
-    //쿠키를 헤더에 추가
-    private HttpHeaders createHeaders(String cookie) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", USER_AGENT);
-        headers.set("Cookie", "OnlineJudge=" + cookie);
-        return headers;
+    }
+
+    private void saveCookieToRedis(Long memberId,String cookie){
+        String key = generateKey(memberId);
+        //Redis에 쿠키 저장
+        redisTemplate.opsForValue().set(key, cookie);
+        redisTemplate.expire(key, 12, TimeUnit.HOURS);
+    }
+    private String generateKey(Long memberId) {
+        return String.format("OnlineJudgeCookie:memberId:%s", memberId);
+    }
+
+    private void updateMemberInfo(Member member, String bojId){
+        member.setBojId(bojId);
+        memberRepository.save(member);
+
+    }
+
+    public ResponseEntity<String> submit(SubmitCodeDto submitCodeDto) {
+        validateBojProblemId(submitCodeDto.getBojProblemId());
+
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        String cookie = getCookieFromRedis(generateKey(memberId));
+        String CSRFKey = getCSRFKey(cookie, submitCodeDto.getBojProblemId());
+        String submitResult = sendSubmitRequest(cookie, CSRFKey, submitCodeDto);
+
+        return processSubmitResult(submitResult);
+    }
+    private void validateBojProblemId(String bojProblemId) {
+        try {
+            int problemId = Integer.parseInt(bojProblemId);
+            if (problemId >= 30000 || problemId < 1000)
+                throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
+        }
+        catch (NumberFormatException e) {
+            throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
+        }
+    }
+    private String getCookieFromRedis(String key){
+        return Optional.ofNullable((String) redisTemplate.opsForValue().get(key))
+                .orElseThrow(() -> new MorandiException(SubmitErrorCode.COOKIE_NOT_EXIST));
     }
 
     //POST 보낼 때 필요한 CSRF 키를 가져옴
-    public String getCSRFKey(String cookie, String bojProblemId) {
+    private String getCSRFKey(String cookie, String bojProblemId) {
 
         String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", bojProblemId);
 
@@ -102,54 +130,26 @@ public class BaekjoonSubmitService {
         }
 
     }
-    //POST로 보낼 때 필요한 파라미터들을 생성
-    private MultiValueMap<String, String> createParameters(SubmitCodeDto submitCodeDto, String CSRFKey, String bojProblemId) {
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("problem_id", bojProblemId);
-        parameters.add("language", submitCodeDto.getLanguageId());
-        parameters.add("code_open", CodeVisuabilityConstants.CLOSE.getCodeVisuability());
-        parameters.add("source", submitCodeDto.getSourceCode());
-        parameters.add("csrf_key", CSRFKey);
-        return parameters;
+
+    //쿠키를 헤더에 추가
+    private HttpHeaders createHeaders(String cookie) {
+        HttpHeaders headers = new HttpHeaders();
+            headers.set("User-Agent", USER_AGENT);
+            headers.set("Cookie", "OnlineJudge=" + cookie);
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        return headers;
     }
-    public ResponseEntity<String> submit(SubmitCodeDto submitCodeDto) {
 
-        String key = generateKey(SecurityUtils.getCurrentMemberId());
-
-        String cookie = Optional.ofNullable((String) redisTemplate.opsForValue().get(key))
-                .orElseThrow(() -> new MorandiException(SubmitErrorCode.COOKIE_NOT_EXIST));
-
-        String bojProblemId = submitCodeDto.getBojProblemId();
-
-        try {
-            int problemId = Integer.parseInt(bojProblemId);
-            if (problemId >= 30000 || problemId < 1000)
-                throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
-        }
-        catch (NumberFormatException e) {
-            throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
-        }
-
-        String CSRFKey = getCSRFKey(cookie, bojProblemId);
-
-        //String.format으로 바꾸면
-        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", bojProblemId);
-
+    private String sendSubmitRequest(String cookie, String CSRFKey, SubmitCodeDto submitCodeDto) {
+        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", submitCodeDto.getBojProblemId());
         HttpHeaders headers = createHeaders(cookie);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> parameters = createParameters(submitCodeDto, CSRFKey, bojProblemId);
-
+        MultiValueMap<String, String> parameters = createParameters(submitCodeDto, CSRFKey);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(parameters, headers);
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(acmicpcUrl, request, String.class);
-            String location = response.getHeaders().getLocation().toString();
 
-            if(location.contains("status")) //정상적으로 제출되어 제출현황 페이지로 redirect시키려는 경우
-                return new ResponseEntity<>(HttpStatus.OK);
-            else //로그인창으로 넘어간 경우
-                throw new MorandiException(SubmitErrorCode.BAEKJOON_LOGIN_ERROR);
+            return response.getHeaders().getLocation().toString();
         }
         catch(HttpClientErrorException e) {
             throw new MorandiException(SubmitErrorCode.BAEKJOON_SERVER_ERROR);
@@ -158,6 +158,20 @@ public class BaekjoonSubmitService {
             throw new MorandiException(SubmitErrorCode.BAEKJOON_UNKNOWN_ERROR);
         }
     }
-
-
+    //POST로 보낼 때 필요한 파라미터들을 생성
+    private MultiValueMap<String, String> createParameters(SubmitCodeDto submitCodeDto, String CSRFKey) {
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+            parameters.add("problem_id", submitCodeDto.getBojProblemId());
+            parameters.add("language", submitCodeDto.getLanguageId());
+            parameters.add("code_open", CodeVisuabilityConstants.CLOSE.getCodeVisuability());
+            parameters.add("source", submitCodeDto.getSourceCode());
+            parameters.add("csrf_key", CSRFKey);
+        return parameters;
+    }
+    private ResponseEntity<String> processSubmitResult(String submitResult) {
+        if (submitResult.contains("status")) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        throw new MorandiException(SubmitErrorCode.BAEKJOON_LOGIN_ERROR);
+    }
 }
