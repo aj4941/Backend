@@ -88,7 +88,7 @@ public class GetProblemsService {
                     JsonNode rootNode = mapper.readTree(jsonString);
                     JsonNode itemsArray = rootNode.get("items");
                     if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
-                        if (isAlpha(itemsArray)) continue;
+                        if (!isKorean(itemsArray)) continue;
                         long prev = index;
                         index = getProblem(bojProblems, index, mapper, itemsArray);
                         if (prev == index) continue;
@@ -125,14 +125,9 @@ public class GetProblemsService {
         return index;
     }
 
-    private static boolean isAlpha(JsonNode itemsArray) {
+    private static boolean isKorean(JsonNode itemsArray) {
         JsonNode firstItemNode = itemsArray.get(0);
         String title = firstItemNode.get("titleKo").asText();
-        int alpha = (int) IntStream.range(0, 2).filter(i -> ('a' <= title.charAt(i) && title.charAt(i) <= 'z')
-                || ('A' <= title.charAt(i) && title.charAt(i) <= 'Z')).count();
-
-        if (alpha == 2)
-            return true;
-        return false;
+        return title.matches(".*[가-힣]+.*");
     }
 }
