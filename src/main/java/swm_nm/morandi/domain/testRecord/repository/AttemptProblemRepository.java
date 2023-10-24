@@ -4,17 +4,20 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, Long> {
     List<AttemptProblem> findAllByMember_MemberId(Long memberId);
     List<AttemptProblem> findAllByTest_TestId(Long testId);
     List<AttemptProblem> findAllByTestOrderByAttemptProblemIdAsc(Tests test);
+
+    Optional<AttemptProblem> findByMember_MemberIdAndTest_testIdAndTest_TestStatusAndProblem_BojProblemId(Long memberId, Long testId, TestStatus testStatus, Long bojProblemId);
     List<AttemptProblem> findAttemptProblemsByTest_TestId(Long testId);
 
     //1년동안의 테스트 기록 히트맵 데이터를 가져온다.
