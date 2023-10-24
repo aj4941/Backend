@@ -13,7 +13,8 @@ public enum SubmitErrorCode implements ErrorCode {
     COOKIE_NOT_EXIST(HttpStatus.BAD_REQUEST,"쿠키가 존재하지 않습니다. 익스텐션을 실행해 주세요"),
     BAEKJOON_INVALID_ID(HttpStatus.BAD_REQUEST,"초기에 등록한 백준 ID로 로그인 해주세요"),
     BAEKJOON_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"알 수 없는 오류가 발생했습니다"),
-    INVALID_BOJPROBLEM_NUMBER(HttpStatus.BAD_REQUEST,"유효하지 않은 문제 번호입니다");
+    INVALID_BOJPROBLEM_NUMBER(HttpStatus.BAD_REQUEST,"유효하지 않은 문제 번호입니다"),
+    CANT_FIND_SOLUTION_ID(HttpStatus.BAD_REQUEST,"Solution ID를 찾을 수 없습니다");
 
     //TODO
     //크롬익스텐션에서 fetch요청 시 forbidden오면 저장된 쿠키 null로 변경하고, 다시 로그인하라는 메시지 띄우기

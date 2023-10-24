@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
-import swm_nm.morandi.domain.codeSubmit.constants.SubmitConstants;
 import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
+import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdDto;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.global.exception.MorandiException;
@@ -86,15 +87,16 @@ public class BaekjoonSubmitService {
 
     }
 
-    public ResponseEntity<String> submit(SubmitCodeDto submitCodeDto) {
+    public ResponseEntity<SolutionIdDto> submit(SubmitCodeDto submitCodeDto) {
         validateBojProblemId(submitCodeDto.getBojProblemId());
 
         Long memberId = SecurityUtils.getCurrentMemberId();
         String cookie = getCookieFromRedis(generateKey(memberId));
         String CSRFKey = getCSRFKey(cookie, submitCodeDto.getBojProblemId());
         String submitResult = sendSubmitRequest(cookie, CSRFKey, submitCodeDto);
-
-        return processSubmitResult(submitResult);
+        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", submitCodeDto.getBojProblemId());
+        HttpHeaders headers = createHeaders(cookie);
+        return processSubmitResult(submitResult,acmicpcUrl,headers);
     }
     private void validateBojProblemId(String bojProblemId) {
         try {
@@ -168,10 +170,48 @@ public class BaekjoonSubmitService {
             parameters.add("csrf_key", CSRFKey);
         return parameters;
     }
-    private ResponseEntity<String> processSubmitResult(String submitResult) {
-        if (submitResult.contains("status")) {
-            return new ResponseEntity<>(HttpStatus.OK);
+    private ResponseEntity<SolutionIdDto> processSubmitResult(String location,String acmicpcUrl,HttpHeaders headers){
+
+        if (location.contains("status")) {
+                if (!location.startsWith("http"))
+                    location = URI.create(acmicpcUrl).resolve(location).toString();
+                ResponseEntity<String> redirectedResponse = restTemplate.exchange(location, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+                // HTML에서 solution-id를 추출합니다.
+                SolutionIdDto solutionId = extractSolutionIdFromHtml(redirectedResponse.getBody());
+
+                if (solutionId.getSolutionId() != null) {
+                    System.out.println("Extracted Solution ID: " + solutionId);
+                    return ResponseEntity.status(redirectedResponse.getStatusCode()).body(solutionId);
+
+                } else {
+                    throw new MorandiException(SubmitErrorCode.CANT_FIND_SOLUTION_ID);
+                }
+
+
         }
         throw new MorandiException(SubmitErrorCode.BAEKJOON_LOGIN_ERROR);
+    }
+    private SolutionIdDto extractSolutionIdFromHtml(String html) {
+        // HTML을 파싱합니다.
+        Document doc = Jsoup.parse(html);
+
+        // 테이블을 선택합니다.
+        Element table = doc.getElementById("status-table");
+
+        // 첫 번째 행을 선택합니다.
+        Element firstRow = table.select("tbody tr").first();
+
+        // 첫 번째 행에서 solution-id를 추출합니다.
+        Element solutionIdElement = firstRow.select("td").first(); // 첫 번째 열에 있는 것이 solution-id 입니다.
+
+        if (solutionIdElement != null) {
+            String solutionId = solutionIdElement.text();
+
+            return new SolutionIdDto(solutionId);
+
+        } else {
+           throw new MorandiException(SubmitErrorCode.CANT_FIND_SOLUTION_ID);
+        }
     }
 }
