@@ -21,8 +21,6 @@ import java.util.List;
 @Slf4j
 public class CheckAttemptProblemService {
 
-    private final TestRepository testRepository;
-
     private final AttemptProblemRepository attemptProblemRepository;
 
     private final SolvedCheckService solvedCheckService;

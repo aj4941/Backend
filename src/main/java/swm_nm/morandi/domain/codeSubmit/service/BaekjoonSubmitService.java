@@ -93,10 +93,9 @@ public class BaekjoonSubmitService {
         Long memberId = SecurityUtils.getCurrentMemberId();
         String cookie = getCookieFromRedis(generateKey(memberId));
         String CSRFKey = getCSRFKey(cookie, submitCodeDto.getBojProblemId());
-        String submitResult = sendSubmitRequest(cookie, CSRFKey, submitCodeDto);
-        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", submitCodeDto.getBojProblemId());
-        HttpHeaders headers = createHeaders(cookie);
-        return processSubmitResult(submitResult,acmicpcUrl,headers);
+
+        return sendSubmitRequest(cookie, CSRFKey, submitCodeDto);
+
     }
     private void validateBojProblemId(String bojProblemId) {
         try {
@@ -142,7 +141,7 @@ public class BaekjoonSubmitService {
         return headers;
     }
 
-    private String sendSubmitRequest(String cookie, String CSRFKey, SubmitCodeDto submitCodeDto) {
+    private ResponseEntity<SolutionIdDto> sendSubmitRequest(String cookie, String CSRFKey, SubmitCodeDto submitCodeDto) {
         String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", submitCodeDto.getBojProblemId());
         HttpHeaders headers = createHeaders(cookie);
         MultiValueMap<String, String> parameters = createParameters(submitCodeDto, CSRFKey);
@@ -150,15 +149,40 @@ public class BaekjoonSubmitService {
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(acmicpcUrl, request, String.class);
+            String location = response.getHeaders().getLocation().toString();
+            if(location.contains("status")) {
+                if (!location.startsWith("http"))
+                    location = URI.create(acmicpcUrl).resolve(location).toString();
 
-            return response.getHeaders().getLocation().toString();
+
+                ResponseEntity<String> redirectedResponse = restTemplate.exchange(location, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+
+
+                // HTML에서 solution-id를 추출합니다.
+                SolutionIdDto solutionId = extractSolutionIdFromHtml(redirectedResponse.getBody());
+                
+                if (solutionId.getSolutionId() != null) {
+                    return ResponseEntity.status(redirectedResponse.getStatusCode()).body(solutionId);
+                }
+                else {
+                    throw new MorandiException(SubmitErrorCode.CANT_FIND_SOLUTION_ID);
+                }
+            }
+
+
         }
         catch(HttpClientErrorException e) {
             throw new MorandiException(SubmitErrorCode.BAEKJOON_SERVER_ERROR);
         }
+        catch(NullPointerException e) {
+            throw new MorandiException(SubmitErrorCode.NULL_POINTER_EXCEPTION);
+        }
         catch(Exception e) {       //알 수 없는 오류
             throw new MorandiException(SubmitErrorCode.BAEKJOON_UNKNOWN_ERROR);
         }
+
+        throw new MorandiException(SubmitErrorCode.BAEKJOON_UNKNOWN_ERROR);
     }
     //POST로 보낼 때 필요한 파라미터들을 생성
     private MultiValueMap<String, String> createParameters(SubmitCodeDto submitCodeDto, String CSRFKey) {
@@ -170,28 +194,7 @@ public class BaekjoonSubmitService {
             parameters.add("csrf_key", CSRFKey);
         return parameters;
     }
-    private ResponseEntity<SolutionIdDto> processSubmitResult(String location,String acmicpcUrl,HttpHeaders headers){
 
-        if (location.contains("status")) {
-                if (!location.startsWith("http"))
-                    location = URI.create(acmicpcUrl).resolve(location).toString();
-                ResponseEntity<String> redirectedResponse = restTemplate.exchange(location, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-
-                // HTML에서 solution-id를 추출합니다.
-                SolutionIdDto solutionId = extractSolutionIdFromHtml(redirectedResponse.getBody());
-
-                if (solutionId.getSolutionId() != null) {
-                    System.out.println("Extracted Solution ID: " + solutionId);
-                    return ResponseEntity.status(redirectedResponse.getStatusCode()).body(solutionId);
-
-                } else {
-                    throw new MorandiException(SubmitErrorCode.CANT_FIND_SOLUTION_ID);
-                }
-
-
-        }
-        throw new MorandiException(SubmitErrorCode.BAEKJOON_LOGIN_ERROR);
-    }
     private SolutionIdDto extractSolutionIdFromHtml(String html) {
         // HTML을 파싱합니다.
         Document doc = Jsoup.parse(html);
