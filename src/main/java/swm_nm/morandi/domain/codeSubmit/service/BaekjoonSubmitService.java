@@ -47,14 +47,14 @@ public class BaekjoonSubmitService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MorandiException(MemberErrorCode.EXTENSION_MEMBER_NOT_FOUND));
 
-        validateBojId(member, baekjoonUserDto.getBojId());
+        //validateBojId(member, baekjoonUserDto.getBojId());
 
         saveCookieToRedis(memberId, baekjoonUserDto.getCookie());
 
         //Member에 백준 아이디 초기화
-        if(member.getBojId()==null) {
+       // if(member.getBojId()==null) {
             updateMemberInfo(member, baekjoonUserDto.getBojId());
-        }
+       // }
         return baekjoonUserDto.getCookie();
     }
 
