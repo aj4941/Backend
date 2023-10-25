@@ -28,7 +28,7 @@ public class TestExitController {
     private final SaveCodeService saveCodeService;
     @PostMapping("/exit")
     @Operation(summary = "테스트 종료하기", description = "테스트를 종료할 경우 문제별 정답 여부와 소요 시간을 제공합니다.")
-    public ResponseEntity<TestResultDto> saveAttemptedProblemResult(@RequestBody TestCheckDto testCheckDto,
+    public ResponseEntity<TestResultDto> saveAttemptedProblemResultByPost(@RequestBody TestCheckDto testCheckDto,
                                                                     HttpSession session) {
         session.setAttribute("testResultDto", testExitService.testExit(testCheckDto));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -41,7 +41,7 @@ public class TestExitController {
 
     @GetMapping("/exit")
     @Operation(summary = "테스트 종료하기", description = "테스트를 종료할 때 POST 요청을 받은 것을 PRG 패턴을 통해 GET 요청으로 받습니다.")
-    public ResponseEntity<TestResultDto> saveAttemptProblemResult(HttpSession session) {
+    public ResponseEntity<TestResultDto> saveAttemptedProblemResultByGet(HttpSession session) {
         TestResultDto testResultDto = (TestResultDto) session.getAttribute("testResultDto");
         return new ResponseEntity<>(testResultDto, HttpStatus.OK);
     }
