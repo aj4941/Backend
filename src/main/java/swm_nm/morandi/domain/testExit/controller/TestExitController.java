@@ -31,16 +31,17 @@ public class TestExitController {
     public ResponseEntity<TestResultDto> saveAttemptedProblemResultByPost(@RequestBody TestCheckDto testCheckDto,
                                                                     HttpSession session) {
         session.setAttribute("testResultDto", testExitService.testExit(testCheckDto));
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
                 .scheme("https")
+                .path("/tests/result")
                 .build()
                 .toUri();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(location);
+        HttpHeaders headers = new HttpHeaders();headers.setLocation(location);
         return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
     }
 
-    @GetMapping("/exit")
+    @GetMapping("/result")
     @Operation(summary = "테스트 종료하기", description = "테스트를 종료할 때 POST 요청을 받은 것을 PRG 패턴을 통해 GET 요청으로 받습니다.")
     public ResponseEntity<TestResultDto> saveAttemptedProblemResultByGet(HttpSession session) {
         TestResultDto testResultDto = (TestResultDto) session.getAttribute("testResultDto");
