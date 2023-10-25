@@ -32,6 +32,7 @@ public class TestExitController {
                                                                     HttpSession session) {
         session.setAttribute("testResultDto", testExitService.testExit(testCheckDto));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .scheme("https")
                 .build()
                 .toUri();
         HttpHeaders headers = new HttpHeaders();
