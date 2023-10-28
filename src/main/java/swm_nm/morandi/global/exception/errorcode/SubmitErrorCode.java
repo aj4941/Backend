@@ -15,7 +15,8 @@ public enum SubmitErrorCode implements ErrorCode {
     BAEKJOON_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"알 수 없는 오류가 발생했습니다"),
     INVALID_BOJPROBLEM_NUMBER(HttpStatus.BAD_REQUEST,"유효하지 않은 문제 번호입니다"),
     CANT_FIND_SOLUTION_ID(HttpStatus.BAD_REQUEST,"Solution ID를 찾을 수 없습니다"),
-    NULL_POINTER_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"백준 Response NullPointerException")
+    NULL_POINTER_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"백준 Response NullPointerException"),
+    TEST_NOT_EXIST(HttpStatus.BAD_REQUEST,"저장하려는 문제의 테스트가 존재하지 않습니다")
     ;
 
     //TODO
