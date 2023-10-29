@@ -3,8 +3,7 @@ package swm_nm.morandi.config.security;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import swm_nm.morandi.domain.auth.constants.SecurityConstants;
 import swm_nm.morandi.domain.auth.response.TokenDto;
@@ -13,33 +12,35 @@ import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.domain.member.entity.Member;
 
 import java.security.Key;
+import java.security.PublicKey;
 import java.util.Date;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Slf4j
 @Component
 public class JwtProvider {
-    private final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
+    private final SecurityConstants securityConstants;
     private Optional<Jws<Claims>> parseTokenToJws(String token){
         if(token==null)
             throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
         try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(getSecretKey())
+            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(getPublicKey())
                     .build()
                     .parseClaimsJws(token);
             return Optional.of(claimsJws);
 
         }  catch (ExpiredJwtException e) {
-            logger.info("만료된 JWT Token");
+            log.info("만료된 JWT Token");
             throw new MorandiException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            logger.info("유효하지 않은 JWT signature");
+            log.info("유효하지 않은 JWT signature");
             throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
         } catch (UnsupportedJwtException e) {
-            logger.info("지원되지 않는 토큰");
+            log.info("지원되지 않는 토큰");
             throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
         } catch (IllegalArgumentException e) {
-            logger.info("IllegalArgumentException");
+            log.info("IllegalArgumentException");
 
         }
         throw new MorandiException(AuthErrorCode.INVALID_TOKEN);
@@ -66,14 +67,15 @@ public class JwtProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
-    private Key getSecretKey() {
-        //임시 테스트 용도
-        return SecurityConstants.JWT_KEY;
-        //return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
+    private Key getPrivateKey() {
+        return securityConstants.getPrivateKey();
+    }
+    private PublicKey getPublicKey() {
+        return securityConstants.getPublicKey();
     }
     private String buildAccessToken(
             Long id, Date issuedAt, Date accessTokenExpiresIn, String role) {
-        final Key encodedKey = getSecretKey();
+        final Key encodedKey = getPrivateKey();
         return Jwts.builder()
                 .setIssuer("MORANDI")
                 .setIssuedAt(issuedAt)
@@ -86,7 +88,7 @@ public class JwtProvider {
     }
 
     private String buildRefreshToken(Long id, Date issuedAt, Date accessTokenExpiresIn) {
-        final Key encodedKey = getSecretKey();
+        final Key encodedKey = getPrivateKey();
         return Jwts.builder()
                 .setIssuer("MORANDI")
                 .setIssuedAt(issuedAt)
@@ -101,14 +103,14 @@ public class JwtProvider {
         final Date issuedAt = new Date();
         final Date accessTokenExpiresIn =
                 //현재시각 + SecurityConstants의 JWT_EXPIRATION
-                new Date(issuedAt.getTime() + SecurityConstants.JWT_EXPIRATION);
+                new Date(issuedAt.getTime() + securityConstants.JWT_EXPIRATION);
 
         return buildAccessToken(id, issuedAt, accessTokenExpiresIn, role);
     }
     public String generateRefreshToken(Long id) {
         final Date issuedAt = new Date();
         final Date refreshTokenExpiresIn =
-                new Date(issuedAt.getTime() +  SecurityConstants.REFRESH_TOKEN_EXPIRATION);
+                new Date(issuedAt.getTime() +  securityConstants.REFRESH_TOKEN_EXPIRATION);
         return buildRefreshToken(id, issuedAt, refreshTokenExpiresIn);
     }
 
