@@ -2,18 +2,17 @@ package swm_nm.morandi.domain.testStart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.domain.testDuring.dto.TempCode;
+import org.springframework.transaction.annotation.Transactional;
+import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
+import swm_nm.morandi.domain.testDuring.dto.TestInfo;
+import swm_nm.morandi.domain.testDuring.dto.factory.TempCodeFactory;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import swm_nm.morandi.redis.utils.RedisKeyGenerator;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -24,43 +23,52 @@ public class TempCodeInitializer {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public String generateKey(Tests test, int problemNumber, String language) {
-        return String.format("testId:%s:problemNumber:%s:language:%s", test.getTestId(), problemNumber, language);
-    }
-    private List<String> languages;
-    private List<String> codeLists;
-    @PostConstruct
-    public void initTempCodeInitializer() {
-        languages = List.of("Python", "Cpp", "Java");
-        String pythonCode = readCodeFromFile("codes/temp.py");
-        String cppCode = readCodeFromFile("codes/temp.cpp");
-        String javaCode = readCodeFromFile("codes/temp.java");
-        codeLists = List.of(pythonCode, cppCode, javaCode);
+    private final TempCodeFactory tempCodeFactory;
+
+    private final RedisKeyGenerator redisKeyGenerator;
+
+
+    @Transactional
+    public void initializeTempCodeCache(Tests test) {
+        log.debug("Initializing temp code cache for test with ID: {}", test.getTestId());
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime endTime = now.plusMinutes(test.getTestTime());
+        Duration duration = Duration.between(now, endTime);
+        long expireTime = duration.toMinutes();
+
+
+        // 테스트 정보를 저장한다
+        String ongoingTestKey = redisKeyGenerator.generateOngoingTestKey();
+        TestInfo testInfo = TestInfo.builder()
+                .testId(test.getTestId())// 테스트 아이디
+                .endTime(endTime)// 테스트가 끝나는 시간
+                .build();
+        redisTemplate.opsForValue().set(ongoingTestKey, testInfo);//, expireTime, TimeUnit.MINUTES);
+        //테스트 정보를 만료시켜버리면 테스트가 끝나버리면 key가 사라져서 테스트 정보를 몰라버리니깐 만료시키지 않는다.
+
+
+        log.debug("Test info cache initialized for test with ID: {}", test.getTestId());
+
+        // 테스트 문제별 코드를 저장한다
+        String tempCodeKey = redisKeyGenerator.generateTempCodeKey(test.getTestId());
+        HashOperations<String, String, TempCodeDto> hashOps = redisTemplate.opsForHash();
+
+        TempCodeDto initialTempCode = tempCodeFactory.getTempCodeDto();
+
+        int problemCount = test.getAttemptProblems().size();
+        IntStream.rangeClosed(1, problemCount).forEach(problemNumber ->
+                hashOps.put(tempCodeKey, String.valueOf(problemNumber), initialTempCode)
+        );
+        redisTemplate.expire(tempCodeKey, expireTime, TimeUnit.MINUTES);
+
+
+
+        // 로깅: 초기화 완료
+        log.debug("Initialization of temp code cache completed for test with ID: {}", test.getTestId());
+
+
     }
 
-    public void initTempCodeCacheWhenTestStart(Tests test) {
-        LocalDateTime now = LocalDateTime.now();
-        // 끝나는 시간
-        // tempCode를 저장
-        // 테스트 남은 시간만큼 TTL을 설정한다
-        int size = test.getAttemptProblems().size();
-        IntStream.rangeClosed(1, size).forEach(i ->
-                languages.forEach(language -> {
-                    String key = generateKey(test, i, language);
-                    LocalDateTime endTime = now.plusMinutes(test.getTestTime());
-                    Duration duration = Duration.between(now, endTime);
-                    long expireTime = duration.toMinutes();
-                    redisTemplate.opsForValue().set(key, new TempCode(codeLists.get(languages.indexOf(language)), endTime));
-                    redisTemplate.expire(key, expireTime, TimeUnit.MINUTES);
-            })
-        );
-    }
-    private String readCodeFromFile(String filePath) {
-        try {
-            return new String(Files.readAllBytes(Paths.get(filePath)));
-        } catch (IOException e) {
-            log.error("Error reading code from file: " + filePath, e);
-            return "";
-        }
-    }
+
 }

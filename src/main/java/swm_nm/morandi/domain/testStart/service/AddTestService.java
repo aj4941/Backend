@@ -2,7 +2,10 @@ package swm_nm.morandi.domain.testStart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
@@ -22,6 +25,10 @@ public class AddTestService {
     private final TestRepository testRepository;
 
     private final TestScheduler testScheduler;
+
+    private final RedisTemplate<String, Object> redisTemplate;
+
+
     @Transactional
     public Tests startTestByTestTypeId(TestType testType, Member member) {
         Tests test = Tests.builder()
@@ -45,9 +52,22 @@ public class AddTestService {
                 .bojId(member.getBojId())
                 .build();
 
-        testScheduler.addTest(testCheckDto);
-        member.setCurrentTestId(testId);
+        //testScheduler.addTest(testCheckDto);
+
 
         return test;
     }
+
+    public String generateTestKdy(Long testId) {
+        return "test:" + testId;
+    }
+
+
+    public void initializeTempCode(){
+        HashOperations<String, String, TempCodeDto> hashOps = redisTemplate.opsForHash();
+
+
+
+    }
+
 }

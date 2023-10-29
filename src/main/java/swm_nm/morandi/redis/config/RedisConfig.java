@@ -1,4 +1,4 @@
-package swm_nm.morandi.domain.testDuring.config;
+package swm_nm.morandi.redis.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +22,13 @@ public class RedisConfig {
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        // Hash Key Serializer
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        // Hash Value Serializer
+        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
         return template;
     }
 }

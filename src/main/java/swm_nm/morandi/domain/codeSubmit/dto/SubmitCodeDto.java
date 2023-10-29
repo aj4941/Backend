@@ -4,6 +4,7 @@ package swm_nm.morandi.domain.codeSubmit.dto;
 import lombok.Getter;
 import lombok.Setter;
 import swm_nm.morandi.domain.codeSubmit.constants.SubmitConstants;
+import swm_nm.morandi.domain.common.Language;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.SubmitErrorCode;
 
@@ -17,14 +18,16 @@ public class SubmitCodeDto {
     public String bojProblemId;
 
     @NotNull(message = "언어를 입력해주세요")
-    public String language;
+    public Language language;
+
+    public Integer problemNumber;
 
     @NotNull(message = "소스코드를 입력해주세요")
     public String sourceCode;
 
     public String getLanguageId() {
         try {
-            return SubmitConstants.valueOf(this.language).getLanguageId();
+            return SubmitConstants.valueOf(this.language.getLanguage()).getLanguageId();
         } catch (IllegalArgumentException e) {
             throw new MorandiException(SubmitErrorCode.LANGUAGE_CODE_NOT_FOUND);
         }

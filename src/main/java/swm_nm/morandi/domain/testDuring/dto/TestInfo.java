@@ -14,13 +14,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TempCode {
+public class TestInfo {
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String code;
+    public Long testId;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

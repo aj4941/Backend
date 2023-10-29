@@ -2,6 +2,7 @@ package swm_nm.morandi.domain.testStart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.testDuring.service.TempCodeService;
@@ -19,6 +20,7 @@ import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.*;
 import swm_nm.morandi.global.utils.SecurityUtils;
+import swm_nm.morandi.redis.utils.RedisKeyGenerator;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class TestStartUseCase {
     private final MemberRepository memberRepository;
     private final AttemptProblemRepository attemptProblemRepository;
 
+
     //이미 테스트 중인지 확인
     @Transactional
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
@@ -56,7 +59,7 @@ public class TestStartUseCase {
         // TODO Redis 이용하여
         // 현재 테스트가 진행중인지 확인하도록
         // 이미 테스트 중인지 확인
-        Tests test = testProgressCheckService.isTestinProgress(member);
+        Tests test = testProgressCheckService.getOngoingTest(member);
         if (test != null) {
             return getTestStartResponseDto(test);
         }
@@ -78,7 +81,7 @@ public class TestStartUseCase {
         saveProblemsService.saveAttemptProblems(member, test, bojProblems);
 
         // 테스트 시작시 코드 캐시 초기화
-        tempCodeInitializer.initTempCodeCacheWhenTestStart(test);
+        tempCodeInitializer.initializeTempCodeCache(test);
 
         return getTestStartResponseDto(test, bojProblems);
     }
@@ -103,27 +106,8 @@ public class TestStartUseCase {
     }
 
     private List<TestCodeDto> getTestCodeDtos(Tests test) {
-        Long testId = test.getTestId();
-        List<String> languages = List.of("Python", "Cpp", "Java");
-        List<TestCodeDto> testCodeDtos = new ArrayList<>();
-        LongStream.rangeClosed(1, test.getProblemCount()).forEach(problemNumber -> {
-            String pythonCode = "", cppCode = "", javaCode = "";
-            for (String language : languages) {
-                String key = String.format("testId:%s:problemNumber:%s:language:%s", testId, problemNumber, language);
-                String code = tempCodeService.getTempCode(key).getCode();
-                if (language.equals("Python")) pythonCode = code;
-                else if (language.equals("Cpp")) cppCode = code;
-                else if (language.equals("Java")) javaCode = code;
-            }
-            TestCodeDto testCodeDto = TestCodeDto.builder()
-                    .problemNumber(problemNumber)
-                    .pythonCode(pythonCode)
-                    .cppCode(cppCode)
-                    .javaCode(javaCode)
-                    .build();
-            testCodeDtos.add(testCodeDto);
-        });
-        return testCodeDtos;
+
+        return tempCodeService.getTempCode(test);
     }
 
     private TestStartResponseDto getTestStartResponseDto(Tests test) {

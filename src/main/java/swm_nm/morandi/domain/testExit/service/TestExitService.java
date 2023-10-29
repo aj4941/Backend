@@ -2,6 +2,7 @@ package swm_nm.morandi.domain.testExit.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
@@ -21,6 +22,7 @@ import swm_nm.morandi.global.exception.errorcode.AuthErrorCode;
 import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 import swm_nm.morandi.global.exception.errorcode.TestTypeErrorCode;
 import swm_nm.morandi.global.utils.SecurityUtils;
+import swm_nm.morandi.redis.utils.RedisKeyGenerator;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -44,6 +46,9 @@ public class TestExitService {
     private final CalculateRatingService calculateRatingService;
 
     private final SolvedCheckService solvedCheckService;
+
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisKeyGenerator redisKeyGenerator;
 
     //Controller에서 사용되는 것
     public TestResultDto testExit(TestCheckDto testCheckDto)
@@ -78,6 +83,7 @@ public class TestExitService {
 
         testResultDto.setAttemptProblemDtos(attemptProblemDtos);
 
+        redisTemplate.delete(redisKeyGenerator.generateOngoingTestKey());
         return testResultDto;
     }
 
