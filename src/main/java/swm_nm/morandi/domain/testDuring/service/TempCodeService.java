@@ -1,7 +1,6 @@
 package swm_nm.morandi.domain.testDuring.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TempCodeService {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -31,7 +29,7 @@ public class TempCodeService {
         String tempCodeKey = redisKeyGenerator.generateTempCodeKey(testId);
 
         HashOperations<String, String, TempCodeDto> hashOps = redisTemplate.opsForHash();
-        log.error(code);
+
         Long remainingTTL = redisTemplate.getExpire(tempCodeKey);
 
         if (remainingTTL != null && remainingTTL > 0) {
