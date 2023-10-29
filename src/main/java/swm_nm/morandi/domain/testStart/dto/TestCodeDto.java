@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class TestCodeDto {
-    private Long problemNumber;
+    private Integer problemNumber;
     private String pythonCode;
     private String cppCode;
     private String javaCode;

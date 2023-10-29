@@ -2,19 +2,21 @@ package swm_nm.morandi.domain.testDuring.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.domain.testDuring.dto.InputData;
-import swm_nm.morandi.domain.testDuring.dto.TempCode;
+import swm_nm.morandi.domain.common.Language;
 import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
-import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
+import swm_nm.morandi.domain.testInfo.entity.Tests;
+import swm_nm.morandi.domain.testStart.dto.TestCodeDto;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
+import swm_nm.morandi.redis.utils.RedisKeyGenerator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,37 +25,49 @@ public class TempCodeService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void saveTempCode(Long testId, Long problemNumber, String language, String code) {
-        String key = generateKey(testId, problemNumber, language);
-        Long remainingTTL = redisTemplate.getExpire(key);
+    private final RedisKeyGenerator redisKeyGenerator;
+
+    public void saveTempCode(Long testId, Integer problemNumber, Language language, String code) {
+        String tempCodeKey = redisKeyGenerator.generateTempCodeKey(testId);
+
+        HashOperations<String, String, TempCodeDto> hashOps = redisTemplate.opsForHash();
+        log.error(code);
+        Long remainingTTL = redisTemplate.getExpire(tempCodeKey);
 
         if (remainingTTL != null && remainingTTL > 0) {
-            TempCode tempCode = Optional.ofNullable((TempCode) redisTemplate.opsForValue().get(key))
+            TempCodeDto tempCodeDto = Optional.ofNullable(hashOps.get(tempCodeKey, String.valueOf(problemNumber)))
                     .orElseThrow(() -> new MorandiException(TestErrorCode.KEY_NOT_FOUND));
 
-            tempCode.setCode(code);
 
-            // 테스트 시작 시간으로부터 남은 시간을 계산한다
-            Duration duration = Duration.between(LocalDateTime.now(), tempCode.endTime);
-            long expireTime = duration.toMinutes();
+            tempCodeDto.writeCode(code,language);
 
-            // tempCode를 다시 저장한다
-            redisTemplate.opsForValue().set(key, tempCode);
-            // 테스트 남은 시간만큼 TTL을 설정한다
-            redisTemplate.expire(key, expireTime, TimeUnit.MINUTES);
+
+            // 수정된 tempCodeDto를 Redis에 다시 저장합니다.
+            hashOps.put(tempCodeKey, String.valueOf(problemNumber), tempCodeDto);
+
+            // TTL을 다시 설정합니다. (이전 TTL값을 유지)
+            redisTemplate.expire(tempCodeKey, remainingTTL, TimeUnit.SECONDS);
+
         }
         else {
             throw new MorandiException(TestErrorCode.TTL_EXPIRED);
         }
     }
-    public String generateKey(Long testId, Long problemNumber, String language) {
-        return String.format("testId:%s:problemNumber:%s:language:%s",
-                testId, problemNumber, language);
-    }
 
-    public TempCode getTempCode(String key) {
-        return Optional.ofNullable((TempCode) redisTemplate.opsForValue().get(key)).orElseThrow(
-                () -> new MorandiException(TestErrorCode.KEY_NOT_FOUND)
-        );
+    public List<TestCodeDto> getTempCode(Tests test)
+    {
+        HashOperations<String, String, TempCodeDto> hashOps = redisTemplate.opsForHash();
+        String tempCodeKey = redisKeyGenerator.generateTempCodeKey(test.getTestId());
+
+        Map<String, TempCodeDto> tempCodes = hashOps.entries(tempCodeKey);
+
+        return tempCodes.keySet().stream().map(problemNumber-> TestCodeDto.builder()
+                .cppCode(tempCodes.get(problemNumber).getCppCode())
+                .pythonCode(tempCodes.get(problemNumber).getPythonCode())
+                .javaCode(tempCodes.get(problemNumber).getJavaCode())
+                .problemNumber(Integer.parseInt(problemNumber))
+                .build()).collect(Collectors.toList());
+
+
     }
 }

@@ -18,11 +18,16 @@ import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
 import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdDto;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
+import swm_nm.morandi.domain.testDuring.dto.TestInfo;
+import swm_nm.morandi.domain.testDuring.service.TempCodeService;
+import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
+import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.global.exception.errorcode.SubmitErrorCode;
 import swm_nm.morandi.domain.codeSubmit.dto.SubmitCodeDto;
 import swm_nm.morandi.global.utils.SecurityUtils;
+import swm_nm.morandi.redis.utils.RedisKeyGenerator;
 
 import java.net.URI;
 import java.util.Optional;
@@ -38,7 +43,13 @@ public class BaekjoonSubmitService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final RedisKeyGenerator redisKeyGenerator;
+
+    private final TempCodeService tempCodeService;
+
     private final MemberRepository memberRepository;
+
+    private final AttemptProblemRepository attemptProblemRepository;
     //백준 로그인용 쿠키 저장
     //Redis에 현재 로그인한 사용자의 백준 제출용 쿠키를 저장
     @Transactional
@@ -87,6 +98,7 @@ public class BaekjoonSubmitService {
 
     }
 
+    @Transactional
     public ResponseEntity<SolutionIdDto> submit(SubmitCodeDto submitCodeDto) {
         validateBojProblemId(submitCodeDto.getBojProblemId());
 
@@ -94,8 +106,12 @@ public class BaekjoonSubmitService {
         String cookie = getCookieFromRedis(generateKey(memberId));
         String CSRFKey = getCSRFKey(cookie, submitCodeDto.getBojProblemId());
 
-        return sendSubmitRequest(cookie, CSRFKey, submitCodeDto);
+        SolutionIdDto solutionId=  sendSubmitRequest(cookie, CSRFKey, submitCodeDto);
 
+        //제출한 코드 정보를 저장
+        saveSubmitTempCode(submitCodeDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(solutionId);
     }
     private void validateBojProblemId(String bojProblemId) {
         try {
@@ -141,7 +157,7 @@ public class BaekjoonSubmitService {
         return headers;
     }
 
-    private ResponseEntity<SolutionIdDto> sendSubmitRequest(String cookie, String CSRFKey, SubmitCodeDto submitCodeDto) {
+    private SolutionIdDto sendSubmitRequest(String cookie, String CSRFKey, SubmitCodeDto submitCodeDto) {
         String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", submitCodeDto.getBojProblemId());
         HttpHeaders headers = createHeaders(cookie);
         MultiValueMap<String, String> parameters = createParameters(submitCodeDto, CSRFKey);
@@ -163,7 +179,7 @@ public class BaekjoonSubmitService {
                 SolutionIdDto solutionId = extractSolutionIdFromHtml(redirectedResponse.getBody());
                 
                 if (solutionId.getSolutionId() != null) {
-                    return ResponseEntity.status(redirectedResponse.getStatusCode()).body(solutionId);
+                    return solutionId;
                 }
                 else {
                     throw new MorandiException(SubmitErrorCode.CANT_FIND_SOLUTION_ID);
@@ -216,5 +232,29 @@ public class BaekjoonSubmitService {
         } else {
            throw new MorandiException(SubmitErrorCode.CANT_FIND_SOLUTION_ID);
         }
+    }
+
+    private void saveSubmitTempCode(SubmitCodeDto submitCodeDto)
+    {
+        String ongoingTestKey = redisKeyGenerator.generateOngoingTestKey();
+        Long testId = ((TestInfo) Optional.ofNullable(redisTemplate.opsForValue().get(ongoingTestKey))
+                .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST))).testId;
+
+        //TODO
+        //아래 코드는 프론트 고치면 추가하기
+//        tempCodeService.saveTempCode(testId, submitCodeDto.getProblemNumber(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
+
+        saveSubmitCodeToDatabase(testId,submitCodeDto);
+    }
+
+    private void saveSubmitCodeToDatabase(Long testId, SubmitCodeDto submitCodeDto) {
+
+        AttemptProblem attemptProblem = attemptProblemRepository.findByTest_TestIdAndProblem_BojProblemId(testId,Long.parseLong(submitCodeDto.getBojProblemId()))
+                .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST));
+
+        attemptProblem.setSubmitCode(submitCodeDto.getSourceCode());
+        //TODO
+        //attemptProblem에 마지막으로 제출한 language의 정보가 빠져있음 -> 이거 나중에 추가하던지 해야함
+        attemptProblemRepository.save(attemptProblem);
     }
 }

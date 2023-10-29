@@ -1,6 +1,7 @@
 package swm_nm.morandi.domain.testDuring.dto;
 
 import lombok.*;
+import swm_nm.morandi.domain.common.Language;
 
 import java.util.List;
 
@@ -10,8 +11,8 @@ import java.util.List;
 @Builder
 public class TestInputData {
     private Long testId;
-    private Long problemNumber;
-    private String language;
+    private Integer problemNumber;
+    private Language language;
     private String code;
     private List<String> input;
     private List<String> output;
