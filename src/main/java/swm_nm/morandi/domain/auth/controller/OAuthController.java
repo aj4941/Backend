@@ -28,10 +28,12 @@ public class OAuthController {
 
     private final LoginService loginService;
 
+    private final SecurityConstants securityConstants;
+
     //Authorization Code도 모두 가져오는 경우에 사용하는 callback api
     @GetMapping("/{type}/callback")
     public ResponseEntity<String> oauthLogin(@PathVariable String type, @RequestParam String code, HttpServletResponse response) {
-        String accessToken = loginService.login(type, code, SecurityConstants.FOR_SERVICE).getAccessToken();
+        String accessToken = loginService.login(type, code, securityConstants.FOR_SERVICE).getAccessToken();
 
         Cookie jwtCookie = new Cookie("accessToken", accessToken);
         jwtCookie.setHttpOnly(true);
@@ -50,7 +52,7 @@ public class OAuthController {
     //개발자 모드에서는 redirect를 하지 않고 access Token을 가져오는 api
     @GetMapping("/{type}/callback/dev")
     public TokenDto oauthLoginforDevelop(@PathVariable String type, @RequestParam String code) {
-        return loginService.login(type, code,SecurityConstants.FOR_DEVELOPER);
+        return loginService.login(type, code,securityConstants.FOR_DEVELOPER);
     }
 
 
