@@ -242,9 +242,7 @@ public class BaekjoonSubmitService {
         Long testId = ((TestInfo) Optional.ofNullable(redisTemplate.opsForValue().get(ongoingTestKey))
                 .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST))).testId;
 
-        //TODO
-        //아래 코드는 프론트 고치면 추가하기
-//        tempCodeService.saveTempCode(testId, submitCodeDto.getProblemNumber(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
+        tempCodeService.saveTempCode(testId, submitCodeDto.getProblemNumber(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
 
         saveSubmitCodeToDatabase(testId,submitCodeDto);
     }
