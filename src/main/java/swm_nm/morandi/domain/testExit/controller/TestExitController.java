@@ -27,24 +27,15 @@ public class TestExitController {
 
     private final SaveCodeService saveCodeService;
     @PostMapping("/exit")
-    @Operation(summary = "테스트 종료하기", description = "테스트를 종료할 경우 문제별 정답 여부와 소요 시간을 제공합니다.")
-    public ResponseEntity<TestResultDto> saveAttemptedProblemResultByPost(@RequestBody TestCheckDto testCheckDto,
-                                                                    HttpSession session) {
-        session.setAttribute("testResultDto", testExitService.testExit(testCheckDto));
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .scheme("https")
-                .path("/tests/result")
-                .build()
-                .toUri();
-        HttpHeaders headers = new HttpHeaders();headers.setLocation(location);
-        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
+    @Operation(summary = "테스트 종료하기", description = "테스트를 종료할 경우 문제별 정답 여부와 이를 기반으로 레이팅을 계산합니다.")
+    public ResponseEntity<TestResultDto> saveAttemptedProblemResultByPost(@RequestBody TestCheckDto testCheckDto) {
+        TestResultDto testResultDto = testExitService.testExit(testCheckDto);
+        return new ResponseEntity<>(testResultDto, HttpStatus.SEE_OTHER);
     }
 
     @GetMapping("/result")
-    @Operation(summary = "테스트 종료하기", description = "테스트를 종료할 때 POST 요청을 받은 것을 PRG 패턴을 통해 GET 요청으로 받습니다.")
-    public ResponseEntity<TestResultDto> saveAttemptedProblemResultByGet(HttpSession session) {
-        TestResultDto testResultDto = (TestResultDto) session.getAttribute("testResultDto");
+    @Operation(summary = "테스트 결과 데이터 제공", description = "테스트를 종료할 때 POST 요청을 받은 것을 PRG 패턴을 통해 GET 요청으로 결과를 제공합니다.")
+    public ResponseEntity<TestResultDto> saveAttemptedProblemResultByGet(TestResultDto testResultDto) {
         return new ResponseEntity<>(testResultDto, HttpStatus.OK);
     }
 
