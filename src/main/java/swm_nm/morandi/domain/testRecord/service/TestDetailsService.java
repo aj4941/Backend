@@ -23,7 +23,7 @@ public class TestDetailsService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public TestRecordDto getTestRecordDtoByTestId(Long testId) {
         //N+1문제 발생하여 fetch join으로 해결
         List<AttemptProblem> attemptProblems= attemptProblemRepository.findTestDetailsByTest_TestId(testId);

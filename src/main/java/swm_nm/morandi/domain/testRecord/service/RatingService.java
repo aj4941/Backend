@@ -2,6 +2,7 @@ package swm_nm.morandi.domain.testRecord.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
@@ -24,6 +25,7 @@ public class RatingService {
     private final MemberRepository memberRepository;
 
     //현재 레이팅 정보 반환
+    @Transactional(readOnly = true)
     public CurrentRatingDto getCurrentRatingDto() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -34,6 +36,7 @@ public class RatingService {
     }
 
     // 1년동안의 레이팅 그래프 데이터를 가져옴
+    @Transactional(readOnly = true)
     public List<RatingGraphDto> getRatingGraphSinceOneYear(){
         Long memberId = SecurityUtils.getCurrentMemberId();
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);

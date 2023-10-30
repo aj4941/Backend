@@ -3,6 +3,7 @@ package swm_nm.morandi.domain.testRecord.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.testRecord.dto.GraphDto;
 import swm_nm.morandi.domain.problem.entity.Algorithm;
 import swm_nm.morandi.domain.problem.entity.AlgorithmProblemList;
@@ -31,7 +32,7 @@ public class GetGraphService {
     //private final AlgorithmProblemListRepository algorithmProblemListRepository;
 
 
-
+    @Transactional(readOnly = true)
     public GraphResponseDto getGraph(){
         Long memberId = SecurityUtils.getCurrentMemberId();
         List<Object[]> result = attemptProblemRepository.getAttemptStatisticsCollectByAlgorithm(memberId);

@@ -31,9 +31,7 @@ public class LatestTestInfoService {
 
     private final TestRepository testRepository;
 
-    private final AttemptProblemRepository attemptProblemRepository;
-
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TestRecordDto> getTestRecordDtosLatest(TestRecordRequestDto testRecordRequestDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Integer page = testRecordRequestDto.getPage();
@@ -56,7 +54,7 @@ public class LatestTestInfoService {
 
     //테스트 기록을 받아와서 dto로 변환하면서 getAttemptProblemDtos를 통해 테스트 문제들을 dto로 변환
     //Test의 AttemptProblems를 LAZY 로딩하여두고, default_batch_fetch_size 를 통해 한번에 가져옴
-    @Transactional
+    @Transactional(readOnly = true)
     public List<AttemptProblemDto> getAttemptProblemDtos(Tests test) {
         final long[] index = { 1 };
         // after

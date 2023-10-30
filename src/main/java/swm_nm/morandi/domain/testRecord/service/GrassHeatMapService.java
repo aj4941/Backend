@@ -2,6 +2,7 @@ package swm_nm.morandi.domain.testRecord.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testRecord.dto.GrassHeatMapResponse;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
@@ -20,6 +21,7 @@ public class GrassHeatMapService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
+    @Transactional(readOnly = true)
     public List<GrassHeatMapResponse> getGrassHeatMap(){
         Long membeId = SecurityUtils.getCurrentMemberId();
         LocalDate oneYearAgo = LocalDate.now().minusYears(1);
