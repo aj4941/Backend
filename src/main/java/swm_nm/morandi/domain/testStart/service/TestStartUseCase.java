@@ -3,7 +3,7 @@ package swm_nm.morandi.domain.testStart.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.aop.annotation.UserLock;
+import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.testDuring.service.TempCodeService;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
@@ -47,7 +47,7 @@ public class TestStartUseCase {
 
 
     //이미 테스트 중인지 확인
-    @UserLock
+    @MemberLock
     @Transactional
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();

@@ -19,37 +19,37 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class UserLockAspect {
+public class MemberLockAspect {
 
     private final StringRedisTemplate redisTemplate;
-    private final String USER_LOCK_KEY = "userLock";
-    private final Integer USER_LOCK_TTL = 5;
+    private final String MEMBER_LOCK_KEY = "memberLock";
+    private final Integer MEMBER_LOCK_TTL = 5;
 
-    @Pointcut("@annotation(swm_nm.morandi.aop.annotation.UserLock)")
-    public void userLockPointcut() {
+    @Pointcut("@annotation(swm_nm.morandi.aop.annotation.MemberLock)")
+    public void memberLockPointcut() {
     }
 
-    @Around("userLockPointcut()")
-    public Object userLock(ProceedingJoinPoint joinPoint)  throws Throwable {
-        Long userId = SecurityUtils.getCurrentMemberId();
-        String userLockKey = String.format("%s:%d", USER_LOCK_KEY,userId);
+    @Around("memberLockPointcut()")
+    public Object MEMBERLock(ProceedingJoinPoint joinPoint)  throws Throwable {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        String memberLockKey = String.format("%s:%d", MEMBER_LOCK_KEY,memberId);
         boolean locked = false;
         try {
-            if (tryLock(userLockKey)) {
+            if (tryLock(memberLockKey)) {
                 locked = true;
                 return joinPoint.proceed();
             } else {
-                throw new MorandiException(LockErrorCode.USER_LOCKED);
+                throw new MorandiException(LockErrorCode.MEMBER_LOCKED);
             }
         } finally {
             if(locked) {
-                unlock(userLockKey);
+                unlock(memberLockKey);
             }
         }
     }
 
     private Boolean tryLock(String key) {
-        return redisTemplate.opsForValue().setIfAbsent(key, "locked", USER_LOCK_TTL, TimeUnit.SECONDS);
+        return redisTemplate.opsForValue().setIfAbsent(key, "locked", MEMBER_LOCK_TTL, TimeUnit.SECONDS);
     }
 
     private void unlock(String key) {

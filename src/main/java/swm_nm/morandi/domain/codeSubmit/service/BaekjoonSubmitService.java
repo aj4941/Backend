@@ -13,7 +13,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import swm_nm.morandi.aop.annotation.UserLock;
+import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
 import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
 import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdDto;
@@ -99,7 +99,7 @@ public class BaekjoonSubmitService {
 
     }
 
-    @UserLock
+    @MemberLock
     @Transactional
     public ResponseEntity<SolutionIdDto> submit(SubmitCodeDto submitCodeDto) {
         validateBojProblemId(submitCodeDto.getBojProblemId());
