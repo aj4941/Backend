@@ -14,12 +14,13 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class SubmitCodeDto {
 
-    @NotNull(message = "문제 번호를 입력해주세요")
+    @NotNull(message = "백준 문제 번호를 입력해주세요")
     public String bojProblemId;
 
     @NotNull(message = "언어를 입력해주세요")
     public Language language;
 
+    @NotNull(message = "문제 번호를 입력해주세요")
     public Integer problemNumber;
 
     @NotNull(message = "소스코드를 입력해주세요")

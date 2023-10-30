@@ -2,8 +2,8 @@ package swm_nm.morandi.domain.testStart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
 import swm_nm.morandi.domain.testDuring.service.TempCodeService;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
@@ -20,16 +20,13 @@ import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.*;
 import swm_nm.morandi.global.utils.SecurityUtils;
-import swm_nm.morandi.redis.utils.RedisKeyGenerator;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
-import static java.lang.Math.max;
+
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +47,7 @@ public class TestStartUseCase {
 
 
     //이미 테스트 중인지 확인
+    @MemberLock
     @Transactional
     public TestStartResponseDto getTestStartsData(Long testTypeId) {
         Long memberId = SecurityUtils.getCurrentMemberId();

@@ -13,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
 import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
 import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdDto;
@@ -98,6 +99,7 @@ public class BaekjoonSubmitService {
 
     }
 
+    @MemberLock
     @Transactional
     public ResponseEntity<SolutionIdDto> submit(SubmitCodeDto submitCodeDto) {
         validateBojProblemId(submitCodeDto.getBojProblemId());
@@ -240,9 +242,7 @@ public class BaekjoonSubmitService {
         Long testId = ((TestInfo) Optional.ofNullable(redisTemplate.opsForValue().get(ongoingTestKey))
                 .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST))).testId;
 
-        //TODO
-        //아래 코드는 프론트 고치면 추가하기
-//        tempCodeService.saveTempCode(testId, submitCodeDto.getProblemNumber(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
+        tempCodeService.saveTempCode(testId, submitCodeDto.getProblemNumber(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
 
         saveSubmitCodeToDatabase(testId,submitCodeDto);
     }
