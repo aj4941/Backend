@@ -24,6 +24,7 @@ public class AttemptProblem extends BaseEntity {
 
     private Long executionTime;
 
+    @Column(columnDefinition = "TEXT")
     private String submitCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
