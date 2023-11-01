@@ -27,4 +27,12 @@ public class GrassHeatMapResponse {
     public LocalDate testDate;
 
     public Long solvedCount;
+
+    public static GrassHeatMapResponse getGrassHeatMapResponse(LocalDate date, Long count) {
+        GrassHeatMapResponse grassHeatMapResponse = GrassHeatMapResponse.builder()
+                .testDate(date)
+                .solvedCount(count)
+                .build();
+        return grassHeatMapResponse;
+    }
 }

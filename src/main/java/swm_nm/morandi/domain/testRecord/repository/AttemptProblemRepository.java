@@ -41,7 +41,7 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
 //            "GROUP BY a.testDate " +
 //            "ORDER BY a.testDate DESC")
 
-    List<AttemptProblem> findAllAttemptProblemsByMember_MemberIdAndAndTestDateAfterAndIsSolved(Long memberId, LocalDate oneYearAgo, boolean isSolved);
+    List<AttemptProblem> findAllAttemptProblemsByMember_MemberIdAndTestDateAfterAndIsSolved(Long memberId, LocalDate oneYearAgo, boolean isSolved);
 
     @Query("SELECT a.algorithmName, " +
                 "COUNT(ap.problem) as totalAttempts, " +

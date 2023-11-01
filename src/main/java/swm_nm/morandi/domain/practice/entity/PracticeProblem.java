@@ -1,6 +1,7 @@
 package swm_nm.morandi.domain.practice.entity;
 
 import lombok.*;
+import swm_nm.morandi.domain.common.BaseEntity;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.practice.dto.PracticeStatus;
 import swm_nm.morandi.domain.problem.entity.Problem;
@@ -14,15 +15,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PracticeProblem {
+public class PracticeProblem extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long practiceProblemId;
 
-    private LocalDateTime practiceDate;
+    private LocalDate practiceDate;
 
-    @Enumerated(EnumType.STRING)
-    private PracticeStatus practiceStatus;
+    private Boolean isSolved;
 
     private Long solvedTime;
 

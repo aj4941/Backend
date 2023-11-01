@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import swm_nm.morandi.domain.testInfo.dto.TestPageDto;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
 import swm_nm.morandi.domain.testInfo.dto.TestTypeDto;
 import swm_nm.morandi.domain.testInfo.service.*;
@@ -29,7 +30,7 @@ public class TestInfoController {
     private final TestTypeInfoService testTypeInfoService;
     @GetMapping("/latest")
     @Operation(summary = "최근에 본 테스트 목록", description = "마이 페이지에서 최근에 본 테스트 4개를 제공합니다.")
-    public ResponseEntity<List<TestRecordDto>> getLatestTestDtos(TestRecordRequestDto testRecordRequestDto) {
+    public ResponseEntity<TestPageDto> getLatestTestDtos(TestRecordRequestDto testRecordRequestDto) {
         return new ResponseEntity<>(latestTestInfoService.getTestRecordDtosLatest(testRecordRequestDto), HttpStatus.OK);
     }
     @GetMapping("/practice")
