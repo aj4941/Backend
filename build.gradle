@@ -2,10 +2,15 @@ buildscript {
     ext {
         queryDslVersion = "5.0.0"
     }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.15.RELEASE"
+    }
 }
 
 plugins {
-    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 
     id 'java'
     id 'org.springframework.boot' version '2.7.13'
@@ -37,7 +42,7 @@ dependencies {
     // implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'junit:junit:4.13.1'
-    compile 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -49,6 +54,12 @@ dependencies {
             "javax.annotation:javax.annotation-api",
             "com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
 
+    // 스프링 부트 3.0 미만
+//    implementation "com.querydsl:querydsl-jpa"
+//    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
+//
+//    implementation "com.querydsl:querydsl-core"
+//    implementation "com.querydsl:querydsl-collections"
 
     //Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -87,27 +98,21 @@ dependencies {
 
     implementation group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.2'
 }
-def querydslDir = "$buildDir/generated/querydsl"
 
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
+def querydslDir = "$buildDir/generated/querydsl"
 
 sourceSets {
     main.java.srcDir querydslDir
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-    querydsl.extendsFrom compileClasspath
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
 
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
+clean.doLast {
+    file(querydslDir).deleteDir()
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
