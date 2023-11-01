@@ -21,15 +21,15 @@ import static swm_nm.morandi.domain.testInfo.entity.QTests.tests;
 
 @Repository
 @RequiredArgsConstructor
-public class TestStatusRepositoryImpl implements TestStatusRepository{
+public class TestHistoryRepositoryImpl implements TestHistoryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<Tests> findAllTestRecordByCondition(TestHistoryCondition testHistoryCondition) {
+    public Page<Tests> findAllTestHistoryByCondition(TestHistoryCondition testHistoryCondition) {
         Pageable pageable = PageRequest.of(testHistoryCondition.getPage() - 1, testHistoryCondition.getSize(), Sort.by(DESC, "testDate"));
-        return findAllTestRecordByCondition(testHistoryCondition.getTestTypename(), testHistoryCondition.getBojProblemId(), testHistoryCondition.getBojId(), pageable);
+        return findAllTestHistoryByCondition(testHistoryCondition.getTestTypename(), testHistoryCondition.getBojProblemId(), testHistoryCondition.getBojId(), pageable);
     }
     @Override
-    public Page<Tests> findAllTestRecordByCondition(String testTypename, Long bojProblemId, String bojId, Pageable pageable) {
+    public Page<Tests> findAllTestHistoryByCondition(String testTypename, Long bojProblemId, String bojId, Pageable pageable) {
 
         JPQLQuery<Tests> query =  queryFactory
                 .selectFrom(tests)

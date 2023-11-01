@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import swm_nm.morandi.domain.testInfo.repository.TestStatusRepositoryImpl;
+import swm_nm.morandi.domain.testInfo.repository.TestHistoryRepositoryImpl;
 import swm_nm.morandi.domain.testRecord.dto.*;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
@@ -26,7 +26,7 @@ public class TestDetailsService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
-    private final TestStatusRepositoryImpl testStatusRepository;
+    private final TestHistoryRepositoryImpl testStatusRepository;
 
     @Transactional(readOnly = true)
     public TestRecordDto getTestRecordDtoByTestId(Long testId) {
@@ -52,7 +52,7 @@ public class TestDetailsService {
 
     @Transactional(readOnly = true)
     public AllTestHistoryResponse findAllTestStatusByCondition(TestHistoryCondition testHistoryCondition) {
-        Page<Tests> testHistory = testStatusRepository.findAllTestRecordByCondition(testHistoryCondition);
+        Page<Tests> testHistory = testStatusRepository.findAllTestHistoryByCondition(testHistoryCondition);
 
         List<TestHistoryDto> testHistoryDtos = testHistory.stream().map(tests -> TestHistoryDto.builder().
                 testId(tests.getTestId())
