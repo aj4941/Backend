@@ -5,13 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swm_nm.morandi.domain.testRecord.dto.*;
 import swm_nm.morandi.domain.testRecord.service.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -54,5 +52,12 @@ public class TestRecordController {
     @Operation(summary = "사용자 테스트 기록 상세 보기", description = "사용자가 진행한 특정 테스트의 상세보기를 클릭한 경우 테스트 상세 기록을 보여줍니다.")
     public ResponseEntity<TestRecordDto> testRecordInfo(@PathVariable Long testId) {
         return new ResponseEntity<>(testDetailsService.getTestRecordDtoByTestId(testId), HttpStatus.OK);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "전체 테스트 기록 보기", description = "전체 사용자가 진행한 테스트 기록을 보여줍니다.")
+    public AllTestHistoryResponse testRecordInfo(@Valid TestHistoryCondition testHistoryCondition) {
+        return testDetailsService.findAllTestStatusByCondition(testHistoryCondition);
     }
 }
