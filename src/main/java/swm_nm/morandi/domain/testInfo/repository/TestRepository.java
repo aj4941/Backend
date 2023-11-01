@@ -6,7 +6,7 @@ import swm_nm.morandi.domain.testInfo.entity.Tests;
 
 import java.time.LocalDateTime;
 import java.util.List;
-public interface TestRepository extends JpaRepository<Tests, Long>, TestStatusRepository {
+public interface TestRepository extends JpaRepository<Tests, Long>{
     //Paging하여 테스트 기록을 가져옴
     List<Tests> findAllTestsByMember_MemberIdAndTestStatus(Long memberId, TestStatus testStatus, Pageable pageable);
     //1년동안의 테스트 기록을 가져와서 레이팅 반환에 사용함
