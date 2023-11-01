@@ -3,13 +3,14 @@ package swm_nm.morandi.domain.practice.dto;
 import lombok.*;
 import swm_nm.morandi.domain.practice.entity.PracticeProblem;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter @Setter
 @Builder
 public class PracticeResultDto {
 
-    private LocalDateTime practiceDate;
+    private LocalDate practiceDate;
 
     private Boolean isSolved;
 
@@ -21,7 +22,7 @@ public class PracticeResultDto {
                 null : String.format("%d:%02d", practiceProblemSolvedTime / 60, practiceProblemSolvedTime % 60);
         PracticeResultDto practiceResultDto = PracticeResultDto.builder()
                 .practiceDate(practiceProblem.getPracticeDate())
-                .isSolved(practiceProblem.getPracticeStatus() == PracticeStatus.SUCCESS)
+                .isSolved(practiceProblem.getIsSolved())
                 .solvedTime(solvedTime)
                 .build();
 
