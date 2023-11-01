@@ -19,10 +19,12 @@ import java.util.List;
 @ToString
 public class TestRecordDto {
     private Long testId;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime testDate;
+
     private Long testTime;
     private Integer problemCount;
     private Integer acceptCount;

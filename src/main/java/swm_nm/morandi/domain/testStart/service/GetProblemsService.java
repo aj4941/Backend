@@ -64,6 +64,7 @@ public class GetProblemsService {
     }
 
     public void getProblemsByApi(TestType testType, String bojId, List<BojProblem> bojProblems) {
+        System.out.println("testType : " + testType);
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         long index = 1;
         for (DifficultyRange difficultyRange : difficultyRanges) {

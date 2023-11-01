@@ -11,4 +11,5 @@ public interface TestRepository extends JpaRepository<Tests, Long> {
     List<Tests> findAllTestsByMember_MemberIdAndTestStatus(Long memberId, TestStatus testStatus,Pageable pageable);
     //1년동안의 테스트 기록을 가져와서 레이팅 반환에 사용함
     List<Tests> findAllTestsByMember_MemberIdAndTestStatusAndTestDateAfterOrderByTestDateAsc(Long memberId, TestStatus testStatus, LocalDateTime oneYearAgo);
+    Long countByMember_MemberIdAndTestStatus(Long memberId, TestStatus testStatus);
 }
