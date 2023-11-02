@@ -21,6 +21,10 @@ public class TestHistoryDto {
 
     public Long testId;
 
+    public Long memberId;
+
+    public String bojId;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public LocalDateTime testDate;
