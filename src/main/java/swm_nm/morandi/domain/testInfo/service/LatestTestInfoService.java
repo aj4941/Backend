@@ -1,6 +1,7 @@
 package swm_nm.morandi.domain.testInfo.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,12 +33,10 @@ public class LatestTestInfoService {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Integer page = testRecordRequestDto.getPage();
         Integer size = testRecordRequestDto.getSize();
-        Long totalCount = testRepository.countByMember_MemberIdAndTestStatus(memberId, TestStatus.COMPLETED);
-        Long totalPage = (totalCount + size - 1) / size;
 
         //페이징하여 최근 4개의 테스트 기록을 가져옴
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(DESC, "testDate"));
-        List<Tests> recentTests = testRepository.findAllTestsByMember_MemberIdAndTestStatus(memberId, TestStatus.COMPLETED, pageable);
+        Page<Tests> recentTests = testRepository.findAllTestsByMember_MemberIdAndTestStatus(memberId, TestStatus.COMPLETED, pageable);
 
         //테스트 기록을 받아와서 dto로 변환하면서 getAttemptProblemDtos를 통해 테스트 문제들을 dto로 변환
         List<TestRecordDto> testRecordDtos =
@@ -50,7 +49,7 @@ public class LatestTestInfoService {
         //테스트 기록이 4개 미만일 경우 더미 데이터를 넣어줌
         getTestRecordDtos(testRecordDtos);
 
-        TestPageDto testPageDto = TestPageDto.getTestPageDto(totalPage, testRecordDtos);
+        TestPageDto testPageDto = TestPageDto.getTestPageDto(recentTests.getTotalElements(), testRecordDtos);
 
         return testPageDto;
     }

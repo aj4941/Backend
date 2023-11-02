@@ -11,11 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TestPageDto {
-    private Long totalPage;
+    private Long totalElements;
     private List<TestRecordDto> testRecordDtos = new ArrayList<>();
-    public static TestPageDto getTestPageDto(Long totalPage, List<TestRecordDto> testRecordDtos) {
+    public static TestPageDto getTestPageDto(Long totalElements, List<TestRecordDto> testRecordDtos) {
         return TestPageDto.builder()
-                    .totalPage(totalPage)
+                    .totalElements(totalElements)
                     .testRecordDtos(testRecordDtos)
                     .build();
     }
