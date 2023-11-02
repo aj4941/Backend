@@ -20,6 +20,8 @@ import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdResponse;
 import swm_nm.morandi.domain.common.Language;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
+import swm_nm.morandi.domain.practice.entity.PracticeProblem;
+import swm_nm.morandi.domain.practice.repository.PracticeProblemRepository;
 import swm_nm.morandi.domain.testDuring.dto.TestInfo;
 import swm_nm.morandi.domain.testDuring.service.TempCodeService;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
@@ -27,6 +29,7 @@ import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.domain.testRetry.request.RetrySubmitRequest;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
+import swm_nm.morandi.global.exception.errorcode.PracticeProblemErrorCode;
 import swm_nm.morandi.global.exception.errorcode.SubmitErrorCode;
 import swm_nm.morandi.domain.codeSubmit.dto.SubmitCodeDto;
 import swm_nm.morandi.global.utils.SecurityUtils;
@@ -51,6 +54,8 @@ public class BaekjoonSubmitService {
     private final TempCodeService tempCodeService;
 
     private final MemberRepository memberRepository;
+
+    private final PracticeProblemRepository practiceProblemRepository;
 
     private final AttemptProblemRepository attemptProblemRepository;
     //백준 로그인용 쿠키 저장
@@ -82,9 +87,7 @@ public class BaekjoonSubmitService {
         if (existingBojId != null && !existingBojId.equals(bojId)) {
             throw new MorandiException(SubmitErrorCode.BAEKJOON_INVALID_ID);
         }
-
     }
-
     private void saveCookieToRedis(Long memberId,String cookie){
         String key = generateKey(memberId);
         //Redis에 쿠키 저장
@@ -98,9 +101,7 @@ public class BaekjoonSubmitService {
     private void updateMemberInfo(Member member, String bojId){
         member.setBojId(bojId);
         memberRepository.save(member);
-
     }
-
     @MemberLock
     @Transactional
     public ResponseEntity<SolutionIdResponse> submit(SubmitCodeDto submitCodeDto) {
@@ -112,11 +113,21 @@ public class BaekjoonSubmitService {
 
         SolutionIdResponse solutionId =  sendSubmitRequest(cookie, CSRFKey, submitCodeDto.getBojProblemId(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
 
+
         //제출한 코드 정보를 저장
         saveSubmitTempCode(submitCodeDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(solutionId);
     }
+    @MemberLock
+    @Transactional
+    public ResponseEntity<SolutionIdDto> submit(PracticeProblemSubmitCodeRequest practiceProblemSubmitCodeRequest) {
+        validateBojProblemId(practiceProblemSubmitCodeRequest.getBojProblemId());
+
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        String cookie = getCookieFromRedis(generateKey(memberId));
+        String CSRFKey = getCSRFKey(cookie, practiceProblemSubmitCodeRequest.getBojProblemId());
+
 
     @MemberLock
     @Transactional
@@ -131,6 +142,7 @@ public class BaekjoonSubmitService {
     }
 
 
+
     private void validateBojProblemId(String bojProblemId) {
         try {
             int problemId = Integer.parseInt(bojProblemId);
@@ -141,6 +153,7 @@ public class BaekjoonSubmitService {
             throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
         }
     }
+      
     private void validateBojProblemId(Long bojProblemId) {
         try {
 
@@ -151,6 +164,7 @@ public class BaekjoonSubmitService {
             throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
         }
     }
+      
     private String getCookieFromRedis(String key){
         return Optional.ofNullable((String) redisTemplate.opsForValue().get(key))
                 .orElseThrow(() -> new MorandiException(SubmitErrorCode.COOKIE_NOT_EXIST));
@@ -270,11 +284,18 @@ public class BaekjoonSubmitService {
 
         tempCodeService.saveTempCode(testId, submitCodeDto.getProblemNumber(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
 
-        saveSubmitCodeToDatabase(testId,submitCodeDto);
+        saveSubmitCodeToDatabase(testId, submitCodeDto);
+    }
+
+    private void savePracticeProblemSubmitTempCode(PracticeProblemSubmitCodeRequest practiceProblemSubmitCodeRequest) {
+        Long practiceProblemId = practiceProblemSubmitCodeRequest.getPracticeProblemId();
+        Language language = practiceProblemSubmitCodeRequest.getLanguage();
+        String sourceCode = practiceProblemSubmitCodeRequest.getSourceCode();
+        tempCodeService.savePracticeProblemTempCode(practiceProblemId, language, sourceCode);
+        savePracticeProblemToDatabase(practiceProblemId, practiceProblemSubmitCodeRequest);
     }
 
     private void saveSubmitCodeToDatabase(Long testId, SubmitCodeDto submitCodeDto) {
-
         AttemptProblem attemptProblem = attemptProblemRepository.findByTest_TestIdAndProblem_BojProblemId(testId,Long.parseLong(submitCodeDto.getBojProblemId()))
                 .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST));
 
@@ -283,5 +304,13 @@ public class BaekjoonSubmitService {
         //TODO
         //attemptProblem에 마지막으로 제출한 language의 정보가 빠져있음 -> 이거 나중에 추가하던지 해야함
         attemptProblemRepository.save(attemptProblem);
+    }
+
+    private void savePracticeProblemToDatabase(Long practiceProblemId, PracticeProblemSubmitCodeRequest practiceProblemSubmitCodeRequest) {
+        PracticeProblem practiceProblem = practiceProblemRepository.findById(practiceProblemId).orElseThrow(
+                () -> new MorandiException(PracticeProblemErrorCode.PRACTICE_PROBLEM_NOT_FOUND));
+        practiceProblem.setSubmitCode(practiceProblemSubmitCodeRequest.getSourceCode());
+        practiceProblem.setSubmitLanguage(practiceProblemSubmitCodeRequest.getLanguage());
+        practiceProblemRepository.save(practiceProblem);
     }
 }
