@@ -22,7 +22,7 @@ public class CodeSubmitController {
     private final SaveSubmitResultService saveSubmitResultService;
     @PostMapping("/baekjoon")
     @Operation(summary = "문제 번호, 언어이름, 소스코드를 백준에 제출하는 컨트롤러 ", description = "사용자가 테스트 중 코드를 제출하는 경우 백준에 제출하는 컨트롤러입니다.")
-    public ResponseEntity<SolutionIdDto> submit(@RequestBody @Valid SubmitCodeDto submitCodeDto) {
+    public ResponseEntity<SolutionIdResponse> submit(@RequestBody @Valid SubmitCodeDto submitCodeDto) {
         return submitService.submit(submitCodeDto);
     }
     @PostMapping("/baekjoon/practice")

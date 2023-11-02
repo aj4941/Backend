@@ -16,8 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
 import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
-import swm_nm.morandi.domain.codeSubmit.dto.PracticeProblemSubmitCodeRequest;
-import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdDto;
+import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdResponse;
 import swm_nm.morandi.domain.common.Language;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
@@ -27,6 +26,7 @@ import swm_nm.morandi.domain.testDuring.dto.TestInfo;
 import swm_nm.morandi.domain.testDuring.service.TempCodeService;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
+import swm_nm.morandi.domain.testRetry.request.RetrySubmitRequest;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.global.exception.errorcode.PracticeProblemErrorCode;
@@ -104,14 +104,15 @@ public class BaekjoonSubmitService {
     }
     @MemberLock
     @Transactional
-    public ResponseEntity<SolutionIdDto> submit(SubmitCodeDto submitCodeDto) {
+    public ResponseEntity<SolutionIdResponse> submit(SubmitCodeDto submitCodeDto) {
         validateBojProblemId(submitCodeDto.getBojProblemId());
 
         Long memberId = SecurityUtils.getCurrentMemberId();
         String cookie = getCookieFromRedis(generateKey(memberId));
         String CSRFKey = getCSRFKey(cookie, submitCodeDto.getBojProblemId());
 
-        SolutionIdDto solutionId = sendSubmitRequest(cookie, CSRFKey, submitCodeDto.getBojProblemId(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
+        SolutionIdResponse solutionId =  sendSubmitRequest(cookie, CSRFKey, submitCodeDto.getBojProblemId(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
+
 
         //제출한 코드 정보를 저장
         saveSubmitTempCode(submitCodeDto);
@@ -127,14 +128,20 @@ public class BaekjoonSubmitService {
         String cookie = getCookieFromRedis(generateKey(memberId));
         String CSRFKey = getCSRFKey(cookie, practiceProblemSubmitCodeRequest.getBojProblemId());
 
-        SolutionIdDto solutionId = sendSubmitRequest(cookie, CSRFKey, practiceProblemSubmitCodeRequest.getBojProblemId(),
-                practiceProblemSubmitCodeRequest.getLanguage(), practiceProblemSubmitCodeRequest.getSourceCode());
 
-        //제출한 코드 정보를 저장
-        savePracticeProblemSubmitTempCode(practiceProblemSubmitCodeRequest);
+    @MemberLock
+    @Transactional
+    public SolutionIdResponse submit(RetrySubmitRequest retrySubmitRequest) {
+        validateBojProblemId(retrySubmitRequest.getBojProblemId());
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        String bojProblemId = String.valueOf(retrySubmitRequest.getBojProblemId());
+        String cookie = getCookieFromRedis(generateKey(memberId));
+        String CSRFKey = getCSRFKey(cookie, String.valueOf(retrySubmitRequest.getBojProblemId()));
 
-        return ResponseEntity.status(HttpStatus.OK).body(solutionId);
+        return sendSubmitRequest(cookie, CSRFKey, bojProblemId, retrySubmitRequest.getLanguage(), retrySubmitRequest.getSourceCode());
     }
+
+
 
     private void validateBojProblemId(String bojProblemId) {
         try {
@@ -146,6 +153,18 @@ public class BaekjoonSubmitService {
             throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
         }
     }
+      
+    private void validateBojProblemId(Long bojProblemId) {
+        try {
+
+            if (bojProblemId >= 30000 || bojProblemId < 1000)
+                throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
+        }
+        catch (NumberFormatException e) {
+            throw new MorandiException(SubmitErrorCode.INVALID_BOJPROBLEM_NUMBER);
+        }
+    }
+      
     private String getCookieFromRedis(String key){
         return Optional.ofNullable((String) redisTemplate.opsForValue().get(key))
                 .orElseThrow(() -> new MorandiException(SubmitErrorCode.COOKIE_NOT_EXIST));
@@ -180,7 +199,7 @@ public class BaekjoonSubmitService {
         return headers;
     }
 
-    private SolutionIdDto sendSubmitRequest(String cookie, String CSRFKey, String bojProblemId, Language language, String sourceCode) {
+    private SolutionIdResponse sendSubmitRequest(String cookie, String CSRFKey, String bojProblemId, Language language, String sourceCode) {
         String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", bojProblemId);
         HttpHeaders headers = createHeaders(cookie);
         MultiValueMap<String, String> parameters = createParameters(bojProblemId, language,sourceCode, CSRFKey);
@@ -199,7 +218,7 @@ public class BaekjoonSubmitService {
 
 
                 // HTML에서 solution-id를 추출합니다.
-                SolutionIdDto solutionId = extractSolutionIdFromHtml(redirectedResponse.getBody());
+                SolutionIdResponse solutionId = extractSolutionIdFromHtml(redirectedResponse.getBody());
                 
                 if (solutionId.getSolutionId() != null) {
                     return solutionId;
@@ -234,7 +253,7 @@ public class BaekjoonSubmitService {
         return parameters;
     }
 
-    private SolutionIdDto extractSolutionIdFromHtml(String html) {
+    private SolutionIdResponse extractSolutionIdFromHtml(String html) {
         // HTML을 파싱합니다.
         Document doc = Jsoup.parse(html);
 
@@ -250,7 +269,7 @@ public class BaekjoonSubmitService {
         if (solutionIdElement != null) {
             String solutionId = solutionIdElement.text();
 
-            return new SolutionIdDto(solutionId);
+            return new SolutionIdResponse(solutionId);
 
         } else {
            throw new MorandiException(SubmitErrorCode.CANT_FIND_SOLUTION_ID);
