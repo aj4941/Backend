@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import swm_nm.morandi.domain.practice.dto.PracticeExitDto;
-import swm_nm.morandi.domain.practice.dto.PracticeIdDto;
 import swm_nm.morandi.domain.practice.dto.PracticeResultDto;
 import swm_nm.morandi.domain.practice.dto.PracticeStartDto;
+import swm_nm.morandi.domain.practice.dto.PracticeStartResponseDto;
 import swm_nm.morandi.domain.practice.service.PracticeProblemService;
 
 @RestController
@@ -22,9 +22,9 @@ public class PracticeController {
     private final PracticeProblemService practiceProblemService;
     @PostMapping
     @Operation(summary = "연습 문제 시작하기", description = "사용자가 임의로 백준 문제 번호를 골라서 문제를 풀려고 시도할 때 테이블을 구성합니다.")
-    public ResponseEntity<PracticeIdDto> practiceStart(@RequestBody PracticeStartDto practiceStartDto) {
-        PracticeIdDto practiceIdDto = practiceProblemService.savePraticeProblems(practiceStartDto.getBojProblemId());
-        return new ResponseEntity(practiceIdDto, HttpStatus.OK);
+    public ResponseEntity<PracticeStartResponseDto> practiceStart(@RequestBody PracticeStartDto practiceStartDto) {
+        PracticeStartResponseDto practiceStartResponseDto = practiceProblemService.startPractices(practiceStartDto.getBojProblemId());
+        return new ResponseEntity(practiceStartResponseDto, HttpStatus.OK);
     }
     @PostMapping("/exit")
     @Operation(summary = "연습 문제 종료하기", description = "사용자가 시도한 연습문제를 종료할 경우 결과 데이터를 반환합니다.")

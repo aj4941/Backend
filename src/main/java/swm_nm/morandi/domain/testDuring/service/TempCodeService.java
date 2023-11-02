@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.common.Language;
+import swm_nm.morandi.domain.testDuring.dto.PracticeProblemCodeDto;
 import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testStart.dto.TestCodeDto;
@@ -65,7 +66,12 @@ public class TempCodeService {
                 .javaCode(tempCodes.get(problemNumber).getJavaCode())
                 .problemNumber(Integer.parseInt(problemNumber))
                 .build()).collect(Collectors.toList());
+    }
 
-
+    public PracticeProblemCodeDto getPracticeProblemTempCode(Long practiceProblemId) {
+        String practiceProblemTempCodeKey = redisKeyGenerator.generatePracticeProblemTempCodeKey(practiceProblemId);
+        TempCodeDto tempCodeDto = (TempCodeDto) redisTemplate.opsForValue().get(practiceProblemTempCodeKey);
+        PracticeProblemCodeDto practiceProblemCodeDto = PracticeProblemCodeDto.getPracticeProblemCodeDto(tempCodeDto);
+        return practiceProblemCodeDto;
     }
 }

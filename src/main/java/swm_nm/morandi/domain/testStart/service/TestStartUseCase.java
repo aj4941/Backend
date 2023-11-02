@@ -41,10 +41,8 @@ public class TestStartUseCase {
     private final TempCodeService tempCodeService;
     private final TestTypeRepository testTypeRepository;
     private final TestProgressCheckService testProgressCheckService;
-
     private final MemberRepository memberRepository;
     private final AttemptProblemRepository attemptProblemRepository;
-
 
     //이미 테스트 중인지 확인
     @MemberLock
@@ -104,7 +102,6 @@ public class TestStartUseCase {
     }
 
     private List<TestCodeDto> getTestCodeDtos(Tests test) {
-
         return tempCodeService.getTempCode(test);
     }
 
