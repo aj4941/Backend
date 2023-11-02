@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class AllTestHistoryResponse {
-    public int totalPage;
+    public long totalElements;
     public int currentSize;
     public List<TestHistoryDto> testHistorys;
     

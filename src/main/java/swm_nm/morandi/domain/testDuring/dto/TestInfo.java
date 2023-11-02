@@ -15,12 +15,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class TestInfo {
-
-    public Long testId;
-
+    private Long testId;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    public LocalDateTime endTime;
+    private LocalDateTime endTime;
 
 }

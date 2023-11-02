@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class InputData {
+    private Long practiceProblemId;
     private Long testId;
     private Integer problemNumber;
     private Language language;

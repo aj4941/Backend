@@ -57,6 +57,8 @@ public class TestDetailsService {
         List<TestHistoryDto> testHistoryDtos = testHistory.stream().map(tests -> TestHistoryDto.builder().
                 testId(tests.getTestId())
                 .testDate(tests.getTestDate())
+                .memberId(tests.getMember().getMemberId())
+                .bojId(tests.getMember().getBojId())
                 .testTypename(tests.getTestTypename())
                 .problemCount(tests.getAttemptProblems().size())
                 .solvedCount((int) tests.getAttemptProblems().stream().filter(AttemptProblem::getIsSolved).count())
@@ -65,7 +67,7 @@ public class TestDetailsService {
 
         return AllTestHistoryResponse.builder()
                 .testHistorys(testHistoryDtos)
-                .totalPage(testHistory.getTotalPages())
+                .totalElements(testHistory.getTotalElements())
                 .currentSize(testHistory.getSize())
                 .build();
 

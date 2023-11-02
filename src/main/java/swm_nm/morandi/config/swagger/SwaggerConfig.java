@@ -31,7 +31,6 @@ public class SwaggerConfig {
                 .build()
                 .apiInfo(apiInfo());
     }
-
     @Bean
     public Docket testDuringApi() {
         return new Docket(DocumentationType.OAS_30)
@@ -44,7 +43,6 @@ public class SwaggerConfig {
                 .build()
                 .apiInfo(apiInfo());
     }
-
     @Bean
     public Docket testExitApi() {
         return new Docket(DocumentationType.OAS_30)
@@ -57,7 +55,6 @@ public class SwaggerConfig {
                 .build()
                 .apiInfo(apiInfo());
     }
-
     @Bean
     public Docket testInfoApi() {
         return new Docket(DocumentationType.OAS_30)
@@ -102,6 +99,19 @@ public class SwaggerConfig {
                 .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.codeSubmit.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo());
+    }
+
+    @Bean
+    public Docket practiceProblemApi() {
+        return new Docket(DocumentationType.OAS_30)
+                .servers(serverLocal, testServer)
+                .groupName("practice-api")
+                .useDefaultResponseMessages(false)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.practice.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
