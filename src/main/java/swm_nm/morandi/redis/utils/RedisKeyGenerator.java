@@ -19,4 +19,8 @@ public class RedisKeyGenerator {
         return String.format("practiceProblemId:%s", practiceProblemId);
     }
 
+    public String generateRetryTestTempCodeKey(Long testId) {
+        return String.format("retryTestId:%s", testId);
+    }
+
 }

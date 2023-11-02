@@ -253,6 +253,7 @@ public class BaekjoonSubmitService {
                 .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST));
 
         attemptProblem.setSubmitCode(submitCodeDto.getSourceCode());
+        attemptProblem.setSubmitLanguage(submitCodeDto.getLanguage());
         //TODO
         //attemptProblem에 마지막으로 제출한 language의 정보가 빠져있음 -> 이거 나중에 추가하던지 해야함
         attemptProblemRepository.save(attemptProblem);
