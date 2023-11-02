@@ -17,6 +17,7 @@ import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
 import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
 import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdDto;
+import swm_nm.morandi.domain.common.Language;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.domain.testDuring.dto.TestInfo;
@@ -108,13 +109,15 @@ public class BaekjoonSubmitService {
         String cookie = getCookieFromRedis(generateKey(memberId));
         String CSRFKey = getCSRFKey(cookie, submitCodeDto.getBojProblemId());
 
-        SolutionIdDto solutionId=  sendSubmitRequest(cookie, CSRFKey, submitCodeDto);
+        SolutionIdDto solutionId =  sendSubmitRequest(cookie, CSRFKey, submitCodeDto.getBojProblemId(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
 
         //제출한 코드 정보를 저장
         saveSubmitTempCode(submitCodeDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(solutionId);
     }
+
+
     private void validateBojProblemId(String bojProblemId) {
         try {
             int problemId = Integer.parseInt(bojProblemId);
@@ -159,10 +162,10 @@ public class BaekjoonSubmitService {
         return headers;
     }
 
-    private SolutionIdDto sendSubmitRequest(String cookie, String CSRFKey, SubmitCodeDto submitCodeDto) {
-        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", submitCodeDto.getBojProblemId());
+    private SolutionIdDto sendSubmitRequest(String cookie, String CSRFKey, String bojProblemId, Language language, String sourceCode) {
+        String acmicpcUrl = String.format("https://www.acmicpc.net/submit/%s", bojProblemId);
         HttpHeaders headers = createHeaders(cookie);
-        MultiValueMap<String, String> parameters = createParameters(submitCodeDto, CSRFKey);
+        MultiValueMap<String, String> parameters = createParameters(bojProblemId, language,sourceCode, CSRFKey);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(parameters, headers);
 
         try {
@@ -203,12 +206,12 @@ public class BaekjoonSubmitService {
         throw new MorandiException(SubmitErrorCode.BAEKJOON_UNKNOWN_ERROR);
     }
     //POST로 보낼 때 필요한 파라미터들을 생성
-    private MultiValueMap<String, String> createParameters(SubmitCodeDto submitCodeDto, String CSRFKey) {
+    private MultiValueMap<String, String> createParameters(String bojProblemId, Language language, String sourceCode, String CSRFKey) {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-            parameters.add("problem_id", submitCodeDto.getBojProblemId());
-            parameters.add("language", submitCodeDto.getLanguageId());
+            parameters.add("problem_id", bojProblemId);
+            parameters.add("language", SubmitCodeDto.getLanguageId(language));
             parameters.add("code_open", CodeVisuabilityConstants.CLOSE.getCodeVisuability());
-            parameters.add("source", submitCodeDto.getSourceCode());
+            parameters.add("source", sourceCode);
             parameters.add("csrf_key", CSRFKey);
         return parameters;
     }
