@@ -27,7 +27,7 @@ public class CodeSubmitController {
     }
     @PostMapping("/baekjoon/practice")
     @Operation(summary = "문제 번호, 언어 이름, 소스코드를 백준에 제출하는 컨트롤러", description = "사용자가 연습 문제를 제출하는 경우 백준에 제출하는 컨트롤러입니다.")
-    public ResponseEntity<SolutionIdDto> submit(@RequestBody @Valid PracticeProblemSubmitCodeRequest practiceProblemSubmitCodeRequest) {
+    public ResponseEntity<SolutionIdResponse> submit(@RequestBody @Valid PracticeProblemSubmitCodeRequest practiceProblemSubmitCodeRequest) {
         return submitService.submit(practiceProblemSubmitCodeRequest);
     }
     @PostMapping("/cookie")

@@ -1,15 +1,13 @@
 package swm_nm.morandi.domain.testRetry.service;
 
 
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdResponse;
 import swm_nm.morandi.domain.codeSubmit.service.BaekjoonSubmitService;
 import swm_nm.morandi.domain.testDuring.dto.OutputDto;
-import swm_nm.morandi.domain.testDuring.dto.TestInfo;
 import swm_nm.morandi.domain.testDuring.dto.factory.TempCodeFactory;
 import swm_nm.morandi.domain.testDuring.service.RunCodeService;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
