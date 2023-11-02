@@ -5,12 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.codeSubmit.dto.AttemptProblemResultDto;
+import swm_nm.morandi.domain.codeSubmit.dto.PracticeProblemResultDto;
+import swm_nm.morandi.domain.practice.dto.PracticeProblemCode;
+import swm_nm.morandi.domain.practice.entity.PracticeProblem;
+import swm_nm.morandi.domain.practice.repository.PracticeProblemRepository;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.AttemptProblemErrorCode;
+import swm_nm.morandi.global.exception.errorcode.PracticeProblemErrorCode;
 import swm_nm.morandi.global.utils.SecurityUtils;
 
 import java.time.Duration;
@@ -19,16 +24,20 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class SaveSubmitResultService {
+
     private final AttemptProblemRepository attemptProblemRepository;
+
+    private final PracticeProblemRepository practiceProblemRepository;
 
     @Transactional
     public String saveSubmitResult(AttemptProblemResultDto attemptProblemResultDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         AttemptProblem attemptProblem =
-                attemptProblemRepository.findByMember_MemberIdAndTest_testIdAndTest_TestStatusAndProblem_BojProblemId(memberId, attemptProblemResultDto.getTestId(), TestStatus.IN_PROGRESS,attemptProblemResultDto.getBojProblemId())
+                attemptProblemRepository.findByMember_MemberIdAndTest_testIdAndTest_TestStatusAndProblem_BojProblemId(memberId,
+                                attemptProblemResultDto.getTestId(), TestStatus.IN_PROGRESS,attemptProblemResultDto.getBojProblemId())
                 .orElseThrow(() -> new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND_DURING_TEST));
 
-        if(attemptProblem.getIsSolved())
+        if (attemptProblem.getIsSolved())
             throw new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_ALREADY_SOLVED);
 
         Tests test = attemptProblem.getTest();
@@ -45,7 +54,14 @@ public class SaveSubmitResultService {
         attemptProblemRepository.save(attemptProblem);
 
         return "success";
-
     }
 
+    @Transactional
+    public String savePracticeProblemSubmit(PracticeProblemResultDto practiceProblemResultDto) {
+        PracticeProblem practiceProblem = practiceProblemRepository.findById(practiceProblemResultDto.getPracticeProblemId())
+                .orElseThrow(() -> new MorandiException(PracticeProblemErrorCode.PRACTICE_PROBLEM_NOT_FOUND));
+        practiceProblem.setIsSolved(true);
+        practiceProblemRepository.save(practiceProblem);
+        return "success";
+    }
 }
