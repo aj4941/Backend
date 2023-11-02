@@ -33,4 +33,14 @@ public class SubmitCodeDto {
             throw new MorandiException(SubmitErrorCode.LANGUAGE_CODE_NOT_FOUND);
         }
     }
+
+    public static String getLanguageId(Language language) {
+        try {
+            return SubmitConstants.valueOf(language.getLanguage()).getLanguageId();
+        } catch (IllegalArgumentException e) {
+            throw new MorandiException(SubmitErrorCode.LANGUAGE_CODE_NOT_FOUND);
+        }
+    }
+
+
 }
