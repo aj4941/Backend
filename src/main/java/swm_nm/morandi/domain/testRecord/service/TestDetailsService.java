@@ -67,7 +67,7 @@ public class TestDetailsService {
 
         return AllTestHistoryResponse.builder()
                 .testHistorys(testHistoryDtos)
-                .totalPage(testHistory.getTotalPages())
+                .totalElements(testHistory.getTotalElements())
                 .currentSize(testHistory.getSize())
                 .build();
 
