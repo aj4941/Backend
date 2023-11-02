@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,7 +28,7 @@ public class PracticeProblem extends BaseEntity {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Language submitLanguage;
+    private Language submitLanguage = Language.Cpp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROBLEM_ID")
@@ -37,4 +37,14 @@ public class PracticeProblem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    public void setSubmitCode(String code) {
+        this.submitCode = code;
+    }
+    public void setSubmitLanguage(Language language) {
+        this.submitLanguage = language;
+    }
+    public void setIsSolved(Boolean isSolved) {
+        this.isSolved = isSolved;
+    }
 }
