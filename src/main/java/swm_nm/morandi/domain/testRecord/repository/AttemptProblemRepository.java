@@ -16,6 +16,7 @@ public interface AttemptProblemRepository extends JpaRepository<AttemptProblem, 
     List<AttemptProblem> findAllByMember_MemberId(Long memberId);
     List<AttemptProblem> findAllByTest_TestId(Long testId);
 
+    Optional<AttemptProblem> findAttemptProblemByTest_TestIdAndProblem_BojProblemId(Long testId, Long bojProblemId);
     @EntityGraph(attributePaths = {"test", "problem"})
     Optional<AttemptProblem> findByTest_TestIdAndProblem_BojProblemId(Long testId, Long bojProblemId);
     @EntityGraph(attributePaths = {"test", "problem"})

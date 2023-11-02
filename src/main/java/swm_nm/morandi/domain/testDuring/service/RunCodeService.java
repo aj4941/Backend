@@ -1,5 +1,6 @@
 package swm_nm.morandi.domain.testDuring.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,11 @@ import swm_nm.morandi.domain.testDuring.dto.InputData;
 import swm_nm.morandi.domain.testDuring.dto.OutputDto;
 import swm_nm.morandi.domain.testDuring.dto.TestCaseInputData;
 import com.fasterxml.jackson.core.type.TypeReference;
+import swm_nm.morandi.domain.testRetry.request.RetryRunCodeRequest;
+import swm_nm.morandi.domain.testRetry.request.RetryRunTestCaseRequest;
+import swm_nm.morandi.global.exception.MorandiException;
+import swm_nm.morandi.global.exception.errorcode.RunCodeErrorCode;
+
 import java.util.List;
 
 @Service
@@ -64,6 +70,66 @@ public class RunCodeService {
             throw new Exception("HTTP request failed with status code: " + statusCode);
         }
     }
+
+    public OutputDto runCode(RetryRunCodeRequest retryRunCodeRequest)  {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String inputDataJson = objectMapper.writeValueAsString(retryRunCodeRequest);
+
+            // Create POST request
+            HttpPost httpPost = new HttpPost(url);
+            httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setEntity(new StringEntity(inputDataJson, "UTF-8"));
+
+            // Send POST request
+            HttpResponse response = httpClient.execute(httpPost);
+
+            // Check response status code
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200) {
+                String responseJson = EntityUtils.toString(response.getEntity());
+                OutputDto outputDto = objectMapper.readValue(responseJson, OutputDto.class);
+                return outputDto;
+            } else {
+                throw new MorandiException(RunCodeErrorCode.RUN_CODE_ERROR);
+            }
+        }
+        catch (Exception e) {
+            throw new MorandiException(RunCodeErrorCode.RUN_CODE_ERROR);
+        }
+    }
+    public List<OutputDto> runTestCaseCode(RetryRunTestCaseRequest retryRunTestCaseRequest) {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String inputDataJson = objectMapper.writeValueAsString(retryRunTestCaseRequest);
+
+        // Create POST request
+        HttpPost httpPost = new HttpPost(tcUrl);
+        httpPost.setHeader("Content-Type", "application/json");
+        httpPost.setEntity(new StringEntity(inputDataJson, "UTF-8"));
+
+        // Send POST request
+        HttpResponse response = httpClient.execute(httpPost);
+
+        // Check response status code
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode == 200) {
+            String responseJson = EntityUtils.toString(response.getEntity());
+            List<OutputDto> outputDtos = objectMapper.readValue(responseJson, new TypeReference<List<OutputDto>>() {});
+            return outputDtos;
+        } else {
+            throw new MorandiException(RunCodeErrorCode.RUN_CODE_ERROR);
+        }
+        }
+        catch (Exception e) {
+            throw new MorandiException(RunCodeErrorCode.RUN_CODE_ERROR);
+        }
+    }
+
     public List<OutputDto> runTestCaseCode(TestCaseInputData testCaseInputData) throws Exception {
 
         if (testCaseInputData.getPracticeProblemId() != null) {

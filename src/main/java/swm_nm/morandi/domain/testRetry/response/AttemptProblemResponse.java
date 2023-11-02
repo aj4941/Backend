@@ -12,7 +12,7 @@ import swm_nm.morandi.domain.common.Language;
 @Slf4j
 @AllArgsConstructor
 @NoArgsConstructor
-public class RetryAttemptProblemResponse {
+public class AttemptProblemResponse {
     private Long bojProblemId;
     private String pythonCode;
     private String javaCode;
