@@ -2,10 +2,13 @@ package swm_nm.morandi.domain.testStart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.decorate.cbor.CborJsonFactoryDecorator;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import swm_nm.morandi.domain.practice.dto.PracticeProblemInfo;
+import swm_nm.morandi.domain.practice.entity.PracticeProblem;
 import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
 import swm_nm.morandi.domain.testDuring.dto.TestInfo;
 import swm_nm.morandi.domain.testDuring.dto.factory.TempCodeFactory;
@@ -27,7 +30,6 @@ public class TempCodeInitializer {
 
     private final RedisKeyGenerator redisKeyGenerator;
 
-
     @Transactional
     public void initializeTempCodeCache(Tests test) {
         log.debug("Initializing temp code cache for test with ID: {}", test.getTestId());
@@ -37,7 +39,6 @@ public class TempCodeInitializer {
         Duration duration = Duration.between(now, endTime);
         long expireTime = duration.toMinutes();
 
-
         // 테스트 정보를 저장한다
         String ongoingTestKey = redisKeyGenerator.generateOngoingTestKey();
         TestInfo testInfo = TestInfo.builder()
@@ -46,7 +47,6 @@ public class TempCodeInitializer {
                 .build();
         redisTemplate.opsForValue().set(ongoingTestKey, testInfo);//, expireTime, TimeUnit.MINUTES);
         //테스트 정보를 만료시켜버리면 테스트가 끝나버리면 key가 사라져서 테스트 정보를 몰라버리니깐 만료시키지 않는다.
-
 
         log.debug("Test info cache initialized for test with ID: {}", test.getTestId());
 
@@ -62,13 +62,26 @@ public class TempCodeInitializer {
         );
         redisTemplate.expire(tempCodeKey, expireTime, TimeUnit.MINUTES);
 
-
-
         // 로깅: 초기화 완료
         log.debug("Initialization of temp code cache completed for test with ID: {}", test.getTestId());
-
-
     }
 
+    @Transactional
+    public void initializePracticeTempCodeCache(PracticeProblem practiceProblem) {
+        log.debug("Initializing practice problem temp code cache for test with ID: {}", practiceProblem.getPracticeProblemId());
 
+        String ongoingPracticeProblemKey = redisKeyGenerator.generateOngoingPracticeProblemKey(practiceProblem.getProblem().getBojProblemId());
+        PracticeProblemInfo practiceProblemInfo = PracticeProblemInfo.builder()
+                .practiceProblemId(practiceProblem.getPracticeProblemId())
+                .build();
+        redisTemplate.opsForValue().set(ongoingPracticeProblemKey, practiceProblemInfo);
+
+        log.debug("practice problem info cache initialized for test with ID: {}", practiceProblemInfo.getPracticeProblemId());
+
+        String practiceProblemTempCodeKey = redisKeyGenerator.generatePracticeProblemTempCodeKey(practiceProblemInfo.getPracticeProblemId());
+        TempCodeDto initialTempCode = tempCodeFactory.getTempCodeDto();
+        redisTemplate.opsForValue().set(practiceProblemTempCodeKey, initialTempCode);
+
+        log.debug("Initialization of practice problem code cache completed for test with ID: {}", practiceProblemInfo.getPracticeProblemId());
+    }
 }

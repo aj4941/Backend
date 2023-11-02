@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.InputData;
 import swm_nm.morandi.domain.testDuring.dto.OutputDto;
-import swm_nm.morandi.domain.testDuring.dto.TestInputData;
+import swm_nm.morandi.domain.testDuring.dto.TestCaseInputData;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 
@@ -32,8 +32,14 @@ public class RunCodeService {
 
     public OutputDto runCode(InputData inputData) throws Exception {
 
-        tempCodeService.saveTempCode(inputData.getTestId(), inputData.getProblemNumber(),
-                inputData.getLanguage(), inputData.getCode());
+        if (inputData.getPracticeProblemId() != null) {
+            tempCodeService.savePracticeProblemTempCode(inputData.getPracticeProblemId(), inputData.getLanguage(), inputData.getCode());
+        }
+
+        if (inputData.getTestId() != null) {
+            tempCodeService.saveTempCode(inputData.getTestId(), inputData.getProblemNumber(),
+                    inputData.getLanguage(), inputData.getCode());
+        }
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -58,15 +64,21 @@ public class RunCodeService {
             throw new Exception("HTTP request failed with status code: " + statusCode);
         }
     }
-    public List<OutputDto> runTestCaseCode(TestInputData testInputData) throws Exception {
+    public List<OutputDto> runTestCaseCode(TestCaseInputData testCaseInputData) throws Exception {
 
-        tempCodeService.saveTempCode(testInputData.getTestId(),
-                testInputData.getProblemNumber(), testInputData.getLanguage(), testInputData.getCode());
+        if (testCaseInputData.getPracticeProblemId() != null) {
+            tempCodeService.savePracticeProblemTempCode(testCaseInputData.getPracticeProblemId(),
+                    testCaseInputData.getLanguage(), testCaseInputData.getCode());
+        }
+        if (testCaseInputData.getTestId() != null) {
+            tempCodeService.saveTempCode(testCaseInputData.getTestId(),
+                    testCaseInputData.getProblemNumber(), testCaseInputData.getLanguage(), testCaseInputData.getCode());
+        }
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String inputDataJson = objectMapper.writeValueAsString(testInputData);
+        String inputDataJson = objectMapper.writeValueAsString(testCaseInputData);
 
         // Create POST request
         HttpPost httpPost = new HttpPost(tcUrl);

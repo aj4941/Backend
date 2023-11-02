@@ -240,7 +240,7 @@ public class BaekjoonSubmitService {
     {
         String ongoingTestKey = redisKeyGenerator.generateOngoingTestKey();
         Long testId = ((TestInfo) Optional.ofNullable(redisTemplate.opsForValue().get(ongoingTestKey))
-                .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST))).testId;
+                .orElseThrow(() -> new MorandiException(SubmitErrorCode.TEST_NOT_EXIST))).getTestId();
 
         tempCodeService.saveTempCode(testId, submitCodeDto.getProblemNumber(), submitCodeDto.getLanguage(), submitCodeDto.getSourceCode());
 

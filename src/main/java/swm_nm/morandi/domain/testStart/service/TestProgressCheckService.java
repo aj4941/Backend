@@ -43,22 +43,22 @@ public class TestProgressCheckService {
 
     //TODO Redis 이용하여
     // 현재 테스트가 진행중인지 확인하도록
-    public Tests getOngoingTest(Member member){
+    public Tests getOngoingTest(Member member) {
 
         // 현재 테스트가 진행중이 아니라면
         String ongoingTestKey = redisKeyGenerator.generateOngoingTestKey();
         TestInfo testInfo = (TestInfo) redisTemplate.opsForValue().get(ongoingTestKey);
 
-        if(testInfo==null) {
+        if (testInfo == null) {
             return null;
         }
+
         //만약 종료시간이 현재 시간을 지났으면? -> 테스트 종료 후 없다고 반환 후 redis 캐시 삭제
-        if(testInfo.endTime.isBefore(LocalDateTime.now())) {
+        if (testInfo.getEndTime().isBefore(LocalDateTime.now())) {
             Tests test = testRepository.findById(testInfo.getTestId()).orElseThrow(() -> new MorandiException(TestErrorCode.TEST_NOT_FOUND));
             TestType testType = testTypeRepository.findTestTypeByTestTypename(test.getTestTypename())
                     .orElseThrow(() -> new MorandiException(TestTypeErrorCode.TEST_TYPE_NOT_FOUND));
             testExit(testType, member, test);
-
             return null;
         }
         else {

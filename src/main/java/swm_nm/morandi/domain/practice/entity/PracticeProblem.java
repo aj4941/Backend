@@ -3,12 +3,10 @@ package swm_nm.morandi.domain.practice.entity;
 import lombok.*;
 import swm_nm.morandi.domain.common.BaseEntity;
 import swm_nm.morandi.domain.member.entity.Member;
-import swm_nm.morandi.domain.practice.dto.PracticeStatus;
 import swm_nm.morandi.domain.problem.entity.Problem;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
@@ -23,8 +21,6 @@ public class PracticeProblem extends BaseEntity {
     private LocalDate practiceDate;
 
     private Boolean isSolved;
-
-    private Long solvedTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROBLEM_ID")
