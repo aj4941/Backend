@@ -2,7 +2,6 @@ package swm_nm.morandi.domain.testRecord.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.practice.entity.PracticeProblem;
 import swm_nm.morandi.domain.practice.repository.PracticeProblemRepository;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
