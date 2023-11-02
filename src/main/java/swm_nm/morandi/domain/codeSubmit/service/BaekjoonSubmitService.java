@@ -1,5 +1,6 @@
 package swm_nm.morandi.domain.codeSubmit.service;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -16,7 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.codeSubmit.constants.CodeVisuabilityConstants;
 import swm_nm.morandi.domain.codeSubmit.dto.BaekjoonUserDto;
+import swm_nm.morandi.domain.codeSubmit.dto.PracticeProblemSubmitCodeRequest;
 import swm_nm.morandi.domain.codeSubmit.dto.SolutionIdResponse;
+import swm_nm.morandi.domain.codeSubmit.dto.SubmitCodeDto;
 import swm_nm.morandi.domain.common.Language;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
@@ -31,9 +34,10 @@ import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.global.exception.errorcode.PracticeProblemErrorCode;
 import swm_nm.morandi.global.exception.errorcode.SubmitErrorCode;
-import swm_nm.morandi.domain.codeSubmit.dto.SubmitCodeDto;
 import swm_nm.morandi.global.utils.SecurityUtils;
 import swm_nm.morandi.redis.utils.RedisKeyGenerator;
+
+
 
 import java.net.URI;
 import java.util.Optional;
@@ -121,12 +125,22 @@ public class BaekjoonSubmitService {
     }
     @MemberLock
     @Transactional
-    public ResponseEntity<SolutionIdDto> submit(PracticeProblemSubmitCodeRequest practiceProblemSubmitCodeRequest) {
+    public ResponseEntity<SolutionIdResponse> submit(PracticeProblemSubmitCodeRequest practiceProblemSubmitCodeRequest) {
         validateBojProblemId(practiceProblemSubmitCodeRequest.getBojProblemId());
 
         Long memberId = SecurityUtils.getCurrentMemberId();
         String cookie = getCookieFromRedis(generateKey(memberId));
         String CSRFKey = getCSRFKey(cookie, practiceProblemSubmitCodeRequest.getBojProblemId());
+
+        SolutionIdResponse solutionId = sendSubmitRequest(cookie, CSRFKey, practiceProblemSubmitCodeRequest.getBojProblemId(),
+                practiceProblemSubmitCodeRequest.getLanguage(), practiceProblemSubmitCodeRequest.getSourceCode());
+
+        //제출한 코드 정보를 저장
+        savePracticeProblemSubmitTempCode(practiceProblemSubmitCodeRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(solutionId);
+    }
+
 
 
     @MemberLock
