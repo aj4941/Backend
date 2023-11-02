@@ -40,7 +40,6 @@ public class PracticeController {
         PracticeResultDto practiceResultDto = practiceProblemService.practiceResult(practiceExitDto.getPracticeProblemId());
         return new ResponseEntity<>(practiceResultDto, HttpStatus.OK);
     }
-
     @PostMapping("/output")
     @Operation(summary = "연습문제 코드 실행 결과값 반환", description = "사용자가 특정 코드를 실행할 경우 결과값을 제공합니다. " +
             "입력 데이터는 practiceProblemId, language, code, input으로 구성됩니다." )
