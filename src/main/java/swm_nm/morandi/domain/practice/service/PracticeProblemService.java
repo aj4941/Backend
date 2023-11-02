@@ -45,7 +45,7 @@ public class PracticeProblemService {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        PracticeProblemInfo practiceProblemInfo = practiceCheckService.getPracticeProblemInfo();
+        PracticeProblemInfo practiceProblemInfo = practiceCheckService.getPracticeProblemInfo(bojProblemId);
 
         if (practiceProblemInfo != null) {
             return getPracticeStartResponseDto(practiceProblemInfo.getPracticeProblemId());

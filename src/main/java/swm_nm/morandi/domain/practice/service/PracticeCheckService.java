@@ -19,8 +19,8 @@ public class PracticeCheckService {
     private final RedisKeyGenerator redisKeyGenerator;
 
     private final RedisTemplate<String, Object> redisTemplate;
-    public PracticeProblemInfo getPracticeProblemInfo() {
-        String ongoingPracticeProblemKey = redisKeyGenerator.generateOngoingPracticeProblemKey();
+    public PracticeProblemInfo getPracticeProblemInfo(Long bojProblemId) {
+        String ongoingPracticeProblemKey = redisKeyGenerator.generateOngoingPracticeProblemKey(bojProblemId);
         PracticeProblemInfo practiceProblemInfo
                 = (PracticeProblemInfo) redisTemplate.opsForValue().get(ongoingPracticeProblemKey);
         return practiceProblemInfo;

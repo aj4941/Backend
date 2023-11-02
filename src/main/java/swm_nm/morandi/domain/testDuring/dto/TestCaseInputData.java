@@ -9,7 +9,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestInputData {
+public class TestCaseInputData {
+    private Long practiceProblemId;
     private Long testId;
     private Integer problemNumber;
     private Language language;

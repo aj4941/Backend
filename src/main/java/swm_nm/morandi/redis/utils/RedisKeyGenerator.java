@@ -9,8 +9,8 @@ public class RedisKeyGenerator {
     public String generateOngoingTestKey() {
         return String.format("testing:memberId:%s", SecurityUtils.getCurrentMemberId());
     }
-    public String generateOngoingPracticeProblemKey() {
-        return String.format("practicing:memberId:%s", SecurityUtils.getCurrentMemberId());
+    public String generateOngoingPracticeProblemKey(Long bojProblemId) {
+        return String.format("practicing:memberId:%s:bojProblemId:%s", SecurityUtils.getCurrentMemberId(), bojProblemId);
     }
     public String generateTempCodeKey(Long testId) {
         return String.format("testId:%s", testId);

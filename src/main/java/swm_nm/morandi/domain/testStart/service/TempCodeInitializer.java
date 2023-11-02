@@ -2,6 +2,7 @@ package swm_nm.morandi.domain.testStart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.decorate.cbor.CborJsonFactoryDecorator;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,7 @@ public class TempCodeInitializer {
     public void initializePracticeTempCodeCache(PracticeProblem practiceProblem) {
         log.debug("Initializing practice problem temp code cache for test with ID: {}", practiceProblem.getPracticeProblemId());
 
-        String ongoingPracticeProblemKey = redisKeyGenerator.generateOngoingPracticeProblemKey();
+        String ongoingPracticeProblemKey = redisKeyGenerator.generateOngoingPracticeProblemKey(practiceProblem.getProblem().getBojProblemId());
         PracticeProblemInfo practiceProblemInfo = PracticeProblemInfo.builder()
                 .practiceProblemId(practiceProblem.getPracticeProblemId())
                 .build();
@@ -80,7 +81,6 @@ public class TempCodeInitializer {
         String practiceProblemTempCodeKey = redisKeyGenerator.generatePracticeProblemTempCodeKey(practiceProblemInfo.getPracticeProblemId());
         TempCodeDto initialTempCode = tempCodeFactory.getTempCodeDto();
         redisTemplate.opsForValue().set(practiceProblemTempCodeKey, initialTempCode);
-        redisTemplate.expire(practiceProblemTempCodeKey, 300000L, TimeUnit.MINUTES);
 
         log.debug("Initialization of practice problem code cache completed for test with ID: {}", practiceProblemInfo.getPracticeProblemId());
     }

@@ -52,6 +52,12 @@ public class TempCodeService {
             throw new MorandiException(TestErrorCode.TTL_EXPIRED);
         }
     }
+    public void savePracticeProblemTempCode(Long practiceProblemId, Language language, String code) {
+        String practiceProblemTempCodeKey = redisKeyGenerator.generatePracticeProblemTempCodeKey(practiceProblemId);
+        TempCodeDto tempCodeDto = (TempCodeDto) redisTemplate.opsForValue().get(practiceProblemTempCodeKey);
+        tempCodeDto.writeCode(code, language);
+        redisTemplate.opsForValue().set(practiceProblemTempCodeKey, tempCodeDto);
+    }
 
     public List<TestCodeDto> getTempCode(Tests test)
     {
