@@ -10,11 +10,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestPageDto {
+public class MyTestHistoryResponse {
     private Long totalElements;
     private List<TestRecordDto> testRecordDtos = new ArrayList<>();
-    public static TestPageDto getTestPageDto(Long totalElements, List<TestRecordDto> testRecordDtos) {
-        return TestPageDto.builder()
+    public static MyTestHistoryResponse getTestPageDto(Long totalElements, List<TestRecordDto> testRecordDtos) {
+        return MyTestHistoryResponse.builder()
                     .totalElements(totalElements)
                     .testRecordDtos(testRecordDtos)
                     .build();

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
-import swm_nm.morandi.domain.testInfo.dto.TestPageDto;
+import swm_nm.morandi.domain.testInfo.dto.MyTestHistoryResponse;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testRecord.dto.TestRecordRequestDto;
@@ -29,7 +29,7 @@ public class LatestTestInfoService {
     private final TestRepository testRepository;
 
     @Transactional(readOnly = true)
-    public TestPageDto getTestRecordDtosLatest(TestRecordRequestDto testRecordRequestDto) {
+    public MyTestHistoryResponse getTestRecordDtosLatest(TestRecordRequestDto testRecordRequestDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Integer page = testRecordRequestDto.getPage();
         Integer size = testRecordRequestDto.getSize();
@@ -49,9 +49,8 @@ public class LatestTestInfoService {
         //테스트 기록이 4개 미만일 경우 더미 데이터를 넣어줌
         getTestRecordDtos(testRecordDtos);
 
-        TestPageDto testPageDto = TestPageDto.getTestPageDto(recentTests.getTotalElements(), testRecordDtos);
+        return MyTestHistoryResponse.getTestPageDto(recentTests.getTotalElements(), testRecordDtos);
 
-        return testPageDto;
     }
 
     //테스트 기록을 받아와서 dto로 변환하면서 getAttemptProblemDtos를 통해 테스트 문제들을 dto로 변환
