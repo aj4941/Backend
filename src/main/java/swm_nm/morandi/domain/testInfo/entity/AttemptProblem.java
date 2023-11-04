@@ -2,6 +2,7 @@ package swm_nm.morandi.domain.testInfo.entity;
 
 import lombok.*;
 import swm_nm.morandi.domain.common.BaseEntity;
+import swm_nm.morandi.domain.common.Language;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.problem.entity.Problem;
 
@@ -23,6 +24,10 @@ public class AttemptProblem extends BaseEntity {
     private LocalDate testDate;
 
     private Long executionTime;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private Language submitLanguage = Language.Cpp;
 
     @Column(columnDefinition = "TEXT")
     private String submitCode;

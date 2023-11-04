@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-public class SolutionIdDto {
+public class SolutionIdResponse {
     public String solutionId;
 }

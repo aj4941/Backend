@@ -116,6 +116,19 @@ public class SwaggerConfig {
                 .build()
                 .apiInfo(apiInfo());
     }
+
+    @Bean
+    public Docket testRetryApi() {
+        return new Docket(DocumentationType.OAS_30)
+                .servers(serverLocal, testServer)
+                .groupName("test-retry-api")
+                .useDefaultResponseMessages(false)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testRetry.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo());
+    }
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Practice Swagger")
