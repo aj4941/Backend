@@ -4,9 +4,8 @@ package swm_nm.morandi.domain.codeSubmit.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import swm_nm.morandi.domain.codeSubmit.dto.AttemptProblemResultDto;
-import swm_nm.morandi.domain.codeSubmit.dto.PracticeProblemResultDto;
-import swm_nm.morandi.domain.practice.dto.PracticeProblemCode;
+import swm_nm.morandi.domain.codeSubmit.dto.AttemptProblemResultRequest;
+import swm_nm.morandi.domain.codeSubmit.dto.PracticeProblemResultRequest;
 import swm_nm.morandi.domain.practice.entity.PracticeProblem;
 import swm_nm.morandi.domain.practice.repository.PracticeProblemRepository;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
@@ -29,12 +28,14 @@ public class SaveSubmitResultService {
 
     private final PracticeProblemRepository practiceProblemRepository;
 
+
+    // 시험 중 정답으로 판명된 문제를 정답으로 처리하는 메서드
     @Transactional
-    public String saveSubmitResult(AttemptProblemResultDto attemptProblemResultDto) {
+    public String saveSubmitResult(AttemptProblemResultRequest attemptProblemResultRequest) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         AttemptProblem attemptProblem =
                 attemptProblemRepository.findByMember_MemberIdAndTest_testIdAndTest_TestStatusAndProblem_BojProblemId(memberId,
-                                attemptProblemResultDto.getTestId(), TestStatus.IN_PROGRESS,attemptProblemResultDto.getBojProblemId())
+                                attemptProblemResultRequest.getTestId(), TestStatus.IN_PROGRESS,attemptProblemResultRequest.getBojProblemId())
                 .orElseThrow(() -> new MorandiException(AttemptProblemErrorCode.ATTEMPT_PROBLEM_NOT_FOUND_DURING_TEST));
 
         if (attemptProblem.getIsSolved())
@@ -57,8 +58,8 @@ public class SaveSubmitResultService {
     }
 
     @Transactional
-    public String savePracticeProblemSubmit(PracticeProblemResultDto practiceProblemResultDto) {
-        PracticeProblem practiceProblem = practiceProblemRepository.findById(practiceProblemResultDto.getPracticeProblemId())
+    public String savePracticeProblemSubmit(PracticeProblemResultRequest practiceProblemResultRequest) {
+        PracticeProblem practiceProblem = practiceProblemRepository.findById(practiceProblemResultRequest.getPracticeProblemId())
                 .orElseThrow(() -> new MorandiException(PracticeProblemErrorCode.PRACTICE_PROBLEM_NOT_FOUND));
         practiceProblem.setIsSolved(true);
         practiceProblemRepository.save(practiceProblem);

@@ -1,11 +1,10 @@
 package swm_nm.morandi.domain.member.service;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-import swm_nm.morandi.domain.member.dto.MemberInfoDto;
+import swm_nm.morandi.domain.member.dto.MemberInfoRequest;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
 
@@ -30,7 +29,7 @@ class MemberInfoServiceTest {
         Member member = result.get();
 
         // when
-        MemberInfoDto memberInfo = memberInfoService.getMemberInfo();
+        MemberInfoRequest memberInfo = memberInfoService.getMemberInfo();
 
         // then
         assertThat(memberInfo.getBojId()).isEqualTo(member.getBojId());

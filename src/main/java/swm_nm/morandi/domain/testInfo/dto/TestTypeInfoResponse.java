@@ -7,7 +7,7 @@ import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestTypeDto {
+public class TestTypeInfoResponse {
     private Long testTypeId;
     private String testTypename;
     private String frequentTypes;

@@ -1,15 +1,12 @@
 package swm_nm.morandi.domain.member.service;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.transaction.annotation.Transactional;
-import swm_nm.morandi.domain.member.dto.RegisterInfoDto;
+import swm_nm.morandi.domain.member.dto.RegisterInfoRequest;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
 
-import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
@@ -24,7 +21,7 @@ class MemberInitServiceTest {
     @Test
     void memberInitialize() {
         // given
-        RegisterInfoDto registerInfoDto = RegisterInfoDto.builder()
+        RegisterInfoRequest registerInfoDto = RegisterInfoRequest.builder()
                 .bojId("aj4941")
                 .build();
 

@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 @RequiredArgsConstructor
-public class MemberListRequestDto {
+public class MemberListRequest {
     private Integer page = 1;
     private Integer size = 15;
 }

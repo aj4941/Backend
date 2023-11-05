@@ -2,14 +2,11 @@ package swm_nm.morandi.domain.testRecord.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GrassDto {
+public class CurrentRatingResponse {
 
-    private LocalDate testDate;
-    private Integer solvedCount;
+    private Long rating;
 }

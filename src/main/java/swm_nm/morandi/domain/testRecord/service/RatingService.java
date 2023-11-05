@@ -8,8 +8,8 @@ import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.domain.testInfo.repository.TestRepository;
-import swm_nm.morandi.domain.testRecord.dto.CurrentRatingDto;
-import swm_nm.morandi.domain.testRecord.dto.RatingGraphDto;
+import swm_nm.morandi.domain.testRecord.dto.CurrentRatingResponse;
+import swm_nm.morandi.domain.testRecord.dto.RatingGraphResponse;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.MemberErrorCode;
 import swm_nm.morandi.global.utils.SecurityUtils;
@@ -26,10 +26,10 @@ public class RatingService {
 
     //현재 레이팅 정보 반환
     @Transactional(readOnly = true)
-    public CurrentRatingDto getCurrentRatingDto() {
+    public CurrentRatingResponse getCurrentRatingDto() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
-        CurrentRatingDto currentRatingDto = CurrentRatingDto.builder()
+        CurrentRatingResponse currentRatingDto = CurrentRatingResponse.builder()
                 .rating(member.getRating())
                 .build();
         return currentRatingDto;
@@ -37,13 +37,13 @@ public class RatingService {
 
     // 1년동안의 레이팅 그래프 데이터를 가져옴
     @Transactional(readOnly = true)
-    public List<RatingGraphDto> getRatingGraphSinceOneYear(){
+    public List<RatingGraphResponse> getRatingGraphSinceOneYear(){
         Long memberId = SecurityUtils.getCurrentMemberId();
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
         List<Tests> tests = testRepository.findAllTestsByMember_MemberIdAndTestStatusAndTestDateAfterOrderByTestDateAsc(memberId, TestStatus.COMPLETED, oneYearAgo);
 
         return tests.stream().map(test ->
-                RatingGraphDto.builder()
+                RatingGraphResponse.builder()
                         .testDate(test.getTestDate())
                         .testRating(test.getTestRating())
                         .testTypeName(test.getTestTypename())

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class BaekjoonUserDto {
+public class BaekjoonUserRequest {
     @NotNull(message = "백준 아이디를 입력해주세요")
     public String bojId;
 

@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public class TestRecordRequestDto {
+public class TestRecordPageRequest {
     private Integer page = 1;
     private Integer size = 4;
 }

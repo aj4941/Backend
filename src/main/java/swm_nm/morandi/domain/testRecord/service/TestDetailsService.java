@@ -29,7 +29,7 @@ public class TestDetailsService {
     private final TestHistoryRepositoryImpl testStatusRepository;
 
     @Transactional(readOnly = true)
-    public TestRecordDto getTestRecordDtoByTestId(Long testId) {
+    public TestRecordResponse getTestRecordDtoByTestId(Long testId) {
         //N+1문제 발생하여 fetch join으로 해결
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findTestDetailsByTest_TestId(testId);
         if (attemptProblems.isEmpty()) {
@@ -46,7 +46,7 @@ public class TestDetailsService {
 
                         }).collect(Collectors.toList());
 
-        TestRecordDto testRecordDto = TestRecordMapper.convertToDto(test, attemptProblemDtos);
+        TestRecordResponse testRecordDto = TestRecordMapper.convertToDto(test, attemptProblemDtos);
         return testRecordDto;
     }
 
@@ -54,7 +54,7 @@ public class TestDetailsService {
     public AllTestHistoryResponse findAllTestStatusByCondition(TestHistoryCondition testHistoryCondition) {
         Page<Tests> testHistory = testStatusRepository.findAllTestHistoryByCondition(testHistoryCondition);
 
-        List<TestHistoryDto> testHistoryDtos = testHistory.stream().map(tests -> TestHistoryDto.builder().
+        List<TestHistoryResponse> testHistoryDtos = testHistory.stream().map(tests -> TestHistoryResponse.builder().
                 testId(tests.getTestId())
                 .testDate(tests.getTestDate())
                 .memberId(tests.getMember().getMemberId())

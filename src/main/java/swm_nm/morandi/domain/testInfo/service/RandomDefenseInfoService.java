@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import swm_nm.morandi.domain.testInfo.dto.TestTypeDto;
+import swm_nm.morandi.domain.testInfo.dto.TestTypeInfoResponse;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.testInfo.mapper.TestTypeMapper;
 import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
@@ -23,7 +23,7 @@ public class RandomDefenseInfoService {
     private final TestTypeRepository testTypeRepository;
 
     @Transactional(readOnly = true)
-    public List<TestTypeDto> getRandomDefenseTestTypeDtos() {
+    public List<TestTypeInfoResponse> getRandomDefenseTestTypeDtos() {
         List<Long> ids = LongStream.rangeClosed(13, 15).boxed().toList();
         List<TestType> testTypes = testTypeRepository.findAllById(ids);
 

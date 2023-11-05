@@ -3,20 +3,20 @@ package swm_nm.morandi.domain.testRecord.mapper;
 import swm_nm.morandi.domain.problem.dto.DifficultyLevel;
 import swm_nm.morandi.domain.testExit.dto.AttemptProblemDto;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
-import swm_nm.morandi.domain.testRecord.dto.TestRecordDto;
+import swm_nm.morandi.domain.testRecord.dto.TestRecordResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestRecordMapper {
-    public static TestRecordDto convertToDto(Tests test, List<AttemptProblemDto> attemptProblemDtos) {
+    public static TestRecordResponse convertToDto(Tests test, List<AttemptProblemDto> attemptProblemDtos) {
         Integer acceptCount = 0;
         for (AttemptProblemDto attemptProblemDto : attemptProblemDtos) {
             if (attemptProblemDto.getIsSolved())
                 acceptCount++;
         }
-        TestRecordDto testRecordDto = TestRecordDto.builder()
+        TestRecordResponse testRecordDto = TestRecordResponse.builder()
                 .testId(test.getTestId())
                 .testDate(test.getTestDate())
                 .testTime(test.getTestTime())
@@ -33,8 +33,8 @@ public class TestRecordMapper {
         return testRecordDto;
     }
 
-    public static TestRecordDto dummyDto() {
-        TestRecordDto testRecordDto = TestRecordDto.builder()
+    public static TestRecordResponse dummyDto() {
+        TestRecordResponse testRecordDto = TestRecordResponse.builder()
                 .testId(0L)
                 .testDate(LocalDateTime.now())
                 .testTime(0L)
