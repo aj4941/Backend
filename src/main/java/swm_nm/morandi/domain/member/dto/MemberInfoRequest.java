@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberInfoDto {
+public class MemberInfoRequest {
     private String introduceInfo;
     private String bojId;
 }

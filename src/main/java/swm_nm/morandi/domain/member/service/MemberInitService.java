@@ -3,7 +3,7 @@ package swm_nm.morandi.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import swm_nm.morandi.domain.member.dto.RegisterInfoDto;
+import swm_nm.morandi.domain.member.dto.RegisterInfoRequest;
 import swm_nm.morandi.domain.member.entity.Member;
 import swm_nm.morandi.domain.member.repository.MemberRepository;
 import swm_nm.morandi.global.exception.MorandiException;
@@ -20,7 +20,7 @@ public class MemberInitService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public RegisterInfoDto memberInitialize(RegisterInfoDto registerInfoDto) {
+    public RegisterInfoRequest memberInitialize(RegisterInfoRequest registerInfoDto) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId).orElseThrow(()-> new MorandiException(AuthErrorCode.MEMBER_NOT_FOUND));
         member.setBojId(registerInfoDto.getBojId());
