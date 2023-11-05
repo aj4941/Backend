@@ -11,11 +11,11 @@ import java.util.HashMap;
 @Getter
 @Builder
 @AllArgsConstructor
-public class GraphResponseDto {
+public class GraphResponse {
     public HashMap<String,Long> solvedRates;
 
 
-    public GraphResponseDto() {
+    public GraphResponse() {
         this.solvedRates = new HashMap<>();
         solvedRates.put("구현", 0L);
         solvedRates.put("그래프", 0L);

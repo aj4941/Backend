@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import swm_nm.morandi.domain.testInfo.dto.MyTestHistoryResponse;
 import swm_nm.morandi.domain.testInfo.dto.TestTypeInfoResponse;
 import swm_nm.morandi.domain.testInfo.service.*;
-import swm_nm.morandi.domain.testRecord.dto.TestRecordRequestDto;
+import swm_nm.morandi.domain.testRecord.dto.TestRecordPageRequest;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class TestInfoController {
     @GetMapping("/latest")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "최근에 본 테스트 목록", description = "마이 페이지에서 최근에 본 테스트 4개를 제공합니다.")
-    public MyTestHistoryResponse getLatestTestDtos(TestRecordRequestDto testRecordRequestDto) {
+    public MyTestHistoryResponse getLatestTestDtos(TestRecordPageRequest testRecordRequestDto) {
         return latestTestInfoService.getTestRecordDtosLatest(testRecordRequestDto);
     }
     @GetMapping("/practice")

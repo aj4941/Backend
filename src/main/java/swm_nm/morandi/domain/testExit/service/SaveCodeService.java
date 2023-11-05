@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
-import swm_nm.morandi.domain.testExit.dto.AttemptCodeDto;
+import swm_nm.morandi.domain.testExit.dto.AttemptCodeRequest;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.AttemptProblemErrorCode;
@@ -19,7 +19,7 @@ public class SaveCodeService {
 
     private final AttemptProblemRepository attemptProblemRepository;
 
-    public void saveEachCodeinAttemptProblems(AttemptCodeDto attemptCodeDto) {
+    public void saveEachCodeinAttemptProblems(AttemptCodeRequest attemptCodeDto) {
         List<AttemptProblem> attemptProblems =
                 attemptProblemRepository.findAttemptProblemsByTest_TestId(attemptCodeDto.getTestId());
         if(attemptProblems.isEmpty()) {

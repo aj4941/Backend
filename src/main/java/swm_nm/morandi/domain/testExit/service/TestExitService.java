@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import swm_nm.morandi.domain.testDuring.dto.TestCheckDto;
 import swm_nm.morandi.domain.testDuring.dto.TestStatus;
-import swm_nm.morandi.domain.testExit.dto.TestResultDto;
+import swm_nm.morandi.domain.testExit.dto.TestResultResponse;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
@@ -51,7 +51,7 @@ public class TestExitService {
     private final RedisKeyGenerator redisKeyGenerator;
 
     //Controller에서 사용되는 것
-    public TestResultDto testExit(TestCheckDto testCheckDto)
+    public TestResultResponse testExit(TestCheckDto testCheckDto)
     {
         Long memberId = SecurityUtils.getCurrentMemberId();
         Member member = memberRepository.findById(memberId)
@@ -64,11 +64,11 @@ public class TestExitService {
     }
 
     @Transactional
-    public TestResultDto testExit(TestCheckDto testCheckDto, Member member, Tests test, TestType testType) {
+    public TestResultResponse testExit(TestCheckDto testCheckDto, Member member, Tests test, TestType testType) {
         String bojId = testCheckDto.getBojId();
 
         solvedCheckService.checkAttemptedProblemResult(test, bojId);
-        TestResultDto testResultDto = TestResultDto.builder().build();
+        TestResultResponse testResultDto = TestResultResponse.builder().build();
         saveTestResult(member, test, testType, testResultDto);
 
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(test.getTestId());
@@ -88,7 +88,7 @@ public class TestExitService {
     }
 
     @Transactional
-    public void saveTestResult(Member member, Tests test, TestType testType, TestResultDto testResultDto) {
+    public void saveTestResult(Member member, Tests test, TestType testType, TestResultResponse testResultDto) {
         test.setTestStatus(TestStatus.COMPLETED);
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAllByTest_TestId(test.getTestId());
         long correct = attemptProblems.stream()
