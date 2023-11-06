@@ -3,8 +3,10 @@ package swm_nm.morandi.domain.testStart.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.aop.annotation.MemberLock;
 import swm_nm.morandi.domain.problem.dto.BojProblem;
+import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
 import swm_nm.morandi.domain.testDuring.service.TempCodeService;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
 import swm_nm.morandi.domain.testInfo.repository.TestTypeRepository;
@@ -21,11 +23,10 @@ import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.*;
 import swm_nm.morandi.global.utils.SecurityUtils;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.stream.IntStream;
 
 
 @Service
@@ -77,14 +78,15 @@ public class TestStartUseCase {
         saveProblemsService.saveAttemptProblems(member, test, bojProblems);
 
         // 테스트 시작시 코드 캐시 초기화
-        tempCodeInitializer.initializeTempCodeCache(test);
+        TempCodeDto tempCodeDto = tempCodeInitializer.initializeTempCodeCache(test);
 
-        return getTestStartResponseDto(test, bojProblems);
+        return getTestStartResponseDto(test, bojProblems, tempCodeDto);
     }
 
 
     //테스트 만들어졌을 때에는 모두 안 푼 문제니깐 false로 초기화
-    private TestStartResponseDto getTestStartResponseDto(Tests test, List<BojProblem> bojProblems) {
+    private TestStartResponseDto getTestStartResponseDto(Tests test, List<BojProblem> bojProblems,
+                                                         TempCodeDto tempCodeDto) {
         List<BojProblemDto> bojProblemDtos = bojProblems.stream().map(bojProblem ->
                 BojProblemDto.builder()
                         .isSolved(false)
@@ -92,20 +94,29 @@ public class TestStartUseCase {
                         .build())
                 .collect(Collectors.toList());
 
-        List<TestCodeDto> testCodeDtos = getTestCodeDtos(test);
-        return TestStartResponseDto.builder()
+        Integer problemCount = test.getProblemCount();
+        List<TestCodeDto> testCodeDtos = IntStream.rangeClosed(1, problemCount).mapToObj(i -> TestCodeDto.builder()
+                .cppCode(tempCodeDto.getCppCode())
+                .pythonCode(tempCodeDto.getPythonCode())
+                .javaCode(tempCodeDto.getJavaCode())
+                .problemNumber(i)
+                .build()).collect(Collectors.toList());
+
+        TestStartResponseDto testStartResponseDto = TestStartResponseDto.builder()
                 .testId(test.getTestId())
                 .bojProblems(bojProblemDtos)
                 .remainingTime(test.getRemainingTime())
                 .testCodeDtos(testCodeDtos)
                 .build();
+
+        return testStartResponseDto;
     }
 
     private List<TestCodeDto> getTestCodeDtos(Tests test) {
         return tempCodeService.getTempCode(test);
     }
 
-    private TestStartResponseDto getTestStartResponseDto(Tests test) {
+    public TestStartResponseDto getTestStartResponseDto(Tests test) {
         Long testId = test.getTestId();
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
 
@@ -117,8 +128,7 @@ public class TestStartUseCase {
 
         List<TestCodeDto> testCodeDtos = getTestCodeDtos(test);
 
-        TestStartResponseDto testStartResponseDto
-                = TestStartResponseDto.builder()
+        TestStartResponseDto testStartResponseDto = TestStartResponseDto.builder()
                 .testId(testId)
                 .bojProblems(bojProblemDtos)
                 .remainingTime(test.getRemainingTime())
