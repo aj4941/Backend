@@ -116,7 +116,7 @@ public class TestStartUseCase {
         return tempCodeService.getTempCode(test);
     }
 
-    public TestStartResponseDto getTestStartResponseDto(Tests test) {
+    private TestStartResponseDto getTestStartResponseDto(Tests test) {
         Long testId = test.getTestId();
         List<AttemptProblem> attemptProblems = attemptProblemRepository.findAttemptProblemsByTest_TestId(testId);
 
