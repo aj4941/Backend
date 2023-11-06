@@ -4,21 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import swm_nm.morandi.domain.testRecord.dto.GraphDto;
-import swm_nm.morandi.domain.problem.entity.Algorithm;
-import swm_nm.morandi.domain.problem.entity.AlgorithmProblemList;
-import swm_nm.morandi.domain.problem.repository.AlgorithmProblemListRepository;
-import swm_nm.morandi.domain.problem.repository.AlgorithmRepository;
-import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
-import swm_nm.morandi.domain.testRecord.dto.GraphResponseDto;
+import swm_nm.morandi.domain.testRecord.dto.GraphResponse;
 import swm_nm.morandi.domain.testRecord.repository.AttemptProblemRepository;
 import swm_nm.morandi.global.utils.SecurityUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +23,11 @@ public class GetGraphService {
 
 
     @Transactional(readOnly = true)
-    public GraphResponseDto getGraph(){
+    public GraphResponse getMemberGraph(){
         Long memberId = SecurityUtils.getCurrentMemberId();
         List<Object[]> result = attemptProblemRepository.getAttemptStatisticsCollectByAlgorithm(memberId);
 
-        GraphResponseDto graphResponseDto = new GraphResponseDto();
+        GraphResponse graphResponseDto = new GraphResponse();
 
         result.forEach(objects ->
                         graphResponseDto.solvedRates

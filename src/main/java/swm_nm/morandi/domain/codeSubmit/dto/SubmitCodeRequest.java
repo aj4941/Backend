@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class SubmitCodeDto {
+public class SubmitCodeRequest {
 
     @NotNull(message = "백준 문제 번호를 입력해주세요")
     public String bojProblemId;

@@ -4,6 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class PracticeProblemResultDto {
+public class PracticeProblemResultRequest {
     private Long practiceProblemId;
 }

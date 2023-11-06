@@ -1,11 +1,12 @@
 package swm_nm.morandi.domain.testInfo.mapper;
 
+import swm_nm.morandi.domain.testInfo.dto.TestTypeInfoResponse;
 import swm_nm.morandi.domain.testInfo.entity.TestType;
-import swm_nm.morandi.domain.testInfo.dto.TestTypeDto;
+
 
 public class TestTypeMapper {
-    public static TestTypeDto convertToDto(TestType testType) {
-        TestTypeDto testTypeDto = TestTypeDto.builder()
+    public static TestTypeInfoResponse convertToDto(TestType testType) {
+        TestTypeInfoResponse testTypeDto = TestTypeInfoResponse.builder()
                 .testTypeId(testType.getTestTypeId())
                 .testTypename(testType.getTestTypename())
                 .frequentTypes(testType.getFrequentTypes())

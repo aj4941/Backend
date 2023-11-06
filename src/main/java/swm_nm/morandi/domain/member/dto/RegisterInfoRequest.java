@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterInfoDto {
+public class RegisterInfoRequest {
     @NotBlank
     private String bojId;
 }

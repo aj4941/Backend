@@ -6,7 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MemberListResponseDto {
+public class MemberListResponse {
 
     private Long rank;
     private String bojId;

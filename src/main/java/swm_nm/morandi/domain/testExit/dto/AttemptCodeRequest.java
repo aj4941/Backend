@@ -9,7 +9,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttemptCodeDto {
+public class AttemptCodeRequest {
     private Long testId;
     private Map<Long,String> submitCode;
 }

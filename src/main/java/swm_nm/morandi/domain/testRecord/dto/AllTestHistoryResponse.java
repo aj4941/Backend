@@ -14,6 +14,6 @@ import java.util.List;
 public class AllTestHistoryResponse {
     public long totalElements;
     public int currentSize;
-    public List<TestHistoryDto> testHistorys;
+    public List<TestHistoryResponse> testHistorys;
     
 }

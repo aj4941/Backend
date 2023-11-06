@@ -6,6 +6,7 @@ import net.logstash.logback.decorate.cbor.CborJsonFactoryDecorator;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import swm_nm.morandi.domain.practice.dto.PracticeProblemInfo;
 import swm_nm.morandi.domain.practice.entity.PracticeProblem;
@@ -16,7 +17,10 @@ import swm_nm.morandi.domain.testInfo.entity.Tests;
 import swm_nm.morandi.redis.utils.RedisKeyGenerator;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -31,7 +35,7 @@ public class TempCodeInitializer {
     private final RedisKeyGenerator redisKeyGenerator;
 
     @Transactional
-    public void initializeTempCodeCache(Tests test) {
+    public TempCodeDto initializeTempCodeCache(Tests test) {
         log.debug("Initializing temp code cache for test with ID: {}", test.getTestId());
 
         LocalDateTime now = LocalDateTime.now();
@@ -57,6 +61,7 @@ public class TempCodeInitializer {
         TempCodeDto initialTempCode = tempCodeFactory.getTempCodeDto();
 
         int problemCount = test.getAttemptProblems().size();
+
         IntStream.rangeClosed(1, problemCount).forEach(problemNumber ->
                 hashOps.put(tempCodeKey, String.valueOf(problemNumber), initialTempCode)
         );
@@ -64,6 +69,8 @@ public class TempCodeInitializer {
 
         // 로깅: 초기화 완료
         log.debug("Initialization of temp code cache completed for test with ID: {}", test.getTestId());
+
+        return initialTempCode;
     }
 
     @Transactional

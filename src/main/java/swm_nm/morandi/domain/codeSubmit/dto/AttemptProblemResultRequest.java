@@ -6,7 +6,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 
 @Getter @Setter
-public class AttemptProblemResultDto {
+public class AttemptProblemResultRequest {
 
     @NotNull(message = "testId는 null일 수 없습니다, 정수형")
     private Long testId;
