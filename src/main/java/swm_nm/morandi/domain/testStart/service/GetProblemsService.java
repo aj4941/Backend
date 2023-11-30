@@ -20,6 +20,7 @@ import swm_nm.morandi.global.exception.MorandiException;
 import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,81 +29,54 @@ import java.util.stream.IntStream;
 @Slf4j
 public class GetProblemsService {
 
-    private final TypeProblemListRepository typeProblemListRepository;
-
-    public void getProblemsByTestType(TestType testType, List<BojProblem> bojProblems) {
-        List<TypeProblemList> typeProblemLists = typeProblemListRepository.findByTestType_TestTypeId(testType.getTestTypeId());
-        List<Problem> problems = typeProblemLists.stream().map(TypeProblemList::getProblem).collect(Collectors.toList());
+    private final ObjectMapper objectMapper;
+    public List<BojProblem> getProblemsByApi(TestType testType, String bojId) {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
-        long index = 1;
-        for (DifficultyRange difficultyRange : difficultyRanges) {
-            int start = DifficultyLevel.getLevelByValue(difficultyRange.getStart());
-            int end = DifficultyLevel.getLevelByValue(difficultyRange.getEnd());
-            boolean flag = false;
-            for (Problem problem : problems) {
-                int problemLevel = DifficultyLevel.getLevelByValue(problem.getProblemDifficulty());
-                if (start <= problemLevel && problemLevel <= end) {
-                    BojProblem bojProblem = BojProblem.builder()
-                            .testProblemId(index++)
-                            .problemId(problem.getBojProblemId())
-                            .level(DifficultyLevel.getLevelByValue(problem.getProblemDifficulty()))
-                            .levelToString(problem.getProblemDifficulty().getFullName()).build();
-                    bojProblems.add(bojProblem);
-                    flag = true;
-                    break;
-                }
-            }
+        List<BojProblem> bojProblems = BojProblem.initBojProblems(difficultyRanges);
+        String apiUrl = "https://solved.ac/api/v3/search/problem";
 
-            if (!flag) {
-                BojProblem bojProblem = BojProblem.builder()
-                        .testProblemId(index++)
-                        .problemId(0L)
-                        .build();
-                bojProblems.add(bojProblem);
-            }
-        }
-    }
+        List<CompletableFuture<Void>> futures = bojProblems.stream()
+                .map(bojProblem -> CompletableFuture.runAsync(() -> {
+                    String start = bojProblem.getStartLevel();
+                    String end = bojProblem.getEndLevel();
+                    String query = getString(testType, bojId, start, end);
+                    String URL = apiUrl + "?query=" + query + "&page=1" + "&sort=random";
 
-    public void getProblemsByApi(TestType testType, String bojId, List<BojProblem> bojProblems) {
-        System.out.println("testType : " + testType);
-        List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
-        long index = 1;
-        for (DifficultyRange difficultyRange : difficultyRanges) {
-            if (bojProblems.get((int) (index - 1)).getProblemId() != 0) {
-                index++;
-                continue;
-            }
-            String start = difficultyRange.getStart().getShortName();
-            String end = difficultyRange.getEnd().getShortName();
-            String apiUrl = "https://solved.ac/api/v3/search/problem";
-            while (true) {
-                String query = getString(testType, bojId, start, end);
-                WebClient webClient = WebClient.builder().build();
-                String jsonString = webClient.get()
-                        .uri(apiUrl + "?query=" + query + "&page=1" + "&sort=random")
-                        .retrieve()
-                        .bodyToMono(String.class)
-                        .block();
-
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    JsonNode rootNode = mapper.readTree(jsonString);
-                    JsonNode itemsArray = rootNode.get("items");
-                    if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
-                        if (!isKorean(itemsArray)) continue;
-                        long prev = index;
-                        index = getProblem(bojProblems, index, mapper, itemsArray);
-                        if (prev == index) continue;
-                        break;
+                    while (true) {
+                        WebClient webClient = WebClient.builder().build();
+                        String jsonString = webClient.get()
+                                .uri(URL)
+                                .retrieve()
+                                .bodyToMono(String.class)
+                                .block();
+                        try {
+                            JsonNode jsonNode = objectMapper.readTree(jsonString);
+                            JsonNode itemsArray = jsonNode.get("items");
+                            if (itemsArray != null && itemsArray.isArray() && itemsArray.size() > 0) {
+                                if (getProblem(bojProblem, itemsArray))
+                                    break;
+                            }
+                        } catch (JsonProcessingException e) {
+                            throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
+                        }
                     }
-                } catch (JsonProcessingException e) {
-                    log.error("JsonProcessingException : {}", e.getMessage());
-                    throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
-                }
-            }
-        }
+                })).collect(Collectors.toList());
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        return bojProblems;
     }
 
+    private boolean getProblem(BojProblem bojProblem, JsonNode itemsArray) {
+        for (JsonNode jsonNode : itemsArray) {
+            Long problemId = jsonNode.get("problemId").asLong();
+            String title = jsonNode.get("titleKo").asText();
+            if (problemId > 28000 || !title.matches(".*[가-힣]+.*")) continue;
+            bojProblem.setProblemId(problemId);
+            return true;
+        }
+        return false;
+    }
     private static String getString(TestType testType, String bojId, String start, String end) {
         String query = testType.getTestTypeId() == 7 ?
                 String.format("tier:%s..%s ~solved_by:%s tag:simulation ~tag:ad_hoc ~tag:constructive ~tag:geometry" +
@@ -110,25 +84,5 @@ public class GetProblemsService {
                 String.format("tier:%s..%s ~solved_by:%s ~tag:ad_hoc ~tag:constructive ~tag:geometry" +
                         " ~tag:number_theory ~tag:simulation ~tag:math solved:200.. solved:..5000", start, end, bojId);
         return query;
-    }
-
-    private static long getProblem(List<BojProblem> bojProblems, long index, ObjectMapper mapper, JsonNode itemsArray)
-            throws JsonProcessingException {
-        JsonNode firstProblem = itemsArray.get(0);
-        BojProblem apiProblem = mapper.treeToValue(firstProblem, BojProblem.class);
-        if (apiProblem.getProblemId() > 28000)
-            return index;
-        BojProblem bojProblem = bojProblems.get((int) (index - 1));
-        bojProblem.setProblemId(apiProblem.getProblemId());
-        bojProblem.setLevel(apiProblem.getLevel());
-        bojProblem.setTestProblemId(index++);
-        bojProblem.setLevelToString(DifficultyLevel.getValueByLevel(bojProblem.getLevel()));
-        return index;
-    }
-
-    private static boolean isKorean(JsonNode itemsArray) {
-        JsonNode firstItemNode = itemsArray.get(0);
-        String title = firstItemNode.get("titleKo").asText();
-        return title.matches(".*[가-힣]+.*");
     }
 }

@@ -66,13 +66,12 @@ public class TestStartUseCase {
         test = addTestService.startTestByTestTypeId(testType, member);
 
         String bojId = memberInfoService.getMemberInfo().getBojId();
-        List<BojProblem> bojProblems = new ArrayList<>();
 
         // 테스트 시작시 문제 가져오기
-        getProblemsService.getProblemsByTestType(testType, bojProblems);
+        // getProblemsService.getProblemsByTestType(testType, bojProblems);
 
         // API로 문제 가져오기
-        getProblemsService.getProblemsByApi(testType, bojId, bojProblems);
+        List<BojProblem> bojProblems = getProblemsService.getProblemsByApi(testType, bojId);
 
         // 테스트 시작시 문제 저장
         saveProblemsService.saveAttemptProblems(member, test, bojProblems);
@@ -88,10 +87,10 @@ public class TestStartUseCase {
     private TestStartResponseDto getTestStartResponseDto(Tests test, List<BojProblem> bojProblems,
                                                          TempCodeDto tempCodeDto) {
         List<BojProblemDto> bojProblemDtos = bojProblems.stream().map(bojProblem ->
-                BojProblemDto.builder()
-                        .isSolved(false)
-                        .bojProblemId(bojProblem.getProblemId())
-                        .build())
+                        BojProblemDto.builder()
+                                .isSolved(false)
+                                .bojProblemId(bojProblem.getProblemId())
+                                .build())
                 .collect(Collectors.toList());
 
         Integer problemCount = test.getProblemCount();
@@ -122,9 +121,9 @@ public class TestStartUseCase {
 
         List<BojProblemDto> bojProblemDtos =
                 attemptProblems.stream().map(attemptProblem -> BojProblemDto.builder()
-                       .isSolved(attemptProblem.getIsSolved())
-                       .bojProblemId(attemptProblem.getProblem().getBojProblemId())
-                       .build()).collect(Collectors.toList());
+                        .isSolved(attemptProblem.getIsSolved())
+                        .bojProblemId(attemptProblem.getProblem().getBojProblemId())
+                        .build()).collect(Collectors.toList());
 
         List<TestCodeDto> testCodeDtos = getTestCodeDtos(test);
 
