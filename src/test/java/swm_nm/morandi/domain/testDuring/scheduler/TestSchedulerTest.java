@@ -60,12 +60,7 @@ class TestSchedulerTest {
 
         // when
         long startTime = System.currentTimeMillis();
-        Future<Void> future = testScheduler.callApiPeriodically();
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        testScheduler.callApiPeriodically();
         long endTime = System.currentTimeMillis();
 
         // then
