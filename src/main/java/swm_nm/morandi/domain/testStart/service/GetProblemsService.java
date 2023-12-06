@@ -21,6 +21,8 @@ import swm_nm.morandi.global.exception.errorcode.TestErrorCode;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -34,6 +36,7 @@ public class GetProblemsService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         List<BojProblem> bojProblems = BojProblem.initBojProblems(difficultyRanges);
         String apiUrl = "https://solved.ac/api/v3/search/problem";
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
 
         List<CompletableFuture<Void>> futures = bojProblems.stream()
                 .map(bojProblem -> CompletableFuture.runAsync(() -> {
@@ -60,7 +63,7 @@ public class GetProblemsService {
                             throw new MorandiException(TestErrorCode.JSON_PARSE_ERROR);
                         }
                     }
-                })).collect(Collectors.toList());
+                }, executorService)).collect(Collectors.toList());
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
