@@ -36,7 +36,7 @@ public class GetProblemsService {
         List<DifficultyRange> difficultyRanges = testType.getDifficultyRanges();
         List<BojProblem> bojProblems = BojProblem.initBojProblems(difficultyRanges);
         String apiUrl = "https://solved.ac/api/v3/search/problem";
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
 
         List<CompletableFuture<Void>> futures = bojProblems.stream()
                 .map(bojProblem -> CompletableFuture.runAsync(() -> {
