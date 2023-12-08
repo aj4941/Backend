@@ -28,6 +28,7 @@ import swm_nm.morandi.redis.utils.RedisKeyGenerator;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -51,23 +52,24 @@ public class CustomTestService {
         validateMemberId(memberId);
         List<Member> members = getMembers(customTestRequest);
         List<Tests> tests = createTests(customTestRequest, members);
+        List<Problem> problems = getProblemsInOrder(customTestRequest.getBojProblems());
 
-        tests.forEach(test -> {
-            String testingKey = createTestingKey(test.getMember().getMemberId());
-            storeTestInfoInRedis(testingKey, test, customTestRequest);
-            List<AttemptProblem> attemptProblems = createAttemptProblems(customTestRequest, test);
-            attemptProblemRepository.saveAll(attemptProblems);
-            setupTempCode(test, customTestRequest);
-        });
+        final List<CustomTestResponse> customTestResponses =
+            tests.stream().map(test -> {
+                                String testingKey = createTestingKey(test.getMember().getMemberId());
+                                storeTestInfoInRedis(testingKey, test, customTestRequest);
+                                List<AttemptProblem> attemptProblems = createAttemptProblems(customTestRequest, test,problems);
+                                attemptProblemRepository.saveAll(attemptProblems);
+                                setupTempCode(test, customTestRequest);
 
-        final List<CustomTestResponse> customTestResponses = tests.stream().map(test -> CustomTestResponse
-                        .builder()
-                        .testTypename(test.getTestTypename())
-                        .customTestId(test.getTestId())
-                        .bojId(test.getMember().getBojId())
-                        .memberId(test.getMember().getMemberId())
-                        .build())
-                .collect(Collectors.toList());
+            return CustomTestResponse
+                    .builder()
+                    .testTypename(test.getTestTypename())
+                    .customTestId(test.getTestId())
+                    .bojId(test.getMember().getBojId())
+                    .memberId(test.getMember().getMemberId())
+                    .build();
+        }).collect(Collectors.toList());
 
         return CustomTestResponses.builder()
                 .customTests(customTestResponses).build();
@@ -99,6 +101,18 @@ public class CustomTestService {
         testRepository.saveAll(tests);
         return tests;
     }
+
+    private List<Problem> getProblemsInOrder(List<Long> bojProblemIds) {
+        List<Problem> problems = problemRepository.findAllByBojProblemIdIn(bojProblemIds);
+
+        Map<Long, Problem> idToProblemMap = problems.stream()
+                .collect(Collectors.toMap(Problem::getBojProblemId, problem -> problem));
+
+        return bojProblemIds.stream()
+                .map(idToProblemMap::get)
+                .collect(Collectors.toList());
+    }
+
     private void clearTestInfoInRedis(List<Member> members) {
         for (Member member : members) {
             String testingKey = createTestingKey(member.getMemberId());
@@ -120,14 +134,15 @@ public class CustomTestService {
         redisTemplate.opsForValue().set(testingKey, testInfo);
     }
 
-    private List<AttemptProblem> createAttemptProblems(CustomTestRequest customTestRequest, Tests test) {
-        final List<Problem> problems = problemRepository.findAllByBojProblemIdIn(customTestRequest.getBojProblems());
+
+    private List<AttemptProblem> createAttemptProblems(CustomTestRequest customTestRequest, Tests test, List<Problem> problems) {
         return problems.stream()
                 .map(problem -> {
                     final AttemptProblem attemptProblem = AttemptProblem.builder()
                             .testDate(customTestRequest.getStartTime().toLocalDate())
                             .member(test.getMember())
                             .problem(problem)
+                            .isSolved(false)
                             .test(test)
                             .build();
                         attemptProblem.setTest(test);
