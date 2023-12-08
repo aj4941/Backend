@@ -37,13 +37,10 @@ public class OAuthController {
 
         Cookie jwtCookie = new Cookie("accessToken", accessToken);
         jwtCookie.setHttpOnly(true);
-
         jwtCookie.setDomain(domain);; // 최상위 도메인 설정
-        jwtCookie.setPath("/");   // 이거 사용해
-
+        jwtCookie.setPath("/");
         jwtCookie.setMaxAge(24 * 60 * 60); //쿠키 24시간
-        //jwtCookie.setSecure(true); // secure flag (HTTPS)
-
+//        jwtCookie.setSecure(true); // secure flag (HTTPS)
         response.addCookie(jwtCookie);
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUri)).build();

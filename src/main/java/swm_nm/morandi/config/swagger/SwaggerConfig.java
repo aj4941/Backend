@@ -1,8 +1,5 @@
 package swm_nm.morandi.config.swagger;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -12,6 +9,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Server;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import swm_nm.morandi.global.annotations.CurrentMember;
 
 import java.util.Collections;
 
@@ -19,116 +17,21 @@ import java.util.Collections;
 public class SwaggerConfig {
     Server serverLocal = new Server("local", "http://localhost:8080", "for local usages", Collections.emptyList(), Collections.emptyList());
     Server testServer = new Server("test", "https://api.morandi.co.kr", "for testing", Collections.emptyList(), Collections.emptyList());
-    @Bean
-    public Docket memberApi() {
+
+    private Docket createDocket(String groupName, String basePackage) {
         return new Docket(DocumentationType.OAS_30)
                 .servers(serverLocal, testServer)
-                .groupName("member-api")
+                .groupName(groupName)
                 .useDefaultResponseMessages(false)
+                .ignoredParameterTypes(CurrentMember.class)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.member.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
-    @Bean
-    public Docket testDuringApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("test-during-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testDuring.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
-    @Bean
-    public Docket testExitApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("test-exit-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testExit.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
-    @Bean
-    public Docket testInfoApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("test-info-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testInfo.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
-    @Bean
-    public Docket testRecordApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("test-record-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testRecord.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
-    @Bean
-    public Docket testStartApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("test-start-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testStart.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
-    @Bean
-    public Docket codeSubmitApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("code-submit-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.codeSubmit.controller"))
+                .apis(RequestHandlerSelectors.basePackage(basePackage))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
     }
 
-    @Bean
-    public Docket practiceProblemApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("practice-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.practice.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
-
-    @Bean
-    public Docket testRetryApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .servers(serverLocal, testServer)
-                .groupName("test-retry-api")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("swm_nm.morandi.domain.testRetry.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
-    }
+    // 공통으로 사용할 ApiInfo 정의
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Practice Swagger")
@@ -136,4 +39,50 @@ public class SwaggerConfig {
                 .version("1.0")
                 .build();
     }
+
+    @Bean
+    public Docket memberApi() {
+        return createDocket("member-api", "swm_nm.morandi.domain.member.controller");
+    }
+
+    @Bean
+    public Docket testDuringApi() {
+        return createDocket("test-during-api", "swm_nm.morandi.domain.testDuring.controller");
+    }
+
+    @Bean
+    public Docket testExitApi() {
+        return createDocket("test-exit-api", "swm_nm.morandi.domain.testExit.controller");
+    }
+
+    @Bean
+    public Docket testInfoApi() {
+        return createDocket("test-info-api", "swm_nm.morandi.domain.testInfo.controller");
+    }
+
+    @Bean
+    public Docket testRecordApi() {
+        return createDocket("test-record-api", "swm_nm.morandi.domain.testRecord.controller");
+    }
+
+    @Bean
+    public Docket testStartApi() {
+        return createDocket("test-start-api", "swm_nm.morandi.domain.testStart.controller");
+    }
+
+    @Bean
+    public Docket codeSubmitApi() {
+        return createDocket("code-submit-api", "swm_nm.morandi.domain.codeSubmit.controller");
+    }
+
+    @Bean
+    public Docket practiceProblemApi() {
+        return createDocket("practice-api", "swm_nm.morandi.domain.practice.controller");
+    }
+
+    @Bean
+    public Docket testRetryApi() {
+        return createDocket("test-retry-api", "swm_nm.morandi.domain.testRetry.controller");
+    }
+
 }

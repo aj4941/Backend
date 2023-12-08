@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import swm_nm.morandi.domain.testStart.dto.TestStartRequestDto;
 import swm_nm.morandi.domain.testStart.dto.TestStartResponseDto;
 import swm_nm.morandi.domain.testStart.service.TestStartUseCase;
+import swm_nm.morandi.global.annotations.CurrentMember;
 
 @RestController
 @RequestMapping("/tests")
@@ -23,8 +24,9 @@ public class TestStartController {
     @PostMapping
     @Operation(summary = "테스트 입장", description = "사용자가 테스트에 입장할 때 테스트 문제 세트를 구성합니다.")
     public ResponseEntity<TestStartResponseDto> testStart
-            (@RequestBody TestStartRequestDto testStartRequestDto) {
+            (@CurrentMember Long memberId,
+             @RequestBody TestStartRequestDto testStartRequestDto) {
         Long testTypeId = testStartRequestDto.getTestTypeId();
-        return new ResponseEntity<>(testStartUseCase.getTestStartsData(testTypeId), HttpStatus.OK);
+        return new ResponseEntity<>(testStartUseCase.getTestStartsData(memberId, testTypeId), HttpStatus.OK);
     }
 }
