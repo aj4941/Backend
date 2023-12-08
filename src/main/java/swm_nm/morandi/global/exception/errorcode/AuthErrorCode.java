@@ -21,7 +21,8 @@ public enum AuthErrorCode implements ErrorCode {
     SSO_USERINFO(HttpStatus.UNAUTHORIZED,"SSO에서 사용자 정보를 가져올 수 없습니다" ),
     SSO_SERVER_ERROR(HttpStatus.UNAUTHORIZED,"SSO서버와 통신할 수 없습니다." ),
     BAEKJOON_ID_NULL(HttpStatus.UNPROCESSABLE_ENTITY,"백준 ID는 크롬 익스텐션을 통해 필수로 등록해야합니다. " ),//상태코드 422 에외처리
-    INVALID_SOCIAL_TYPE(HttpStatus.BAD_REQUEST,"지원되지 않는 OAuth provider 입니다.");
+    INVALID_SOCIAL_TYPE(HttpStatus.BAD_REQUEST,"지원되지 않는 OAuth provider 입니다."),
+    AUTHENTICATION_FAILED(HttpStatus.BAD_REQUEST, "지원하지 않는 사용자입니다. "),;
 
 
     private final HttpStatus httpStatus;
