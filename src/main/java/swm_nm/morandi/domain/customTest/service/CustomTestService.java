@@ -16,6 +16,7 @@ import swm_nm.morandi.domain.problem.entity.Problem;
 import swm_nm.morandi.domain.problem.repository.ProblemRepository;
 import swm_nm.morandi.domain.testDuring.dto.TempCodeDto;
 import swm_nm.morandi.domain.testDuring.dto.TestInfo;
+import swm_nm.morandi.domain.testDuring.dto.TestStatus;
 import swm_nm.morandi.domain.testDuring.dto.factory.TempCodeFactory;
 import swm_nm.morandi.domain.testInfo.entity.AttemptProblem;
 import swm_nm.morandi.domain.testInfo.entity.Tests;
@@ -96,6 +97,7 @@ public class CustomTestService {
                         .problemCount(customTestRequest.getBojProblems().size())
                         .endDifficulty(DifficultyLevel.G5)
                         .startDifficulty(DifficultyLevel.S3)
+                        .testStatus(TestStatus.IN_PROGRESS)
                         .build())
                 .collect(Collectors.toList());
         testRepository.saveAll(tests);
