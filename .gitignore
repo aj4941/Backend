@@ -1,4 +1,5 @@
 .env
+codes/*
 docker-compose.yml
 src/main/resources/application.yml
 src/main/java/swm_nm/morandi/auth/constants/SecurityConstants.java

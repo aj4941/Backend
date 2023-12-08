@@ -48,8 +48,7 @@ public class TestStartUseCase {
     //이미 테스트 중인지 확인
     @MemberLock
     @Transactional
-    public TestStartResponseDto getTestStartsData(Long testTypeId) {
-        Long memberId = SecurityUtils.getCurrentMemberId();
+    public TestStartResponseDto getTestStartsData(Long memberId, Long testTypeId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new MorandiException(MemberErrorCode.MEMBER_NOT_FOUND));
 

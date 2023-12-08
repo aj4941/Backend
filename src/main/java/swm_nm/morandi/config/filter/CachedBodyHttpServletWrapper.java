@@ -48,6 +48,12 @@ public class CachedBodyHttpServletWrapper extends HttpServletRequestWrapper {
             return cachedBodyInputStream.available() == 0;
         }
 
+        //TODO
+        /*
+         *
+         *  비동기 처리 사용 시에는 아래 isReady , setReadListener 메서드를 구현해야함
+         *
+         */
         @Override
         public boolean isReady() {
             return true;
