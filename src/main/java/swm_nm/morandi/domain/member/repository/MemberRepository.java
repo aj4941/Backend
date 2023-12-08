@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import swm_nm.morandi.domain.member.entity.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -13,4 +14,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
     Boolean existsByBojId(String bojId);
     Page<Member> findAll(Pageable pageable);
+
+    List<Member> findAllByBojIdIn(List<String> bojIdList);
 }
