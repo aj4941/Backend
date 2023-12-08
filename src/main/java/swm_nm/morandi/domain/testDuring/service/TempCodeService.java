@@ -66,12 +66,15 @@ public class TempCodeService {
 
         Map<String, TempCodeDto> tempCodes = hashOps.entries(tempCodeKey);
 
-        return tempCodes.keySet().stream().map(problemNumber-> TestCodeDto.builder()
-                .cppCode(tempCodes.get(problemNumber).getCppCode())
-                .pythonCode(tempCodes.get(problemNumber).getPythonCode())
-                .javaCode(tempCodes.get(problemNumber).getJavaCode())
-                .problemNumber(Integer.parseInt(problemNumber))
-                .build()).collect(Collectors.toList());
+        return tempCodes.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> TestCodeDto.builder()
+                        .cppCode(entry.getValue().getCppCode())
+                        .pythonCode(entry.getValue().getPythonCode())
+                        .javaCode(entry.getValue().getJavaCode())
+                        .problemNumber(Integer.parseInt(entry.getKey()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public PracticeProblemCodeDto getPracticeProblemTempCode(Long practiceProblemId) {
