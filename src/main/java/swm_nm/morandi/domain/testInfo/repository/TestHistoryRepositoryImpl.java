@@ -33,13 +33,12 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
 
         JPQLQuery<Tests> query =  queryFactory
                 .selectFrom(tests)
-                .join(tests.member, member)
-                .join(tests.attemptProblems, attemptProblem)
-                .join(attemptProblem.problem, problem)
                 .where(bojIdEq(bojId),
                         testTypenameEq(testTypename),
                         bojProblemIdEq(bojProblemId),
                         tests.testStatus.eq(TestStatus.COMPLETED));
+
+        applyConditionalJoins(query, bojId, testTypename, bojProblemId);
 
         JPQLQuery<Tests> paginatedQuery = query
                 .offset(pageable.getOffset())
@@ -47,6 +46,16 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
 
         List<Tests> testList = paginatedQuery.fetch();
         return new PageImpl<>(testList, pageable, query.fetchCount());
+    }
+
+    private void applyConditionalJoins(JPQLQuery<Tests> query, String bojId, String testTypename, Long bojProblemId) {
+        if (StringUtils.hasText(bojId) || StringUtils.hasText(testTypename)) {
+            query.join(tests.member, member);
+        }
+        if (bojProblemId != null) {
+            query.join(tests.attemptProblems, attemptProblem)
+                    .join(attemptProblem.problem, problem);
+        }
     }
 
     private BooleanExpression bojIdEq(String bojId) {
