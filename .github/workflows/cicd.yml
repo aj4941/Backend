@@ -76,8 +76,7 @@ jobs:
           host: ${{ env.EC2_BASTION_HOST }}
           debug: true
           username: ubuntu
-          key: ${{ secrets.SSH_SECRET_ACCESS_KEY }}
           port: 22
           envs: EC2_BACKEND_HOST,GITHUB_SHA,ECR_REGISTRY
           script: |
-            ssh -i ~/.ssh/swm-nm-morandi.pem -o StrictHostKeyChecking=no ubuntu@$EC2_BACKEND_HOST 'bash /home/ubuntu/morandi-backend/deploy.sh'
+            ssh -o StrictHostKeyChecking=no ubuntu@$EC2_BACKEND_HOST 'bash /home/ubuntu/morandi-backend/deploy.sh'
