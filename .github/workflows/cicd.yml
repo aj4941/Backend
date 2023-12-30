@@ -75,6 +75,7 @@ jobs:
         with:
           host: ${{ env.EC2_BASTION_HOST }}
           debug: true
+          key: ${{ secrets.SSH_SECRET_ACCESS_KEY }}
           username: ubuntu
           port: 22
           envs: EC2_BACKEND_HOST,GITHUB_SHA,ECR_REGISTRY
