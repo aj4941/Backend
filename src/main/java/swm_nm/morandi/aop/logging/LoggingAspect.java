@@ -102,7 +102,8 @@ public class LoggingAspect {
             log.info("{}, \"return\": {}", callFunction,
                     mapper.writeValueAsString(result)
                     );
-
+            // 트랜잭션 종료
+            transaction.finish();
             Sentry.configureScope(Scope::clear);
             Sentry.clearBreadcrumbs();
         }
