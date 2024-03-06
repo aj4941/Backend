@@ -15,11 +15,12 @@
 <br><br><br>
 
 <h3 align="left">📄 ERD</h3>
-<img src="https://github.com/SWM-Morandi/Backend/assets/51875177/09f4a800-0136-487d-8a65-0be5265667a2">
+<img src="https://github.com/SWM-Morandi/Backend/assets/51875177/c219d4eb-1062-4298-a893-9447f400742a">
 
 <br><br><br>
 
 <h3 align="left">📚 API Docs</h3>
+- API 문서를 Swagger를 이용하여 편리하게 관리했습니다.
 <img src="https://github.com/SWM-Morandi/Backend/assets/51875177/5ac9f0b5-5fdc-48dd-ae29-f00349fd32ce">
 
 <br><br><br>
