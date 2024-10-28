@@ -11,13 +11,6 @@
  - 현재 버전을 유지보수 하면서 새로운 버전으로 업데이트를 진행하고 있습니다.
 <img src="https://github.com/SWM-Morandi/Backend/assets/51875177/09f4a800-0136-487d-8a65-0be5265667a2">
 
-<br>
-
-<h3 align="left">⚙️ 프로젝트 구조</h3>
-<img src="https://github.com/SWM-Morandi/Backend/assets/51875177/8a3b875f-8714-41fa-a907-3b70636cd852">
-
-<br>
-
 <h3 align="left">🛠️ Tech Stack</h3>
 
 - Java 17, Spring Boot
